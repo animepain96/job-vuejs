@@ -25,7 +25,7 @@
     <CDropdownItem to="/password">
       <CIcon name="cil-shield-alt" /> Password
     </CDropdownItem>
-    <CDropdownItem to="/logout">
+    <CDropdownItem @click="$store.dispatch('auth/logout')">
       <CIcon name="cil-lock-locked" /> Logout
     </CDropdownItem>
   </CDropdown>

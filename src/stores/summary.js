@@ -1,4 +1,4 @@
-import {HTTP} from "@/helpers/http";
+import HTTP from "@/helpers/http";
 import {CHART_REPORT} from "@/constants/summaryAPI";
 import {toastAlert} from "@/helpers/alert";
 
@@ -14,7 +14,7 @@ const summary = {
     },
     actions: {
         getAnnualRevenue({commit}) {
-            return HTTP.get(CHART_REPORT, {
+            return HTTP(true).get(CHART_REPORT, {
                 headers: {
                     accept: 'application/json',
                 },

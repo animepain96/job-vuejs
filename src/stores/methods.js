@@ -1,4 +1,4 @@
-import {HTTP} from "@/helpers/http";
+import HTTP from "@/helpers/http";
 import {DELETE_METHOD, METHOD_LIST, UPDATE_METHOD, CREATE_METHOD} from "@/constants/methodAPI";
 import {toastAlert} from "@/helpers/alert";
 
@@ -14,7 +14,7 @@ const methods = {
     },
     actions: {
         getList({commit}) {
-            return HTTP.get(METHOD_LIST, {
+            return HTTP(true).get(METHOD_LIST, {
                 headers: {
                     Accept: 'application/json',
                 }
@@ -27,7 +27,7 @@ const methods = {
             });
         },
         update({commit, state}, payload){
-            return HTTP.patch(UPDATE_METHOD(payload.id), {
+            return HTTP(true).patch(UPDATE_METHOD(payload.id), {
                 name: payload.name,
             }, {
                 headers: {
@@ -56,7 +56,7 @@ const methods = {
             });
         },
         delete({commit, state}, method) {
-            return HTTP.delete(DELETE_METHOD(method.id), {
+            return HTTP(true).delete(DELETE_METHOD(method.id), {
                 headers: {
                     Accept: 'application/json',
                 }
@@ -82,7 +82,7 @@ const methods = {
             });
         },
         create({commit, state}, method) {
-            return HTTP.post(CREATE_METHOD, {
+            return HTTP(true).post(CREATE_METHOD, {
                 name: method.name,
             }, {
                 headers: {

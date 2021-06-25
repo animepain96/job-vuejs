@@ -1,6 +1,6 @@
 import {ADDITION_LIST, CREATE_JOB, DELETE_JOB, GET_RATE, JOB_LIST, UPDATE_JOB} from "@/constants/jobAPI";
 import {toastAlert} from "@/helpers/alert";
-import {HTTP} from "@/helpers/http";
+import HTTP from "@/helpers/http";
 
 const jobs = {
     namespaced: true,
@@ -26,7 +26,7 @@ const jobs = {
     },
     actions: {
         getList({commit}) {
-            return HTTP.get(JOB_LIST, {
+            return HTTP(true).get(JOB_LIST, {
                 headers: {
                     Accept: 'application/json',
                 },
@@ -44,7 +44,7 @@ const jobs = {
             });
         },
         getAdditionList({commit}) {
-            return HTTP.get(ADDITION_LIST, {
+            return HTTP(true).get(ADDITION_LIST, {
                 headers: {
                     Accept: 'application/json',
                 },
@@ -68,7 +68,7 @@ const jobs = {
             });
         },
         updateJob({commit, state}, payload) {
-            return HTTP.patch(UPDATE_JOB(payload.id), payload.data, {
+            return HTTP(true).patch(UPDATE_JOB(payload.id), payload.data, {
                 headers: {
                     Accept: 'application/json',
                 }
@@ -98,7 +98,7 @@ const jobs = {
             });
         },
         getRate({commit, state}) {
-            return HTTP.get(GET_RATE, {
+            return HTTP(true).get(GET_RATE, {
                 headers: {
                     Accept: 'application/json',
                 },
@@ -117,7 +117,7 @@ const jobs = {
             });
         },
         delete({commit, state}, job) {
-            return HTTP.delete(DELETE_JOB(job.id), {
+            return HTTP(true).delete(DELETE_JOB(job.id), {
                 headers: {
                     Accept: 'application/json',
                 }
@@ -143,7 +143,7 @@ const jobs = {
             });
         },
         create({commit, state}, payload) {
-            return HTTP.post(CREATE_JOB, payload, {
+            return HTTP(true).post(CREATE_JOB, payload, {
                 headers: {
                     Accept: 'application/json',
                 }

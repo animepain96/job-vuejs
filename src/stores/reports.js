@@ -1,4 +1,4 @@
-import {HTTP} from "@/helpers/http";
+import HTTP from "@/helpers/http";
 import {GET_REPORT} from "@/constants/reportAPI";
 import {toastAlert} from "@/helpers/alert";
 import {DELETE_JOB, UPDATE_JOB} from "@/constants/jobAPI";
@@ -37,7 +37,7 @@ const reports = {
             if(query) {
                 config.params = query;
             }
-             return HTTP.get(GET_REPORT, config).then(response => {
+             return HTTP(true).get(GET_REPORT, config).then(response => {
                 commit('updateList', response.data.data);
                 return true;
             }).catch(() => {
@@ -46,7 +46,7 @@ const reports = {
             });
         },
         updateJob({commit, state}, payload) {
-            return HTTP.patch(UPDATE_JOB(payload.id), payload.data, {
+            return HTTP(true).patch(UPDATE_JOB(payload.id), payload.data, {
                 headers: {
                     Accept: 'application/json',
                 }
@@ -76,7 +76,7 @@ const reports = {
             });
         },
         delete({commit, state}, job) {
-            return HTTP.delete(DELETE_JOB(job.id), {
+            return HTTP(true).delete(DELETE_JOB(job.id), {
                 headers: {
                     Accept: 'application/json',
                 }

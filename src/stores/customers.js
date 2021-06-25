@@ -1,4 +1,4 @@
-import {HTTP} from "@/helpers/http";
+import HTTP from "@/helpers/http";
 import {CREATE_CUSTOMER, CUSTOMER_LIST, DELETE_CUSTOMER, UPDATE_CUSTOMER} from "@/constants/customersAPI";
 import {toastAlert} from "@/helpers/alert";
 
@@ -14,7 +14,7 @@ const customers = {
     },
     actions: {
         getList({commit}) {
-            return HTTP.get(CUSTOMER_LIST, {
+            return HTTP(true).get(CUSTOMER_LIST, {
                 headers: {
                     Accept: 'application/json',
                 }
@@ -27,7 +27,7 @@ const customers = {
             });
         },
         update({commit, state}, payload) {
-            return HTTP.patch(UPDATE_CUSTOMER(payload.id), {
+            return HTTP(true).patch(UPDATE_CUSTOMER(payload.id), {
                 name: payload.name,
             }, {
                 headers: {
@@ -56,7 +56,7 @@ const customers = {
             });
         },
         delete({commit, state}, customer) {
-            return HTTP.delete(DELETE_CUSTOMER(customer.id), {
+            return HTTP(true).delete(DELETE_CUSTOMER(customer.id), {
                 headers: {
                     Accept: 'application/json',
                 }
@@ -82,7 +82,7 @@ const customers = {
             });
         },
         create({commit, state}, customer) {
-            return HTTP.post(CREATE_CUSTOMER, {
+            return HTTP(true).post(CREATE_CUSTOMER, {
                 name: customer.name,
             }, {
                 headers: {

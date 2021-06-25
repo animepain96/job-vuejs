@@ -7,12 +7,14 @@ import * as icons from '@coreui/icons'
 import VueSweetalert2 from "vue-sweetalert2"
 import store from './store'
 import Vuelidate from "vuelidate";
+import VueCookies from "vue-cookies";
 
 Vue.config.performance = true
 Vue.use(CoreuiVue)
 Vue.use(VueSweetalert2)
 Vue.prototype.$log = console.log.bind(console)
 Vue.use(Vuelidate)
+Vue.use(VueCookies)
 
 new Vue({
   el: '#app',

@@ -1,4 +1,4 @@
-import {HTTP} from "@/helpers/http";
+import HTTP from "@/helpers/http";
 import {TYPE_LIST, UPDATE_TYPE, DELETE_TYPE, CREATE_TYPE} from "@/constants/typeAPI";
 import {toastAlert} from "@/helpers/alert";
 
@@ -14,7 +14,7 @@ const types = {
     },
     actions: {
         getList({commit}) {
-            return HTTP.get(TYPE_LIST, {
+            return HTTP(true).get(TYPE_LIST, {
                 headers: {
                     Accept: 'application/json',
                 },
@@ -32,7 +32,7 @@ const types = {
             });
         },
         update({commit, state}, payload){
-            return HTTP.patch(UPDATE_TYPE(payload.id), {
+            return HTTP(true).patch(UPDATE_TYPE(payload.id), {
                 name: payload.name,
             }, {
                 headers: {
@@ -61,7 +61,7 @@ const types = {
             });
         },
         delete({commit, state}, type) {
-            return HTTP.delete(DELETE_TYPE(type.id), {
+            return HTTP(true).delete(DELETE_TYPE(type.id), {
                 headers: {
                     Accept: 'application/json',
                 }
@@ -87,7 +87,7 @@ const types = {
             });
         },
         create({commit, state}, type) {
-            return HTTP.post(CREATE_TYPE, {
+            return HTTP(true).post(CREATE_TYPE, {
                 name: type.name,
             }, {
                 headers: {
