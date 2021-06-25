@@ -1,0 +1,1 @@
+export const CHART_REPORT = '/api/report-chart';
