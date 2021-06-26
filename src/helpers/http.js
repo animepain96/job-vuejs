@@ -6,7 +6,7 @@ const HTTP = (auth = false) => {
     const configs = {
         baseURL: env.API,
         headers: {
-
+            Accept: 'application/json',
         },
     };
     if(auth) {

@@ -1,12 +1,12 @@
 import store from '@/store';
 
 const authHelper = {
-    isLogged: function() {
+    isLogged: () => {
         if(store.state.auth.token) {
             return true;
         } else if(window.$cookies.get('token')) {
-            store.state.auth.token = window.$cookies.get('token');
-            return true;
+            const token = window.$cookies.get('token');
+            return store.dispatch('auth/getUser', token);
         }
         return false;
     }

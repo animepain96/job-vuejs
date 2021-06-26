@@ -29,6 +29,9 @@ const NotFound = () => import('@/views/pages/Page404')
 //Login
 const Login = () => import('@/views/pages/Login')
 
+//Password
+const Password = () => import('@/views/passwords/Index')
+
 Vue.use(VueRouter)
 
 const Router = new VueRouter({
@@ -94,6 +97,14 @@ function configRoutes() {
                         auth: true,
                     },
                 },
+                {
+                    path: '/password',
+                    name: 'Change Password',
+                    component: Password,
+                    meta: {
+                        auth: true,
+                    },
+                },
             ],
         },
         {
@@ -113,9 +124,10 @@ function configRoutes() {
     ]
 }
 
-Router.beforeEach((to, from, next) => {
+Router.beforeEach(async (to, from, next) => {
     if (to.matched.some(record => record.meta.auth)) {
-        if (!authHelper.isLogged()) {
+        const logged = await authHelper.isLogged();
+        if (!logged) {
             next({
                 name: 'Login',
             });
