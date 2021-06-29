@@ -31,6 +31,33 @@
           </CRow>
         </CCardHeader>
         <CCardBody>
+          <CRow>
+            <CCol md="3">
+              <CInput
+                  v-model="unpaidThresholdComputed"
+                  label="Unpaid Threshold"
+                  addLabelClasses="font-weight-bold"
+                  :is-valid="this.$v.unpaidThreshold.$dirty ? !this.$v.unpaidThreshold.$error : null"
+                  :invalid-feedback="!this.$v.unpaidThreshold.required ? 'This field is required.' : 'This field required numeric value.'"
+              >
+                <template #append>
+                  <CButton @click="updateUnpaidThreshold" color="primary" v-text="'Save'"/>
+                </template>
+              </CInput>
+            </CCol>
+            <CCol md="4" class="offset-md-5">
+              <CRow>
+                <CCol md="6">
+                  <CSelect :custom="true" label="Sort By" addLabelClasses="font-weight-bold" :options="sortOptions"
+                           :value.sync="sortBy"/>
+                </CCol>
+                <CCol md="6">
+                  <CSelect :custom="true" label="Unpaid List" addLabelClasses="font-weight-bold"
+                           :options="unpaidOptions" :value.sync="unpaid"/>
+                </CCol>
+              </CRow>
+            </CCol>
+          </CRow>
           <CDataTable
               :sorterValue="{column: 'id', asc: false}"
               :tableFilter="{ placeholder: 'Search...'}"
@@ -55,6 +82,11 @@
                     :is-valid="v.customer.name.$dirty ? !v.customer.name.$error : null"
                     :invalid-feedback="!v.customer.name.required ? 'This field is required.' : 'This field required 255 maximum characters.'"
                 />
+              </td>
+            </template>
+            <template #unpaid="{item}">
+              <td>
+                <span v-text="'$' + item.unpaid.toLocaleString()"></span>
               </td>
             </template>
             <template #action="{item}">
@@ -101,15 +133,16 @@
 </template>
 
 <script>
-import {required, maxLength} from 'vuelidate/lib/validators';
+import {required, maxLength, numeric} from 'vuelidate/lib/validators';
 
 export default {
   data() {
     return {
       fields: [
         {key: 'id', name: 'ID', _style: "width: 20%;"},
-        {key: 'name', name: 'Name', _style: "width: 50%;"},
-        {key: 'action', _style: "width: 30%;"},
+        {key: 'name', name: 'Name', _style: "width: 30%;"},
+        {key: 'unpaid', name: 'Unpaid', _style: "width: 30%;"},
+        {key: 'action', _style: "width: 20%;"},
       ],
       customer: {
         name: '',
@@ -120,6 +153,18 @@ export default {
       isEdit: false,
       isCreate: false,
       isLoading: false,
+      sortBy: 0,
+      unpaid: 0,
+      sortOptions: [
+        {value: 0, label: 'Most Recent'},
+        {value: 1, label: 'Newest'},
+        {value: 2, label: 'Oldest'},
+      ],
+      unpaidOptions: [
+        {value: 0, label: 'All List'},
+        {value: 1, label: 'Unpaid List'},
+      ],
+      unpaidThreshold: 0,
     };
   },
   validations: {
@@ -129,16 +174,39 @@ export default {
         maxLength: maxLength(255),
       },
     },
+    unpaidThreshold: {
+      required,
+      numeric,
+    },
   },
   created() {
     this.$store.dispatch('customers/getList', null, {root: true});
   },
   computed: {
+    unpaidThresholdComputed: {
+      get()
+      {
+        return this.$store.state.app.unpaidThreshold;
+      },
+      set(value)
+      {
+        this.unpaidThreshold = value;
+      },
+    },
     v() {
       return this.$v;
     },
     customers() {
-      return this.$store.state.customers.customers;
+      return this.$store.state.customers.customers.map((customer) => {
+        customer.unpaid = customer.jobs.reduce((total, job) => {
+          if(!job.paid) {
+            return total + job.price;
+          }
+          return total + 0;
+        }, 0);
+
+        return customer;
+      });
     },
   },
   methods: {
@@ -149,7 +217,7 @@ export default {
     },
     updateCustomer() {
       this.$v.customer.$touch();
-      if(!this.$v.customer.$invalid) {
+      if (!this.$v.customer.$invalid) {
         this.$store.commit('app/setLoading', true);
         this.$store.dispatch('customers/update', {id: this.selected.id, name: this.customer.name}, {root: true})
             .then(status => {
@@ -201,6 +269,16 @@ export default {
       this.customer.name = '';
       this.$v.customer.$reset();
     },
+    updateUnpaidThreshold() {
+      this.$v.unpaidThreshold.$touch();
+      if(!this.$v.unpaidThreshold.$invalid) {
+        this.$store.commit('app/setLoading', true);
+        this.$store.dispatch('app/updateUnpaidThreshold', {unpaid_threshold: this.unpaidThreshold}, {root: true})
+            .then(() => {
+              this.$store.commit('app/setLoading', false);
+            });
+      }
+    }
   }
 }
 </script>

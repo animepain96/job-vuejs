@@ -22,7 +22,7 @@
       />
     </CSidebarBrand>
 
-    <CRenderFunction flat :content-to-render="$options.nav"/>
+    <CRenderFunction flat :content-to-render="navItems"/>
     <CSidebarMinimizer
       class="d-md-down-none"
       @click.native="$store.commit('set', ['sidebarMinimize', !minimize])"
@@ -37,6 +37,24 @@ export default {
   name: 'TheSidebar',
   nav,
   computed: {
+    navItems() {
+      let result = this.$options.nav;
+      let unpaidCount = this.$store.state.app.unpaidCount;
+      result = result.map((item) => {
+        item._children = item._children.map((child) => {
+          if(child.name === 'Customers') {
+            child.badge = {
+              text: unpaidCount,
+              color: 'danger',
+            };
+          }
+          return child;
+        });
+
+        return item;
+      });
+      return result;
+    },
     show () {
       return this.$store.state.sidebar.sidebarShow
     },

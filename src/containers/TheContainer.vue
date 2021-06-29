@@ -31,7 +31,11 @@ export default {
     TheHeader,
     TheFooter,
     Overlay,
-  }
+  },
+  created() {
+    this.$store.dispatch('app/getUnpaidCount');
+    this.$store.dispatch('app/getUnpaidThreshold');
+  },
 }
 </script>
 
