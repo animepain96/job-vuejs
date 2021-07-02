@@ -6,7 +6,8 @@
           <CRow :class="['align-items-center']">
             <CCol md="7"><h3 :class="['mb-0']">Type Management</h3></CCol>
             <CCol md="5">
-              <CButton @click="isCreate = true" :class="['ml-auto', 'float-md-right']" color="success">
+              <CButton v-c-tooltip="'Create New'" @click="() => {this.isCreate = true; this.cancelEdit();}" :class="['ml-auto', 'float-md-right']"
+                       color="success">
                 <CIcon name="cil-plus"></CIcon>
               </CButton>
               <CForm @submit.prevent="createType">
@@ -32,7 +33,7 @@
         </CCardHeader>
         <CCardBody>
           <CDataTable
-              :sorterValue="{column: 'id', asc: false}"
+              :sorterValue="sortBy"
               :responsive=false
               :tableFilter="{ placeholder: 'Search...'}"
               items-per-page-select
@@ -45,9 +46,10 @@
               clickable-rows
               :active-page="1"
               :pagination="{ doubleArrows: false, align: 'center'}"
+              @update:sorter-value="(e) => this.sortBy = e"
           >
             <template #name="{item}">
-              <td>
+              <td :class="'inline-edit-wrap'">
                 <label v-text="item.name" v-show="item.id !== selected.id || !isEdit"></label>
                 <CInput
                     type="text"
@@ -55,43 +57,25 @@
                     v-show="item.id === selected.id && isEdit"
                     :is-valid="v.type.name.$dirty ? !v.type.name.$error : null"
                     :invalid-feedback="!v.type.name.required ? 'This field is required.' : 'This field required 255 maximum characters.'"
+                    @keyup="updateType"
                 />
+                <CButton v-c-tooltip="'Edit'" size="sm" color="secondary" :class="'inline-edit-button'"
+                         @click="() => editType(item)"
+                         v-show="!(selected.id === item.id && isEdit)">
+                  <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
+                </CButton>
               </td>
             </template>
             <template #action="{item}">
               <td>
-                <CButtonGroup class="mr-3" v-show="! isEdit || selected.id !== item.id">
-                  <CButton
-                      size="sm"
-                      color="primary"
-                      @click="editType(item)"
-                  >
-                    <CIcon name="cil-pencil"></CIcon>
-                  </CButton>
-                  <CButton
-                      size="sm"
-                      color="danger"
-                      @click="deleteType(item)"
-                  >
-                    <CIcon name="cil-trash"></CIcon>
-                  </CButton>
-                </CButtonGroup>
-                <CButtonGroup class="mr-3" v-show="isEdit && selected.id === item.id">
-                  <CButton
-                      size="sm"
-                      color="success"
-                      @click="updateType"
-                  >
-                    <CIcon name="cil-save"></CIcon>
-                  </CButton>
-                  <CButton
-                      size="sm"
-                      color="secondary"
-                      @click="cancelEdit"
-                  >
-                    <CIcon name="cil-x-circle"></CIcon>
-                  </CButton>
-                </CButtonGroup>
+                <CButton
+                    v-c-tooltip="'Delete'"
+                    size="sm"
+                    color="danger"
+                    @click="deleteType(item)"
+                >
+                  <CIcon name="cil-trash"></CIcon>
+                </CButton>
               </td>
             </template>
           </CDataTable>
@@ -109,9 +93,13 @@ export default {
     return {
       fields: [
         {key: 'id', name: 'ID', _style: "width: 20%;"},
-        {key: 'name', name: 'Name', _style: "width: 50%;"},
         {key: 'action', _style: "width: 30%;"},
+        {key: 'name', name: 'Name', _style: "width: 50%;"},
       ],
+      sortBy: {
+        column: 'id',
+        asc: false,
+      },
       type: {
         name: '',
       },
@@ -144,22 +132,27 @@ export default {
     editType(item) {
       this.selected = item;
       this.isEdit = true;
+      this.type.name = item.name;
     },
-    updateType() {
-      this.$v.type.$touch();
-      if (!this.$v.type.$invalid) {
-        this.$store.commit('app/setLoading', true);
-        this.$store.dispatch('types/update', {id: this.selected.id, name: this.type.name}, {root: true})
-            .then(status => {
-              if (status) {
-                this.isEdit = false;
-                this.type = {
-                  name: '',
-                };
-                this.$v.type.$reset();
-              }
-              this.$store.commit('app/setLoading', false);
-            });
+    updateType(e) {
+      if(e.keyCode === 13) {
+        this.$v.type.$touch();
+        if (!this.$v.type.$invalid) {
+          this.$store.commit('app/setLoading', true);
+          this.$store.dispatch('types/update', {id: this.selected.id, name: this.type.name}, {root: true})
+              .then(status => {
+                if (status) {
+                  this.isEdit = false;
+                  this.type = {
+                    name: '',
+                  };
+                  this.$v.type.$reset();
+                }
+                this.$store.commit('app/setLoading', false);
+              });
+        }
+      } else if(e.keyCode === 27) {
+        this.cancelEdit();
       }
     },
     createType() {
@@ -180,6 +173,7 @@ export default {
       }
     },
     deleteType(item) {
+      this.cancelEdit();
       this.selected = item;
       this.$swal.fire({
         title: 'Are you sure to delete this type?',
@@ -204,6 +198,8 @@ export default {
     cancelEdit() {
       this.isEdit = false;
       this.type.name = '';
+      this.editField = '';
+      this.$v.type.$reset();
     },
   }
 }

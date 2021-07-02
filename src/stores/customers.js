@@ -27,9 +27,7 @@ const customers = {
             });
         },
         update({commit, state}, payload) {
-            return HTTP(true).patch(UPDATE_CUSTOMER(payload.id), {
-                name: payload.name,
-            }, {
+            return HTTP(true).patch(UPDATE_CUSTOMER(payload.id), payload, {
                 headers: {
                     Accept: 'application/json',
                 }
@@ -43,7 +41,6 @@ const customers = {
                     });
 
                     commit('updateList', customers);
-                    toastAlert('The customer was updated successfully.', 'success')
 
                     return true;
                 }

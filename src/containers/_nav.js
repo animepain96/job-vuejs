@@ -30,13 +30,25 @@ export default [
         _name: 'CSidebarNavItem',
         name: 'Report',
         to: '/report',
-        icon: 'cil-list',
+        icon: 'cil-document',
       },
       {
         _name: 'CSidebarNavItem',
         name: 'Chart Report',
         to: '/chart-report',
         icon: 'cil-chart-pie',
+      },
+      {
+        _name: 'CSidebarNavItem',
+        name: 'Users',
+        to: '/users',
+        icon: 'cil-user',
+      },
+      {
+        _name: 'CSidebarNavItem',
+        name: 'Backups',
+        to: '/backups',
+        icon: 'cil-storage',
       },
     ]
   }

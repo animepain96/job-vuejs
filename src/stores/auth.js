@@ -61,10 +61,10 @@ const auth = {
                         return true;
                     }
 
-                    toastAlert('There was an error. Please try again.', 'error');
+                    toastAlert('Please login to your account before continue.', 'error');
                     return false;
                 }).catch(() => {
-                    toastAlert('There was an error. Please try again.', 'error');
+                    toastAlert('Please login to your account before continue.', 'error');
                     return false;
                 });
         },

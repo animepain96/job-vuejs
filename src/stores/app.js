@@ -8,8 +8,12 @@ const app = {
         isLoading: false,
         unpaidThreshold: 0,
         unpaidCount: 0,
+        tableLoading: false,
     },
     mutations: {
+        setTableLoading(state, status) {
+          state.tableLoading = status;
+        },
         setLoading(state, status) {
             state.isLoading = status;
         },

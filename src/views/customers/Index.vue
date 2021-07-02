@@ -6,7 +6,8 @@
           <CRow :class="['align-items-center']">
             <CCol md="7"><h3 :class="['mb-0']">Customer Management</h3></CCol>
             <CCol md="5">
-              <CButton @click="isCreate = true" :class="['ml-auto', 'float-md-right']" color="success">
+              <CButton v-c-tooltip="'Create New'" @click="() => {this.isCreate = true; this.cancelEdit(); }" :class="['ml-auto', 'float-md-right']"
+                       color="success">
                 <CIcon name="cil-plus"></CIcon>
               </CButton>
               <CForm @submit.prevent="createCustomer">
@@ -48,7 +49,8 @@
             <CCol md="4" class="offset-md-5">
               <CRow>
                 <CCol md="6">
-                  <CSelect :custom="true" label="Sort By" addLabelClasses="font-weight-bold" :options="sortOptions"
+                  <CSelect :custom="true" label="Sort By" addLabelClasses="font-weight-bold"
+                           :options="sortOptions"
                            :value.sync="sortBy"/>
                 </CCol>
                 <CCol md="6">
@@ -58,8 +60,11 @@
               </CRow>
             </CCol>
           </CRow>
-          <CDataTable
-              :sorterValue="{column: 'id', asc: false}"
+          <CCustomDataTable
+              :loading="loading"
+              :sort-by="sortBy"
+              :responsive="true"
+              :sorterValue="sortState"
               :tableFilter="{ placeholder: 'Search...'}"
               items-per-page-select
               sorter
@@ -70,18 +75,55 @@
               :items-per-page="10"
               clickable-rows
               :active-page="1"
-              :pagination="{ doubleArrows: false, align: 'center'}"
+              :pagination="{ doubleArrows: true, align: 'center'}"
+              @update:sorter-value="(e) => this.sortState = e"
           >
+
             <template #name="{item}">
-              <td>
-                <span v-text="item.name" v-show="item.id !== selected.id || !isEdit"></span>
+              <td :class="'inline-edit-wrap'">
+                <span v-text="item.name" v-show="!(selected.id === item.id && isEdit && editField === 'name')"></span>
                 <CInput
                     type="text"
                     v-model="customer.name"
-                    v-if="item.id === selected.id && isEdit"
+                    v-if="item.id === selected.id && isEdit && editField === 'name'"
                     :is-valid="v.customer.name.$dirty ? !v.customer.name.$error : null"
                     :invalid-feedback="!v.customer.name.required ? 'This field is required.' : 'This field required 255 maximum characters.'"
+                    @keyup="updateCustomer"
                 />
+                <CButton
+                    v-c-tooltip="'Edit'"
+                    size="sm"
+                    color="secondary"
+                    :class="'inline-edit-button'"
+                    @click="() => editCustomer(item, 'name')"
+                    v-show="!(selected.id === item.id && isEdit && editField === 'name')"
+                >
+                  <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
+                </CButton>
+              </td>
+            </template>
+            <template #note="{item}">
+              <td :class="'inline-edit-wrap'">
+                <span v-text="item.note" v-show="!(selected.id === item.id && isEdit && editField === 'note')"></span>
+                <CTextarea
+                    rows="4"
+                    type="text"
+                    v-model="customer.note"
+                    v-if="item.id === selected.id && isEdit && editField === 'note'"
+                    :is-valid="v.customer.note.$dirty ? !v.customer.note.$error : null"
+                    :invalid-feedback="!v.customer.note.required ? 'This field is required.' : 'This field required 10000 maximum characters.'"
+                    @keyup="updateCustomer"
+                />
+                <CButton
+                    v-c-tooltip="'Edit'"
+                    size="sm"
+                    color="secondary"
+                    :class="'inline-edit-button'"
+                    @click="() => editCustomer(item, 'note')"
+                    v-show="!(selected.id === item.id && isEdit && editField === 'note')"
+                >
+                  <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
+                </CButton>
               </td>
             </template>
             <template #unpaid="{item}">
@@ -91,41 +133,17 @@
             </template>
             <template #action="{item}">
               <td>
-                <CButtonGroup class="mr-3" v-show="! isEdit || selected.id !== item.id">
-                  <CButton
-                      size="sm"
-                      color="primary"
-                      @click="editCustomer(item)"
-                  >
-                    <CIcon name="cil-pencil"></CIcon>
-                  </CButton>
-                  <CButton
-                      size="sm"
-                      color="danger"
-                      @click="deleteCustomer(item)"
-                  >
-                    <CIcon name="cil-trash"></CIcon>
-                  </CButton>
-                </CButtonGroup>
-                <CButtonGroup class="mr-3" v-show="isEdit && selected.id === item.id">
-                  <CButton
-                      size="sm"
-                      color="success"
-                      @click="updateCustomer"
-                  >
-                    <CIcon name="cil-save"></CIcon>
-                  </CButton>
-                  <CButton
-                      size="sm"
-                      color="secondary"
-                      @click="cancelEdit"
-                  >
-                    <CIcon name="cil-x-circle"></CIcon>
-                  </CButton>
-                </CButtonGroup>
+                <CButton
+                    v-c-tooltip="'Delete'"
+                    size="sm"
+                    color="danger"
+                    @click="deleteCustomer(item)"
+                >
+                  <CIcon name="cil-trash"></CIcon>
+                </CButton>
               </td>
             </template>
-          </CDataTable>
+          </CCustomDataTable>
         </CCardBody>
       </CCard>
     </CCol>
@@ -134,18 +152,24 @@
 
 <script>
 import {required, maxLength, numeric} from 'vuelidate/lib/validators';
+import CCustomDataTable from "@/views/custom/CCustomDataTable";
 
 export default {
+  components: {
+    CCustomDataTable,
+  },
   data() {
     return {
       fields: [
-        {key: 'id', name: 'ID', _style: "width: 20%;"},
+        {key: 'id', name: 'ID', _style: "width: 10%;"},
+        {key: 'action', _style: "width: 10%;"},
         {key: 'name', name: 'Name', _style: "width: 30%;"},
-        {key: 'unpaid', name: 'Unpaid', _style: "width: 30%;"},
-        {key: 'action', _style: "width: 20%;"},
+        {key: 'note', name: 'Note', _style: "width: 30%;"},
+        {key: 'unpaid', name: 'Unpaid', _style: "width: 20%;"},
       ],
       customer: {
         name: '',
+        note: '',
       },
       selected: {
         name: '',
@@ -155,6 +179,10 @@ export default {
       isLoading: false,
       sortBy: 0,
       unpaid: 0,
+      sortState: {
+        column: 'id',
+        asc: false,
+      },
       sortOptions: [
         {value: 0, label: 'Most Recent'},
         {value: 1, label: 'Newest'},
@@ -165,6 +193,7 @@ export default {
         {value: 1, label: 'Unpaid List'},
       ],
       unpaidThreshold: 0,
+      editField: '',
     };
   },
   validations: {
@@ -173,6 +202,9 @@ export default {
         required,
         maxLength: maxLength(255),
       },
+      note: {
+        maxLength: maxLength(10000),
+      },
     },
     unpaidThreshold: {
       required,
@@ -180,16 +212,19 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('customers/getList', null, {root: true});
+    this.$store.commit('app/setTableLoading', true);
+    this.$store.dispatch('customers/getList', null, {root: true})
+        .finally(() => this.$store.commit('app/setTableLoading', false));
   },
   computed: {
+    loading() {
+      return this.$store.state.app.tableLoading;
+    },
     unpaidThresholdComputed: {
-      get()
-      {
+      get() {
         return this.$store.state.app.unpaidThreshold;
       },
-      set(value)
-      {
+      set(value) {
         this.unpaidThreshold = value;
       },
     },
@@ -197,9 +232,11 @@ export default {
       return this.$v;
     },
     customers() {
-      return this.$store.state.customers.customers.map((customer) => {
+      let result = this.$store.state.customers.customers;
+      result = result.map((customer) => {
+        //get unpaid
         customer.unpaid = customer.jobs.reduce((total, job) => {
-          if(!job.paid) {
+          if (!job.paid) {
             return total + job.price;
           }
           return total + 0;
@@ -207,30 +244,51 @@ export default {
 
         return customer;
       });
+
+      if (this.unpaid === 1) {
+        result = result.filter((customer) => {
+          if (customer.unpaid > this.unpaidThresholdComputed) {
+            return customer;
+          }
+        });
+      }
+
+      return result;
     },
   },
   methods: {
-    editCustomer(item) {
+    editCustomer(item, field) {
       this.selected = item;
       this.isEdit = true;
-      this.customer.name = item.name;
+      this.customer[field] = item[field];
+      this.editField = field;
     },
-    updateCustomer() {
-      this.$v.customer.$touch();
-      if (!this.$v.customer.$invalid) {
-        this.$store.commit('app/setLoading', true);
-        this.$store.dispatch('customers/update', {id: this.selected.id, name: this.customer.name}, {root: true})
-            .then(status => {
-              if (status) {
-                this.isEdit = false;
-                this.$v.customer.$reset();
-                this.customer.name = '';
-              }
-              this.$store.commit('app/setLoading', false);
-            });
+    updateCustomer(e) {
+      if (e.keyCode === 13) {
+        this.$v.customer[this.editField].$touch();
+        if (!this.$v.customer[this.editField].$invalid) {
+          this.$store.commit('app/setLoading', true);
+          this.$store.dispatch('customers/update', {
+            id: this.selected.id,
+            field: this.editField,
+            value: this.customer[this.editField]
+          }, {root: true})
+              .then(status => {
+                if (status) {
+                  this.isEdit = false;
+                  this.$v.customer.$reset();
+                  this.customer.name = '';
+                  this.editField = '';
+                }
+                this.$store.commit('app/setLoading', false);
+              });
+        }
+      } else if (e.keyCode === 27) {
+        this.cancelEdit();
       }
     },
     deleteCustomer(item) {
+      this.cancelEdit();
       this.selected = item;
       this.$swal.fire({
         title: 'Are you sure to delete this customer?',
@@ -241,11 +299,14 @@ export default {
         confirmButtonText: 'Confirm'
       }).then((result) => {
         if (result.isConfirmed) {
-          this.$store.commit('app/setLoading', true);
-          this.$store.dispatch('customers/delete', this.selected, {root: true})
-              .then(() => this.$store.commit('app/setLoading', false));
+          this.performDelete();
         }
       })
+    },
+    performDelete() {
+      this.$store.commit('app/setLoading', true);
+      this.$store.dispatch('customers/delete', this.selected, {root: true})
+          .then(() => this.$store.commit('app/setLoading', false));
     },
     createCustomer() {
       this.$v.customer.$touch();
@@ -266,19 +327,24 @@ export default {
     },
     cancelEdit() {
       this.isEdit = false;
-      this.customer.name = '';
+      this.customer = {
+        name: '',
+        note: '',
+      };
+      this.editField = '';
       this.$v.customer.$reset();
     },
     updateUnpaidThreshold() {
       this.$v.unpaidThreshold.$touch();
-      if(!this.$v.unpaidThreshold.$invalid) {
+      if (!this.$v.unpaidThreshold.$invalid) {
         this.$store.commit('app/setLoading', true);
         this.$store.dispatch('app/updateUnpaidThreshold', {unpaid_threshold: this.unpaidThreshold}, {root: true})
             .then(() => {
               this.$store.commit('app/setLoading', false);
             });
       }
-    }
+    },
+
   }
 }
 </script>

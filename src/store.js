@@ -9,6 +9,8 @@ import jobs from "@/stores/jobs";
 import summary from "@/stores/summary";
 import reports from "@/stores/reports";
 import auth from "@/stores/auth";
+import backups from "@/stores/backups";
+import users from "@/stores/users";
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -22,5 +24,7 @@ export default new Vuex.Store({
     summary: summary,
     reports: reports,
     auth: auth,
+    backups: backups,
+    users: users,
   }
 })

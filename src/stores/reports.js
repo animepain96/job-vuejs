@@ -2,6 +2,7 @@ import HTTP from "@/helpers/http";
 import {GET_REPORT} from "@/constants/reportAPI";
 import {toastAlert} from "@/helpers/alert";
 import {DELETE_JOB, UPDATE_JOB} from "@/constants/jobAPI";
+import moment from "moment";
 
 const now = new Date();
 
@@ -29,13 +30,25 @@ const reports = {
     },
     actions: {
         getList({commit}, query) {
+            let params = null;
+
+            if(query) {
+                params = Object.assign({}, query);
+                if(params.from) {
+                    params.from = moment(params.from).format('YYYY-MM-DD');
+                }
+                if(params.to) {
+                    params.to = moment(params.to).format('YYYY-MM-DD');
+                }
+            }
             let config = {
                 headers: {
                     accept: 'application/json',
                 }
             };
-            if(query) {
-                config.params = query;
+
+            if(params) {
+                config.params = params;
             }
              return HTTP(true).get(GET_REPORT, config).then(response => {
                 commit('updateList', response.data.data);
