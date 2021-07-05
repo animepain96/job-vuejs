@@ -159,6 +159,7 @@ Router.beforeEach(async (to, from, next) => {
     } else {
         next();
     }
+
 });
 
 export default Router;

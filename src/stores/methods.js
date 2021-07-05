@@ -22,7 +22,6 @@ const methods = {
                 commit('updateList', response.data);
                 return true;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error');
                 return false;
             });
         },
@@ -51,7 +50,6 @@ const methods = {
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error');
                 return false;
             });
         },
@@ -77,7 +75,6 @@ const methods = {
                 toastAlert('There was an error. Please try again.', 'error')
                 return false;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error')
                 return false;
             });
         },
@@ -100,7 +97,6 @@ const methods = {
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error');
                 return false;
             });
         },

@@ -12,6 +12,7 @@
               </CButton>
               <CForm @submit.prevent="createCustomer">
                 <CModal
+                    color="primary"
                     title="Create Customer"
                     :show.sync="isCreate"
                 >
@@ -24,7 +25,7 @@
                   />
                   <template v-slot:footer>
                     <CButton @click="isCreate = false" color="secondary">Cancel</CButton>
-                    <CButton type="submit" color="success">Save</CButton>
+                    <CButton type="submit" color="primary">Save</CButton>
                   </template>
                 </CModal>
               </CForm>
@@ -61,7 +62,6 @@
             </CCol>
           </CRow>
           <CCustomDataTable
-              :loading="loading"
               :sort-by="sortBy"
               :responsive="true"
               :sorterValue="sortState"
@@ -176,7 +176,6 @@ export default {
       },
       isEdit: false,
       isCreate: false,
-      isLoading: false,
       sortBy: 0,
       unpaid: 0,
       sortState: {
@@ -212,9 +211,7 @@ export default {
     },
   },
   created() {
-    this.$store.commit('app/setTableLoading', true);
-    this.$store.dispatch('customers/getList', null, {root: true})
-        .finally(() => this.$store.commit('app/setTableLoading', false));
+    this.$store.dispatch('customers/getList');
   },
   computed: {
     loading() {

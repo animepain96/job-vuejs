@@ -1,7 +1,6 @@
 import HTTP from "@/helpers/http";
 import {CHANGE_PASSWORD, GET_USER, POST_LOGIN} from "@/constants/authAPI";
 import {toastAlert} from "@/helpers/alert";
-import router from "@/router/index";
 
 const auth = {
     namespaced: true,
@@ -33,39 +32,26 @@ const auth = {
                     toastAlert('Your email or password is invalid. Please try again.', 'error');
                     return false;
                 }
-            }).catch((error) => {
-                if (error.response) {
-                    if (error.response.status === 401) {
-                        toastAlert('Your email or password is invalid. Please try again.', 'error');
-                        return false;
-                    }
-                }
-                toastAlert('There was an error. Please try again.', 'error');
+            }).catch(() => {
                 return false;
             });
         },
         logout({commit}) {
             commit('setAuth', {user: null, token: null});
             window.$cookies.remove('token');
-            router.push('/login');
         },
-        getUser({commit}, token) {
-            return HTTP().get(GET_USER, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
+        getUser({commit}) {
+            return HTTP(true).get(GET_USER)
                 .then(response => {
                     if (response.data.status === 'success') {
-                        commit('setAuth', {user: response.data.data, token: token});
+                        commit('setUser', response.data.data);
                         return true;
                     }
 
-                    toastAlert('Please login to your account before continue.', 'error');
-                    return false;
-                }).catch(() => {
-                    toastAlert('Please login to your account before continue.', 'error');
-                    return false;
+                }).catch(error => {
+                    if(error.response.status !== 401) {
+                        return false;
+                    }
                 });
         },
         changePassword({dispatch}, payload) {
@@ -80,7 +66,6 @@ const auth = {
                     toastAlert('There was an error. Please try again.', 'error');
                     return false;
                 }).catch(() => {
-                    toastAlert('There was an error. Please try again.', 'error');
                     return false;
                 });
         }

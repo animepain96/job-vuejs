@@ -35,13 +35,13 @@
             </template>
             <template #checkbox="{item}">
               <td>
-                <CInputCheckbox :custom="true" :checked.sync="item.checked > 0"
+                <CInputCheckbox :custom="true" :checked="item.checked > 0"
                                 @click="(e) => itemCheckedHandler(e.target.checked)"/>
               </td>
             </template>
             <template #name="{item}">
               <td>
-                <CLink class="font-weight-bold" v-text="item.name"/>
+                <span class="font-weight-bold text-primary" v-text="item.name" />
               </td>
             </template>
             <template #size="{item}">
@@ -63,10 +63,10 @@
             <template #action="{item}">
               <td>
                 <CButtonGroup>
-                  <CButton v-c-tooltip="'Download'" color="primary" size="sm">
+                  <CButton @click="downloadFile(item.name)" v-c-tooltip="'Download'" color="primary" size="sm">
                     <CIcon name="cil-cloud-download"/>
                   </CButton>
-                  <CButton v-c-tooltip="'Delete'" color="danger" size="sm">
+                  <CButton @click="deleteItem(item.name)" v-c-tooltip="'Delete'" color="danger" size="sm">
                     <CIcon name="cil-trash"/>
                   </CButton>
                 </CButtonGroup>
@@ -108,6 +108,9 @@ export default {
     this.$store.dispatch('backups/getBackups');
   },
   computed: {
+    loading() {
+      return this.$store.state.app.tableLoading;
+    },
     backups: {
       get() {
         return this.$store.state.backups.backups;
@@ -171,9 +174,30 @@ export default {
         })
       }
     },
+    deleteItem(name) {
+      if (name) {
+        this.$swal.fire({
+          title: 'Are you sure to delete this backup file?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Confirm'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.performDelete([name]);
+          }
+        })
+      }
+    },
     performDelete(items) {
       this.$store.commit('app/setLoading', true);
       this.$store.dispatch('backups/deleteBackup', {name: items}, {root: true})
+          .then(() => this.$store.commit('app/setLoading', false));
+    },
+    downloadFile(name) {
+      this.$store.commit('app/setLoading', true);
+      this.$store.dispatch('backups/downloadBackup', {name: name}, {root: true})
           .then(() => this.$store.commit('app/setLoading', false));
     },
   },

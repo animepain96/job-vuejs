@@ -23,7 +23,6 @@ const summary = {
                     commit('updateAnnualRevenue', response.data.data);
                     return true;
                 }).catch(() => {
-                    toastAlert('There was an error. Please try again.', 'error');
                     return false;
                 });
         },

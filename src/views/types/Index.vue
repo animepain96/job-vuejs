@@ -12,6 +12,7 @@
               </CButton>
               <CForm @submit.prevent="createType">
                 <CModal
+                    color="primary"
                     title="Create Type"
                     :show.sync="isCreate"
                 >
@@ -24,7 +25,7 @@
                   />
                   <template v-slot:footer>
                     <CButton @click="isCreate = false" color="secondary">Cancel</CButton>
-                    <CButton type="submit" color="success">Save</CButton>
+                    <CButton type="submit" color="primary">Save</CButton>
                   </template>
                 </CModal>
               </CForm>

@@ -80,9 +80,11 @@ export default {
       if(!this.$v.user.$invalid) {
         this.$store.commit('app/setLoading', true);
         this.$store.dispatch('auth/postLogin', this.user)
-        .then(status => {
+        .then((status) => {
           this.$store.commit('app/setLoading', false);
-          this.$router.push('/');
+          if(status) {
+            this.$router.push('/');
+          }
         });
       }
     },

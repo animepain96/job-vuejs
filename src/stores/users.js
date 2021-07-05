@@ -24,7 +24,6 @@ const users = {
                     toastAlert('Your email or password is invalid. Please try again.', 'error');
                     return false;
                 }).catch(() => {
-                    toastAlert('Your email or password is invalid. Please try again.', 'error');
                     return false;
                 });
         },
@@ -43,7 +42,6 @@ const users = {
                     toastAlert('Unable to create user. Please try again.', 'error');
                     return false;
                 }).catch(() => {
-                    toastAlert('There was an error. Please try again.', 'error');
                     return false;
                 });
         },
@@ -62,7 +60,6 @@ const users = {
                     toastAlert('Unable to delete user. Please try again.', 'error');
                     return false;
                 }).catch(() => {
-                    toastAlert('There was an error. Please try again.', 'error');
                     return false;
                 });
         },
@@ -77,7 +74,6 @@ const users = {
                     toastAlert('Unable to reset password for user. Please try again.', 'error');
                     return false;
                 }).catch(() => {
-                    toastAlert('There was an error. Please try again.', 'error');
                     return false;
                 });
         },
@@ -100,7 +96,6 @@ const users = {
                     toastAlert('Unable to update user. Please try again.', 'error');
                     return false;
                 }).catch(() => {
-                    toastAlert('There was an error. Please try again.', 'error');
                     return false;
                 });
         },

@@ -30,7 +30,7 @@ export default [
         _name: 'CSidebarNavItem',
         name: 'Report',
         to: '/report',
-        icon: 'cil-document',
+        icon: 'cib-buffer',
       },
       {
         _name: 'CSidebarNavItem',

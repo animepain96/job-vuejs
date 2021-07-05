@@ -1,6 +1,7 @@
 import HTTP from "@/helpers/http";
 import {UNPAID_COUNT, UNPAID_THRESHOLD, UPDATE_UNPAID_THRESHOLD} from "@/constants/settingAPI";
 import {toastAlert} from "@/helpers/alert";
+import ca from "vue2-datepicker/locale/es/ca";
 
 const app = {
     namespaced: true,
@@ -33,10 +34,9 @@ const app = {
                         return true;
                     }
 
-                    toastAlert('Fetching unpaid threshold error.', 'error');
                     return false;
-                }).catch(() => {
-                    toastAlert('Fetching unpaid threshold error.', 'error');
+                }).catch((error) => {
+                    console.log(error);
                     return false;
                 });
         },
@@ -48,10 +48,8 @@ const app = {
                         return true;
                     }
 
-                    toastAlert('Fetching unpaid count error.', 'error');
                     return false;
                 }).catch(() => {
-                    toastAlert('Fetching unpaid count error.', 'error');
                     return false;
                 });
         },
@@ -64,10 +62,8 @@ const app = {
                         return true;
                     }
 
-                    toastAlert('There was an error. Please try again.', 'error');
                     return false;
                 }).catch(() => {
-                    toastAlert('There was an error. Please try again.', 'error');
                     return false;
                 });
         },

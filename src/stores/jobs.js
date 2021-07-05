@@ -39,7 +39,6 @@ const jobs = {
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error');
                 return false;
             });
         },
@@ -63,7 +62,6 @@ const jobs = {
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error');
                 return false;
             });
         },
@@ -93,11 +91,10 @@ const jobs = {
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error');
                 return false;
             });
         },
-        getRate({commit, state}) {
+        getRate({commit}) {
             return HTTP(true).get(GET_RATE, {
                 headers: {
                     Accept: 'application/json',
@@ -112,7 +109,6 @@ const jobs = {
                 toastAlert('There was an error when get Exchange Rate. Please try again.', 'error');
                 return false;
             }).catch(() => {
-                toastAlert('There was an error when get Exchange Rate. Please try again.', 'error');
                 return false;
             });
         },
@@ -138,7 +134,6 @@ const jobs = {
                 toastAlert('There was an error. Please try again.', 'error')
                 return false;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error')
                 return false;
             });
         },
@@ -161,7 +156,6 @@ const jobs = {
                 toastAlert('There was an error. Please try again.', 'error')
                 return false;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error')
                 return false;
             });
         }

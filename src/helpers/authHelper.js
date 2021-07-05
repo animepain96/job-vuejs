@@ -5,8 +5,8 @@ const authHelper = {
         if(store.state.auth.token) {
             return true;
         } else if(window.$cookies.get('token')) {
-            const token = window.$cookies.get('token');
-            return store.dispatch('auth/getUser', token);
+            store.commit('auth/setAuth', {token: window.$cookies.get('token'), user: {}});
+            return true;
         }
         return false;
     }

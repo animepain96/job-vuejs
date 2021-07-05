@@ -22,7 +22,6 @@ const customers = {
                 commit('updateList', response.data);
                 return true;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error');
                 return false;
             });
         },
@@ -48,7 +47,6 @@ const customers = {
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error');
                 return false;
             });
         },
@@ -66,7 +64,6 @@ const customers = {
                     });
 
                     commit('updateList', customers);
-                    toastAlert('The customer was deleted successfully.', 'success');
 
                     return true;
                 }
@@ -74,7 +71,6 @@ const customers = {
                 toastAlert('There was an error. Please try again.', 'error')
                 return false;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error')
                 return false;
             });
         },
@@ -97,7 +93,6 @@ const customers = {
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error');
                 return false;
             });
         }

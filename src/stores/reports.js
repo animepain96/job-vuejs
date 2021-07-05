@@ -54,7 +54,6 @@ const reports = {
                 commit('updateList', response.data.data);
                 return true;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error');
                 return false;
             });
         },
@@ -84,7 +83,6 @@ const reports = {
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error');
                 return false;
             });
         },
@@ -110,7 +108,6 @@ const reports = {
                 toastAlert('There was an error. Please try again.', 'error')
                 return false;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error')
                 return false;
             });
         },

@@ -27,7 +27,6 @@ const types = {
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error');
                 return false;
             });
         },
@@ -56,7 +55,6 @@ const types = {
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error');
                 return false;
             });
         },
@@ -82,7 +80,6 @@ const types = {
                 toastAlert('There was an error. Please try again.', 'error')
                 return false;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error')
                 return false;
             });
         },
@@ -105,7 +102,6 @@ const types = {
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
             }).catch(() => {
-                toastAlert('There was an error. Please try again.', 'error');
                 return false;
             });
         },

@@ -6,7 +6,8 @@
           <CRow :class="['align-items-center']">
             <CCol md="7"><h3 :class="['mb-0']">Users Management</h3></CCol>
             <CCol md="5">
-              <CButton v-c-tooltip="'Create New'" @click="isCreate = true" :class="['ml-auto', 'float-md-right']" color="success">
+              <CButton v-c-tooltip="'Create New'" @click="isCreate = true" :class="['ml-auto', 'float-md-right']"
+                       color="success">
                 <CIcon name="cil-plus"></CIcon>
               </CButton>
             </CCol>
@@ -51,14 +52,21 @@
               <td :class="'inline-edit-wrap'">
                 <span v-show="!(isEdit && selected.id === item.id && editField === 'name')" v-text="item.name"></span>
                 <CInput
-                    v-if="isEdit && selected.id === item.id && editField === 'name'"
+                    v-if="isEdit && selected.id === item.id && editField === 'name' && item.id !== 1"
                     :custom="true"
                     v-model="user.name"
                     @keyup="updateUser"
+                    :is-valid="v.user.name.$dirty ? !v.user.name.$error : null"
+                    :invalid-feedback="!v.user.name.required ? 'This field is required.' : 'This field required 255 maximum characters.'"
                 />
-                <CButton v-c-tooltip="'Edit'" size="sm" color="secondary" :class="'inline-edit-button'"
-                         @click="() => editUser(item, 'name')"
-                         v-show="!(selected.id === item.id && isEdit && editField === 'name')">
+                <CButton
+                    v-c-tooltip="'Edit'"
+                    size="sm"
+                    color="secondary"
+                    :class="'inline-edit-button'"
+                    @click="() => editUser(item, 'name')"
+                    v-show="!(selected.id === item.id && isEdit && editField === 'name') && item.id !== 1"
+                >
                   <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
                 </CButton>
               </td>
@@ -75,14 +83,18 @@
                 <CBadge v-show="!(isEdit && selected.id === item.id && editField === 'role')"
                         v-if="item.role === 'admin'" color="danger" v-text="'Admin'"/>
                 <CSelect
+                    :disabled="item.id === 1"
                     v-if="isEdit && selected.id === item.id && editField === 'role'"
                     :custom="true"
                     :options="roles"
                     :value.sync="user.role"
                     @change="(e) => updateUser(e, true)"
+                    :is-valid="v.user.role.$dirty ? !v.user.role.$error : null"
+                    :invalid-feedback="!v.user.role.required ? 'This field is required.' : 'This field is invalid format.'"
                 />
                 <CButton v-c-tooltip="'Edit'" size="sm" color="secondary" :class="'inline-edit-button'"
                          @click="() => editUser(item, 'role')"
+                         v-if="item.id !== 1"
                          v-show="!(selected.id === item.id && isEdit && editField === 'role')">
                   <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
                 </CButton>
@@ -157,6 +169,9 @@ export default {
     this.$store.dispatch('users/getUsers');
   },
   computed: {
+    v() {
+      return this.$v;
+    },
     users() {
       return this.$store.state.users.users;
     },
