@@ -5,7 +5,7 @@
         <CForm @submit.prevent="changePassword">
           <CCardHeader>
             <CRow :class="['align-items-center']">
-              <CCol md="12"><h3 :class="['mb-0']" v-text="'Change Password'"/></CCol>
+              <CCol md="12"><h3 :class="['mb-0']" v-text="this.$tc('views.password.title')"/></CCol>
             </CRow>
           </CCardHeader>
           <CCardBody>
@@ -15,7 +15,7 @@
                     v-model="password.password"
                     type="password"
                     addLabelClasses="font-weight-bold"
-                    label="New Password"
+                    :label="this.$tc('views.password.new_password')"
                     :is-valid="this.$v.password.password.$dirty ? !this.$v.password.password.$error : null"
                     :invalid-feedback="!this.$v.password.password.required ? 'This field is required.' : 'This field required 6 minimum characters.'"
                 />
@@ -23,7 +23,7 @@
                     v-model="password.password_confirmation"
                     type="password"
                     addLabelClasses="font-weight-bold"
-                    label="Confirm Password"
+                    :label="this.$tc('views.password.confirm_password')"
                     :is-valid="this.$v.password.password_confirmation.$dirty ? !this.$v.password.password_confirmation.$error : null"
                     :invalid-feedback="!this.$v.password.password_confirmation.required ? 'This field is required.' : 'This field is same as password.'"
                 />
@@ -31,8 +31,8 @@
             </CRow>
           </CCardBody>
           <CCardFooter>
-            <CButton type="submit" color="primary" v-text="'Save'" />
-            <CButton class="float-right" color="secondary" v-text="'Back'" />
+            <CButton type="submit" color="primary" v-text="this.$tc('buttons.crud.save')" />
+            <CButton type="button" class="float-right" color="secondary" v-text="this.$tc('buttons.crud.cancel')" @click="goBack" />
           </CCardFooter>
         </CForm>
       </CCard>
@@ -75,6 +75,9 @@ export default {
             .then(() => this.$store.commit('app/setLoading', false));
       }
     },
+    goBack() {
+      this.$router.back();
+    }
   },
 }
 </script>

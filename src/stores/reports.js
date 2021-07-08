@@ -1,4 +1,4 @@
-import HTTP from "@/helpers/http";
+import HTTP, {handleError} from "@/helpers/http";
 import {GET_REPORT} from "@/constants/reportAPI";
 import {toastAlert} from "@/helpers/alert";
 import {DELETE_JOB, UPDATE_JOB} from "@/constants/jobAPI";
@@ -53,9 +53,7 @@ const reports = {
              return HTTP(true).get(GET_REPORT, config).then(response => {
                 commit('updateList', response.data.data);
                 return true;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         },
         updateJob({commit, state}, payload) {
             return HTTP(true).patch(UPDATE_JOB(payload.id), payload.data, {
@@ -82,9 +80,7 @@ const reports = {
 
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         },
         delete({commit, state}, job) {
             return HTTP(true).delete(DELETE_JOB(job.id), {
@@ -107,9 +103,7 @@ const reports = {
 
                 toastAlert('There was an error. Please try again.', 'error')
                 return false;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         },
     },
 };

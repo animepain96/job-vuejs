@@ -1,0 +1,250 @@
+{
+  "app": {
+    "title": "Quản lí Công việc"
+  },
+  "routes": {
+    "home": "Trang chủ",
+    "jobs": "Công việc",
+    "customers": "Khách hàng",
+    "methods": "Phương thức",
+    "types": "Phân loại",
+    "report": "Báo cáo",
+    "chart_report": "Biểu đồ báo cáo",
+    "users": "Người dùng",
+    "backups": "Sao lưu",
+    "login": "Đăng nhập",
+    "404": "Không tìm thấy trang",
+    "password": "Mật khẩu"
+  },
+  "views": {
+    "jobs": {
+      "title": "Quản lí Công việc",
+      "total_monthly": "Tổng thu hàng tháng",
+      "rate": "Tỷ lệ quy đổi",
+      "create_job": {
+        "title": "Tạo mới Công việc",
+        "name": "Tên",
+        "customer": "Khách hàng",
+        "type": "Phân loại",
+        "method": "Phương thức",
+        "start_date": "Ngày Bắt đầu",
+        "finish_date": "Ngày Kết thúc",
+        "price": "Giá đô la",
+        "price_yen": "Giá yên",
+        "note": "Ghi chú"
+      },
+      "table": {
+        "id": "Mã",
+        "action": "Thao tác",
+        "name": "Tên",
+        "price": "Giá đô la",
+        "price_yen": "Giá yên",
+        "start_date": "Ngày Bắt đầu",
+        "pay_date": "Ngày Thanh toán",
+        "paid": "Thanh toán",
+        "details": "Mở rộng",
+        "customer": "Khách hàng",
+        "type": "Phân loại",
+        "method": "Phương thức",
+        "deadline": "Ngày Giới hạn",
+        "finish_date": "Ngày Hoàn thành",
+        "note": "Ghi chú"
+      }
+    },
+    "methods": {
+      "title": "Quản lí Phương thức",
+      "table": {
+        "id": "Mã",
+        "action": "Thao tác",
+        "name": "Tên"
+      },
+      "create": {
+        "title": "Tạo mới Phương thức",
+        "name": "Tên"
+      }
+    },
+    "password": {
+      "title": "Thay đổi Mật khẩu",
+      "new_password": "Mật khẩu mới",
+      "confirm_password": "Xác nhận Mật khẩu"
+    },
+    "reports": {
+      "title": "Quản lí Báo cáo",
+      "total": "Tổng thu",
+      "rate": "Tỷ giá",
+      "filter": {
+        "from": "Từ ngày",
+        "to": "Đến ngày",
+        "mode": "Trạng thái",
+        "customer": "Khách hàng",
+        "type": "Phân loại",
+        "method": "Phương thức",
+        "paid": "Thanh toán",
+        "options": {
+          "all": "Tất cả",
+          "yes": "Có",
+          "no": "Không",
+          "sale": "Bán hàng",
+          "payment": "Doanh thu"
+        }
+      },
+      "chart": {
+        "title": "Biểu đồ",
+        "chart_title": "Biểu đồ doanh thu theo Khách hàng",
+        "table": {
+          "name": "Tên Khách hàng",
+          "price": "Giá đô la",
+          "price_yen": "Giá yên"
+        }
+      }
+    },
+    "login": {
+      "title": "Đăng nhập",
+      "description": "Đăng nhập tài khoản của bạn",
+      "username": "Tên đăng nhập",
+      "password": "Mật khẩu",
+      "submit": "Đăng nhập"
+    },
+    "customers": {
+      "title": "Quản lí Khách hàng",
+      "unpaid_threshold": "Giới hạn nợ",
+      "create_customer": {
+        "title": "Tạo mới Khách hàng",
+        "name": "Tên"
+      },
+      "sort_by": {
+        "title": "Sắp xếp",
+        "most_recent": "Mới hợp tác",
+        "newest": "Ngày thêm mới nhất",
+        "oldest": "Ngày thêm cũ nhất"
+      },
+      "unpaid_list": {
+        "title": "Danh sách nợ",
+        "all": "Tất cả",
+        "unpaid": "Còn nợ"
+      },
+      "table": {
+        "id": "Mã",
+        "action": "Thao tác",
+        "name": "Tên",
+        "note": "Ghi chú",
+        "unpaid": "Tổng nợ"
+      }
+    },
+    "types": {
+      "title": "Quản lí Phân loại",
+      "create_type": {
+        "title": "Tạo mới Phân loại",
+        "name": "Tên"
+      },
+      "table": {
+        "id": "Mã",
+        "action": "Thao tác",
+        "name": "Tên"
+      }
+    },
+    "chart_report": {
+      "title": "Biểu đồ Báo cáo",
+      "chart_title": "Doanh thu hằng năm",
+      "months": [
+        "Tháng 1",
+        "Tháng 2",
+        "Tháng 3",
+        "Tháng 4",
+        "Tháng 5",
+        "Tháng 6",
+        "Tháng 7",
+        "Tháng 8",
+        "Tháng 9",
+        "Tháng 10",
+        "Tháng 11",
+        "Tháng 12"
+      ]
+    },
+    "users": {
+      "title": "Quản lí Người dùng",
+      "table": {
+        "id": "Mã",
+        "action": "Thao tác",
+        "name": "Tên",
+        "username": "Tên Người dùng",
+        "email": "Địa chỉ Email",
+        "role": "Vai trò",
+        "active": "Hoạt động"
+      },
+      "roles": {
+        "user": "Người dùng",
+        "admin": "Quản lí",
+        "super_admin": "Siêu Cấp Quản lí"
+      },
+      "unavailable": "Không khả dụng",
+      "create_user": {
+        "title": "Tạo mới Người dùng",
+        "name": "Tên",
+        "username": "Tên Người dùng",
+        "email": "Địa chỉ Email",
+        "password": "Mật khẩu",
+        "confirm_password": "Xác nhận Mật khẩu",
+        "active": "Hoạt động"
+      }
+    },
+    "backups": {
+      "title": "Quản lí Sao lưu",
+      "keep_days": "Số ngày giữ",
+      "table": {
+        "name": "Tên",
+        "action": "Thao tác",
+        "type": "Phân loại",
+        "modified": "Ngày tạo",
+        "size": "Dung lượng"
+      },
+      "types": {
+        "manual": "Thủ công",
+        "auto": "Tự động"
+      }
+    }
+  },
+  "buttons": {
+    "crud": {
+      "create": "Tạo mới",
+      "edit": "Chỉnh sửa",
+      "delete": "Xóa",
+      "show": "Hiện",
+      "hide": "Ẩn",
+      "cancel": "Quay lại",
+      "save": "Lưu lại",
+      "view": "Truy vấn",
+      "chart": "Xem biểu đồ",
+      "reset_password": "Cấp lại Mật khẩu",
+      "manual_backup": "Sao lưu Thủ công",
+      "download": "Tải về",
+      "delete_items": "Xóa tập tin được chọn"
+    }
+  },
+  "header": {
+    "settings": "Cài đặt",
+    "password": "Thay đổi Mật khẩu",
+    "logout": "Đăng xuất",
+    "lang": {
+      "title": "Ngôn ngữ",
+      "en": "Tiếng Anh",
+      "vn": "Tiếng Việt"
+    }
+  },
+  "footer": {
+    "by": "Thiết kế bởi"
+  },
+  "validations": {
+    "required": "Trường nhập liệu này là bắt buộc.",
+    "max_length": "Trường nhập liệu không quá  kí tự."
+  },
+  "table_tool": {
+    "filter": {
+      "title": "Lọc",
+      "placeholder": "Tìm kiếm ..."
+    },
+    "items_per_page": {
+      "title": "Số lượng mỗi trang"
+    }
+  }
+}

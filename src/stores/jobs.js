@@ -1,6 +1,6 @@
 import {ADDITION_LIST, CREATE_JOB, DELETE_JOB, GET_RATE, JOB_LIST, UPDATE_JOB} from "@/constants/jobAPI";
 import {toastAlert} from "@/helpers/alert";
-import HTTP from "@/helpers/http";
+import HTTP, {handleError} from "@/helpers/http";
 
 const jobs = {
     namespaced: true,
@@ -38,9 +38,7 @@ const jobs = {
 
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         },
         getAdditionList({commit}) {
             return HTTP(true).get(ADDITION_LIST, {
@@ -61,9 +59,7 @@ const jobs = {
 
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         },
         updateJob({commit, state}, payload) {
             return HTTP(true).patch(UPDATE_JOB(payload.id), payload.data, {
@@ -90,9 +86,7 @@ const jobs = {
 
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         },
         getRate({commit}) {
             return HTTP(true).get(GET_RATE, {
@@ -108,9 +102,7 @@ const jobs = {
 
                 toastAlert('There was an error when get Exchange Rate. Please try again.', 'error');
                 return false;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         },
         delete({commit, state}, job) {
             return HTTP(true).delete(DELETE_JOB(job.id), {
@@ -133,9 +125,7 @@ const jobs = {
 
                 toastAlert('There was an error. Please try again.', 'error')
                 return false;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         },
         create({commit, state}, payload) {
             return HTTP(true).post(CREATE_JOB, payload, {
@@ -155,9 +145,7 @@ const jobs = {
 
                 toastAlert('There was an error. Please try again.', 'error')
                 return false;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         }
     },
 };

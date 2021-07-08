@@ -8,6 +8,7 @@ import VueSweetalert2 from "vue-sweetalert2"
 import store from './store'
 import Vuelidate from "vuelidate";
 import VueCookies from "vue-cookies";
+import i18n from "@/helpers/i18n";
 
 Vue.config.performance = true
 Vue.use(CoreuiVue)
@@ -18,6 +19,7 @@ Vue.use(VueCookies)
 
 new Vue({
   el: '#app',
+  i18n,
   router,
   store,
   icons,

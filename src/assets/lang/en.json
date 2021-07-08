@@ -1,0 +1,245 @@
+{
+  "app": {
+    "title": "Job Management"
+  },
+  "routes": {
+    "home": "Home",
+    "jobs": "Jobs",
+    "customers": "Customers",
+    "methods": "Methods",
+    "types": "Types",
+    "report": "Report",
+    "chart_report": "Report Chart",
+    "users": "Users",
+    "backups": "Backups",
+    "login": "Login",
+    "404": "Not Found",
+    "password": "Password"
+  },
+  "views": {
+    "jobs": {
+      "title": "Job Management",
+      "total_monthly": "Total this Month",
+      "rate": "Rate",
+      "create_job": {
+        "title": "Create new Job",
+        "name": "Name",
+        "customer": "Customer",
+        "type": "Type",
+        "method": "Method",
+        "start_date": "Start Date",
+        "finish_date": "Finsh Date",
+        "price": "Price USD",
+        "price_yen": "Price YEN",
+        "note": "Note"
+      },
+      "table": {
+        "id": "ID",
+        "action": "Action",
+        "name": "Name",
+        "price": "Price USD",
+        "price_yen": "Price YEN",
+        "start_date": "Start Date",
+        "pay_date": "Pay Date",
+        "paid": "Paid",
+        "details": "Details",
+        "customer": "Customer",
+        "type": "Type",
+        "method": "Method",
+        "deadline": "Deadline",
+        "finish_date": "Finish Date",
+        "note": "Note"
+      }
+    },
+    "methods": {
+      "title": "Method Management",
+      "table": {
+        "id": "ID",
+        "action": "Action",
+        "name": "Name"
+      },
+      "create": {
+        "title": "Create new Method",
+        "name": "Name"
+      }
+    },
+    "password": {
+      "title": "Change Password",
+      "new_password": "New Password",
+      "confirm_password": "Confirm Password"
+    },
+    "reports": {
+      "title": "Report Management",
+      "total": "Total",
+      "rate": "Rate",
+      "filter": {
+        "from": "From",
+        "to": "To",
+        "mode": "Mode",
+        "customer": "Customer",
+        "type": "Type",
+        "method": "Method",
+        "paid": "Paid",
+        "options": {
+          "all": "ALL",
+          "yes": "YES",
+          "no": "NO",
+          "sale": "Sale",
+          "payment": "Payment"
+        }
+      },
+      "chart": {
+        "title": "Chart",
+        "chart_title": "Revenue by Customer",
+        "table": {
+          "name": "Name",
+          "price": "Price USD",
+          "price_yen": "Price YEN"
+        }
+      }
+    },
+    "login": {
+      "title": "Login",
+      "description": "Login to your account",
+      "username": "Username",
+      "password": "Password",
+      "submit": "Login"
+    },
+    "customers": {
+      "title": "Customer Management",
+      "unpaid_threshold": "Unpaid Threshold",
+      "create_customer": {
+        "title": "Create new Customer",
+        "name": "Name"
+      },
+      "sort_by": {
+        "title": "Sort by",
+        "most_recent": "Most recent",
+        "newest": "Newest",
+        "oldest": "Oldest"
+      },
+      "unpaid_list": {
+        "title": "Unpaid list",
+        "all": "All",
+        "unpaid": "Unpaid"
+      },
+      "table": {
+        "id": "ID",
+        "action": "Action",
+        "name": "Name",
+        "note": "Note",
+        "unpaid": "Unpaid"
+      }
+    },
+    "types": {
+      "title": "Type Management",
+      "create_type": {
+        "title": "Create new Type",
+        "name": "Name"
+      },
+      "table": {
+        "id": "ID",
+        "action": "Action",
+        "name": "Name"
+      }
+    },
+    "chart_report": {
+      "title": "Chart Report",
+      "chart_title": "Annual Revenue",
+      "months": [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ]
+    },
+    "users": {
+      "title": "User Management",
+      "table": {
+        "id": "ID",
+        "action": "Action",
+        "name": "Name",
+        "username": "Username",
+        "email": "Email",
+        "role": "Role",
+        "active": "Active"
+      },
+      "roles": {
+        "user": "Người dùng",
+        "admin": "Quản lí",
+        "super_admin": "Siêu Cấp Quản lí"
+      },
+      "unavailable": "Không khả dụng",
+      "create_user": {
+        "title": "Tạo mới Người dùng",
+        "name": "Tên",
+        "username": "Tên Người dùng",
+        "email": "Địa chỉ Email",
+        "password": "Mật khẩu",
+        "confirm_password": "Xác nhận Mật khẩu",
+        "active": "Hoạt động"
+      }
+    },
+    "backups": {
+      "title": "Backup Management",
+      "keep_days": "Keep days",
+      "table": {
+        "name": "Name",
+        "action": "Action",
+        "type": "Type",
+        "modified": "Modified",
+        "size": "Size"
+      },
+      "types": {
+        "manual": "Manual",
+        "auto": "Auto"
+      }
+    }
+  },
+  "buttons": {
+    "crud": {
+      "create": "Create new",
+      "edit": "Edit",
+      "delete": "Delete",
+      "show": "Show",
+      "hide": "Hide",
+      "cancel": "Cancel",
+      "save": "Save",
+      "view": "View",
+      "chart": "Chart",
+      "reset_password": "Reset Password",
+      "manual_backup": "Manual backup",
+      "download": "Download",
+      "delete_items": "Delete selected items"
+    }
+  },
+  "header": {
+    "settings": "Setting",
+    "password": "Change Password",
+    "logout": "Logout"
+  },
+  "footer": {
+    "by": "Designed by"
+  },
+  "validations": {
+    "required": "Trường nhập liệu này là bắt buộc.",
+    "max_length": "Trường nhập liệu không quá  kí tự."
+  },
+  "table_tool": {
+    "filter": {
+      "title": "Filter",
+      "placeholder": "Search ..."
+    },
+    "items_per_page": {
+      "title": "Items per page"
+    }
+  }
+}

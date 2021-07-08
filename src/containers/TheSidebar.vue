@@ -1,64 +1,138 @@
 <template>
-  <CSidebar 
-    fixed 
-    :minimize="minimize"
-    :show="show"
-    @update:show="(value) => $store.commit('set', ['sidebarShow', value])"
+  <CSidebar
+      fixed
+      :minimize="minimize"
+      :show="show"
+      @update:show="(value) => $store.commit('set', ['sidebarShow', value])"
   >
     <CSidebarBrand class="d-md-down-none" to="/">
-      <CIcon 
-        class="c-sidebar-brand-full" 
-        name="logo" 
-        size="custom-size" 
-        :height="35" 
-        viewBox="0 0 556 134"
-      />
-      <CIcon 
-        class="c-sidebar-brand-minimized" 
-        name="logo" 
-        size="custom-size" 
-        :height="35" 
-        viewBox="0 0 110 134"
-      />
+      <CImg style="object-fit: cover; object-position: center;" height="56px"
+            :src="require('@/assets/images/bpotech.png')" alt="BPOTech JSC."/>
     </CSidebarBrand>
 
-    <CRenderFunction flat :content-to-render="navItems"/>
+    <CRenderFunction flat :content-to-render="navData"/>
     <CSidebarMinimizer
-      class="d-md-down-none"
-      @click.native="$store.commit('set', ['sidebarMinimize', !minimize])"
+        class="d-md-down-none"
+        @click.native="$store.commit('set', ['sidebarMinimize', !minimize])"
     />
   </CSidebar>
 </template>
 
 <script>
-import nav from './_nav'
 
 export default {
   name: 'TheSidebar',
-  nav,
   computed: {
+    tc() {
+      return this.$tc;
+    },
+    navData() {
+      return [
+        {
+          _name: 'CSidebarNav',
+          _children: this.navItems,
+        }
+      ];
+    },
+    isAdmin() {
+      return this.$store.state.auth.user && this.$store.state.auth.user.role === 'admin';
+    },
     navItems() {
-      let result = this.$options.nav;
+      let result = [
+        {
+          _name: 'CSidebarNavItem',
+          name: this.$i18n.tc('routes.jobs'),
+          to: '/jobs',
+          icon: 'cib-product-hunt',
+          meta: {
+            admin: false,
+          },
+        },
+        {
+          _name: 'CSidebarNavItem',
+          name: this.$i18n.tc('routes.customers'),
+          to: '/customers',
+          icon: 'cil-people',
+          meta: {
+            admin: false,
+          },
+        },
+        {
+          _name: 'CSidebarNavItem',
+          name: this.$i18n.tc('routes.methods'),
+          to: '/methods',
+          icon: 'cil-cog',
+          meta: {
+            admin: false,
+          },
+        },
+        {
+          _name: 'CSidebarNavItem',
+          name: this.$i18n.tc('routes.types'),
+          to: '/types',
+          icon: 'cil-folder',
+          meta: {
+            admin: false,
+          },
+        },
+        {
+          _name: 'CSidebarNavItem',
+          name: this.$i18n.tc('routes.report'),
+          to: '/report',
+          icon: 'cib-buffer',
+          meta: {
+            admin: false,
+          },
+        },
+        {
+          _name: 'CSidebarNavItem',
+          name: this.$i18n.tc('routes.chart_report'),
+          to: '/chart-report',
+          icon: 'cil-chart-pie',
+          meta: {
+            admin: false,
+          },
+        },
+        {
+          _name: 'CSidebarNavItem',
+          name: this.$i18n.tc('routes.users'),
+          to: '/users',
+          icon: 'cil-user',
+          meta: {
+            admin: true,
+          },
+        },
+        {
+          _name: 'CSidebarNavItem',
+          name: this.$i18n.tc('routes.backups'),
+          to: '/backups',
+          icon: 'cil-storage',
+          meta: {
+            admin: true,
+          },
+        },
+      ];
+      let admin = this.isAdmin;
       let unpaidCount = this.$store.state.app.unpaidCount;
-      result = result.map((item) => {
-        item._children = item._children.map((child) => {
-          if(child.name === 'Customers') {
-            child.badge = {
-              text: unpaidCount,
-              color: 'danger',
-            };
-          }
-          return child;
-        });
+
+      return result.map(function (item) {
+        if (item.name === 'Customers') {
+          item.badge = {
+            text: unpaidCount,
+            color: 'danger',
+          };
+        }
 
         return item;
+      }).filter(function (child) {
+
+        return !(child.meta.admin && !admin);
       });
-      return result;
     },
-    show () {
+    show() {
       return this.$store.state.sidebar.sidebarShow
     },
-    minimize () {
+    minimize() {
       return this.$store.state.sidebar.sidebarMinimize
     }
   }

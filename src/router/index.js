@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import authHelper from "@/helpers/authHelper";
+import {toastAlert} from "@/helpers/alert";
+import i18n from "@/helpers/i18n";
 
 // Containers
 const TheContainer = () => import('@/containers/TheContainer')
@@ -54,6 +56,9 @@ function configRoutes() {
             redirect: '/jobs',
             name: 'Home',
             component: TheContainer,
+            meta: {
+                //label: 'routes.home'
+            },
             children: [
                 {
                     path: 'jobs',
@@ -61,6 +66,7 @@ function configRoutes() {
                     component: Jobs,
                     meta: {
                         auth: true,
+                        //label: 'routes.jobs',
                     },
                 },
                 {
@@ -69,6 +75,7 @@ function configRoutes() {
                     component: Customers,
                     meta: {
                         auth: true,
+                        //label: 'routes.customers',
                     },
                 },
                 {
@@ -77,6 +84,7 @@ function configRoutes() {
                     component: Methods,
                     meta: {
                         auth: true,
+                        //label: 'routes.methods',
                     },
                 },
                 {
@@ -85,6 +93,7 @@ function configRoutes() {
                     component: Types,
                     meta: {
                         auth: true,
+                        //label: 'routes.types',
                     },
                 },
                 {
@@ -93,6 +102,7 @@ function configRoutes() {
                     component: Reports,
                     meta: {
                         auth: true,
+                       //label: 'routes.report',
                     },
                 },
                 {
@@ -101,14 +111,16 @@ function configRoutes() {
                     component: Charts,
                     meta: {
                         auth: true,
+                        //label: 'routes.chart_report',
                     },
                 },
                 {
                     path: '/password',
-                    name: 'Change Password',
+                    name: 'Password',
                     component: Password,
                     meta: {
                         auth: true,
+                        //label: 'routes.password',
                     },
                 },
                 {
@@ -117,6 +129,8 @@ function configRoutes() {
                     component: Users,
                     meta: {
                         auth: true,
+                        admin: true,
+                        //label: 'routes.users',
                     },
                 },
                 {
@@ -125,36 +139,59 @@ function configRoutes() {
                     component: Backups,
                     meta: {
                         auth: true,
+                        admin: true,
+                        //label: 'routes.backups',
                     },
                 },
             ],
         },
         {
             path: '/404',
-            name: 'Page Not Found',
+            name: 'Not Found',
             component: NotFound,
+            meta: {
+                //label: 'routes.404',
+            }
         },
         {
             path: '/login',
             name: 'Login',
             component: Login,
+            meta: {
+                //label: 'routes.login',
+            }
         },
         {
             path: '*',
-            redirect: '/404',
+            redirect: '/',
+            meta: {
+                //label: 'routes.home',
+            }
         },
     ]
 }
 
 Router.beforeEach(async (to, from, next) => {
-    if (to.matched.some(record => record.meta.auth)) {
+
+    if (to.matched.some(record => record.meta.auth || record.meta.admin)) {
         const logged = await authHelper.isLogged();
         if (!logged) {
             next({
-                name: 'Login',
+                path: '/login',
             });
         } else {
-            next();
+            if (to.matched.some(record => record.meta.admin)) {
+                if (authHelper.isAdmin()) {
+                    next();
+                } else {
+                    next({
+                        path: '/',
+                    });
+                    toastAlert('You do not have permission to view this page.', 'error');
+                }
+            } else {
+                next();
+            }
         }
     } else {
         next();

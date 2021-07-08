@@ -1,4 +1,4 @@
-import HTTP from "@/helpers/http";
+import HTTP, {handleError} from "@/helpers/http";
 import {CREATE_USER, DELETE_USER, GET_USERS, RESET_PASSWORD, UPDATE_USER} from "@/constants/userAPI";
 import {toastAlert} from "@/helpers/alert";
 
@@ -23,9 +23,7 @@ const users = {
 
                     toastAlert('Your email or password is invalid. Please try again.', 'error');
                     return false;
-                }).catch(() => {
-                    return false;
-                });
+                }).catch(error => handleError(error));
         },
         createUser({commit, state}, payload) {
             return HTTP(true).post(CREATE_USER, payload)
@@ -41,8 +39,13 @@ const users = {
 
                     toastAlert('Unable to create user. Please try again.', 'error');
                     return false;
-                }).catch(() => {
-                    return false;
+                }).catch(error => {
+                    handleError(error);
+                    if(error && error.response) {
+                        if(error.response.status === 422) {
+
+                        }
+                    }
                 });
         },
         deleteUser({commit, state}, user) {
@@ -59,9 +62,7 @@ const users = {
 
                     toastAlert('Unable to delete user. Please try again.', 'error');
                     return false;
-                }).catch(() => {
-                    return false;
-                });
+                }).catch(error => handleError(error));
         },
         resetPassword({commit}, user) {
             return HTTP(true).post(RESET_PASSWORD(user.id))
@@ -73,9 +74,7 @@ const users = {
 
                     toastAlert('Unable to reset password for user. Please try again.', 'error');
                     return false;
-                }).catch(() => {
-                    return false;
-                });
+                }).catch(error => handleError(error));
         },
         updateUser({commit, state}, payload) {
             return HTTP(true).patch(UPDATE_USER(payload.id), {field: payload.data.field, value: payload.data.value})
@@ -95,9 +94,7 @@ const users = {
 
                     toastAlert('Unable to update user. Please try again.', 'error');
                     return false;
-                }).catch(() => {
-                    return false;
-                });
+                }).catch(error => handleError(error));
         },
     },
 };

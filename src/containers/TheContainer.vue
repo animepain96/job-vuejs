@@ -34,7 +34,6 @@ export default {
   },
   created() {
     this.$store.dispatch('app/getUnpaidCount');
-    this.$store.dispatch('app/getUnpaidThreshold');
   },
 }
 </script>

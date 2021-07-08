@@ -1,7 +1,7 @@
 <template>
   <CModal
-      :title="title"
-      color="success"
+      :title="tc('views.reports.chart.title')"
+      color="primary"
       :show.sync="show"
       size="xl"
   >
@@ -16,8 +16,9 @@
       </CCol>
       <CCol xl="6">
         <CDataTable
+            :sorter-value="{column: 'price', asc: false}"
             :responsive="false"
-            items-per-page-select
+            :itemsPerPageSelect="{ label: tc('table_tool.items_per_page.title')}"
             sorter
             hover
             striped
@@ -42,7 +43,7 @@
       </CCol>
     </CRow>
     <template v-slot:footer>
-      <CButton @click="show = false" color="secondary">Cancel</CButton>
+      <CButton @click="show = false" color="secondary">{{ tc('buttons.crud.cancel') }}</CButton>
     </template>
   </CModal>
 </template>
@@ -66,6 +67,9 @@ export default {
     },
   },
   computed: {
+    tc() {
+      return this.$tc;
+    },
     colors() {
       let colorArray = [];
       for(let i = 0; i < this.items.length; i++) {
@@ -76,9 +80,9 @@ export default {
     },
     fields() {
       return [
-        {key: 'name', name: 'Name', _style: 'width: 40%;'},
-        {key: 'price', name: 'Price', _style: 'width: 30%;'},
-        {key: 'price_yen', name: 'Price Yen', _style: 'width: 30%;'},
+        {key: 'name', label: this.$tc('views.reports.chart.table.name'), _style: 'width: 40%;'},
+        {key: 'price', label: this.$tc('views.reports.chart.table.price'), _style: 'width: 30%;'},
+        {key: 'price_yen', label: this.$tc('views.reports.chart.table.price_yen'), _style: 'width: 30%;'},
       ];
     },
     show: {
@@ -124,7 +128,7 @@ export default {
         maintainAspectRatio: false,
         title: {
           display: true,
-          text: 'Revenue by Customer',
+          text: this.$tc('views.reports.chart.chart_title'),
         },
         legend: {
           display: true,

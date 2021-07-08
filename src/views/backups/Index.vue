@@ -4,9 +4,9 @@
       <CCard>
         <CCardHeader>
           <CRow :class="['align-items-center']">
-            <CCol md="7"><h3 :class="['mb-0']">Backups</h3></CCol>
+            <CCol md="7"><h3 :class="['mb-0']">{{ tc('views.backups.title') }}</h3></CCol>
             <CCol md="5">
-              <CButton v-c-tooltip="'Manual Backup'" @click="manualHandler" :class="['ml-auto', 'float-md-right']"
+              <CButton v-c-tooltip="tc('buttons.crud.manual_backup')" @click="manualHandler" :class="['ml-auto', 'float-md-right']"
                        color="success">
                 <CIcon name="cil-plus"></CIcon>
               </CButton>
@@ -14,34 +14,54 @@
           </CRow>
         </CCardHeader>
         <CCardBody>
+          <CRow>
+            <CCol md="12" class="mb-2" v-if="currentUser.id !== 1">
+              <span v-text="tc('views.backups.keep_days')" class="font-weight-bold" />: <span class="font-weight-bold text-danger" v-text="keepDays" />
+            </CCol>
+            <CCol md="3" v-if="currentUser.id === 1">
+              <CInput
+                  v-model="keepDays"
+                  :label="tc('views.backups.keep_days')"
+                  addLabelClasses="font-weight-bold"
+                  :is-valid="this.$v.keepDays.$dirty ? !this.$v.keepDays.$error : null"
+                  :invalid-feedback="!this.$v.keepDays.required ? 'This field is required.' : 'This field required numeric value.'"
+              >
+                <template #append>
+                  <CButton @click="updateKeepDays" color="primary" v-text="tc('buttons.crud.save')"/>
+                </template>
+              </CInput>
+            </CCol>
+          </CRow>
           <CDataTable
               :sorter-value="sortBy"
               :responsive="false"
-              :tableFilter="{ placeholder: 'Search...'}"
+              :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
+              :itemsPerPageSelect="{ label: tc('table_tool.items_per_page.title')}"
               items-per-page-select
               sorter
               hover
               striped
               :items="backups"
-              :fields="fields"
+              :fields="fieldItems"
               :items-per-page="10"
               clickable-rows
               :active-page="1"
               :pagination="{ doubleArrows: false, align: 'center'}"
               @update:sorter-value="(e) => this.sortBy = e"
           >
-            <template #checkbox-header="{item}">
-              <CInputCheckbox :checked="checkedAll" :custom="true" @click="(e) => allCheckedHandler(e.target.checked)"/>
+            <template v-if="currentUser.id === 1" #checkbox-header>
+              <CInputCheckbox :checked.sync="checkedAll" :custom="true"
+                              @update:checked="allCheckedHandler"/>
             </template>
-            <template #checkbox="{item}">
+            <template v-if="currentUser.id === 1" #checkbox="{item}">
               <td>
-                <CInputCheckbox :custom="true" :checked="item.checked > 0"
-                                @click="(e) => itemCheckedHandler(e.target.checked)"/>
+                <CInputCheckbox :custom="true" :checked.sync="item._checked"
+                                @update:checked="(e) => itemCheckedHandler(e, item.id)"/>
               </td>
             </template>
             <template #name="{item}">
               <td>
-                <span class="font-weight-bold text-primary" v-text="item.name" />
+                <span class="font-weight-bold text-primary" v-text="item.name"/>
               </td>
             </template>
             <template #size="{item}">
@@ -56,26 +76,26 @@
             </template>
             <template #type="{item}">
               <td>
-                <CBadge v-if="item.type === 'manual'" color="primary" v-text="'Manual'"/>
-                <CBadge v-if="item.type === 'auto'" color="success" v-text="'Auto'"/>
+                <CBadge v-if="item.type === 'manual'" color="primary" v-text="tc('views.backups.types.manual')"/>
+                <CBadge v-if="item.type === 'auto'" color="success" v-text="tc('views.backups.types.auto')"/>
               </td>
             </template>
             <template #action="{item}">
               <td>
                 <CButtonGroup>
-                  <CButton @click="downloadFile(item.name)" v-c-tooltip="'Download'" color="primary" size="sm">
+                  <CButton @click="downloadFile(item.name)" v-c-tooltip="tc('buttons.crud.download')" color="primary" size="sm">
                     <CIcon name="cil-cloud-download"/>
                   </CButton>
-                  <CButton @click="deleteItem(item.name)" v-c-tooltip="'Delete'" color="danger" size="sm">
+                  <CButton v-if="currentUser.id === 1" @click="deleteItem(item.name)" v-c-tooltip="tc('buttons.crud.delete')" color="danger" size="sm">
                     <CIcon name="cil-trash"/>
                   </CButton>
                 </CButtonGroup>
               </td>
             </template>
           </CDataTable>
-          <CButton v-if="multipleDelete" @click="deleteSelectedItems" class="delete-selected" color="danger" size="lg">
+          <CButton v-if="multipleDelete && currentUser.id === 1" @click="deleteSelectedItems" class="delete-selected" color="danger" size="lg">
             <CIcon name="cil-trash"/>
-            Delete Selected Items
+            {{tc('buttons.crud.delete_items')}}
           </CButton>
         </CCardBody>
       </CCard>
@@ -84,17 +104,18 @@
 </template>
 
 <script>
+import {required, integer, minValue} from 'vuelidate/lib/validators';
 
 export default {
   data() {
     return {
       fields: [
-        {key: 'checkbox', name: 'Select', _style: 'width: 5%;'},
-        {key: 'name', name: 'Name', _style: 'width: 25%;'},
-        {key: 'action', name: 'Action', _style: 'width: 15%;'},
-        {key: 'type', name: 'Type', _style: 'width: 15%;'},
-        {key: 'modified', name: 'Modified', _style: 'width: 20%;'},
-        {key: 'size', name: 'Size', _style: 'width: 10%;'},
+        {key: 'checkbox', _style: 'width: 5%;'},
+        {key: 'name', label: this.$tc('views.backups.table.name'), _style: 'width: 25%;'},
+        {key: 'action', label: this.$tc('views.backups.table.action'), _style: 'width: 15%;'},
+        {key: 'type', label: this.$tc('views.backups.table.type'), _style: 'width: 15%;'},
+        {key: 'modified', label: this.$tc('views.backups.table.modified'), _style: 'width: 20%;'},
+        {key: 'size', label: this.$tc('views.backups.table.size'), _style: 'width: 10%;'},
       ],
       sortBy: {
         column: 'modified',
@@ -102,22 +123,41 @@ export default {
       },
       multipleDelete: false,
       checkedAll: false,
+      keepDays: 0,
     };
+  },
+  validations: {
+    keepDays: {
+      required,
+      integer,
+      minValue: minValue(1),
+    },
   },
   created() {
     this.$store.dispatch('backups/getBackups');
+    this.$store.dispatch('app/getKeepDays')
+        .then(() => {
+          this.keepDays = this.$store.state.app.keepDays;
+        });
   },
   computed: {
-    loading() {
-      return this.$store.state.app.tableLoading;
+    tc() {
+      return this.$tc;
     },
-    backups: {
-      get() {
-        return this.$store.state.backups.backups;
-      },
-      set(value) {
-        this.$store.commit('backups/setBackups', value);
-      },
+    fieldItems() {
+      return this.fields.filter(item => {
+        return !(this.currentUser.id !== 1 && item.key === 'checkbox');
+
+      });
+    },
+    currentUser() {
+      return this.$store.state.auth.user;
+    },
+    backups() {
+      return this.$store.state.backups.backups.map((backup, key) => {
+        backup.id = key;
+        return backup;
+      });
     },
   },
   methods: {
@@ -128,33 +168,19 @@ export default {
       })
     },
     allCheckedHandler(checked) {
-      this.backups = this.backups.map((backup) => {
-        backup.checked = checked;
-        return backup;
+      this.multipleDelete = checked;
+
+      this.backups.forEach(item => {
+        this.$set(this.backups[item.id], '_checked', checked);
       });
-
-      this.checkedAll = checked;
     },
-    itemCheckedHandler(checked) {
-      if (!checked) {
-        this.checkedAll = false;
-      } else {
-        this.multipleDelete = true;
-        for (let i = 0; i < this.backups.length; i++) {
-          if (!this.backups[i].checked) {
-            this.checkedAll = false;
-            break;
-          }
-
-          if (i === this.backups.length - 1) {
-            this.checkedAll = true;
-            this.allCheckedHandler(this.checkedAll);
-          }
-        }
-      }
+    itemCheckedHandler(checked, id) {
+      this.$set(this.backups[this.backups.findIndex(item => item.id === id)], '_checked', checked);
+      this.checkedAll = !this.backups.some(backup => !backup._checked);
+      this.multipleDelete = this.backups.some(backup => backup._checked);
     },
     deleteSelectedItems() {
-      let items = this.backups.filter(backup => backup.checked === true)
+      let items = this.backups.filter(backup => backup._checked === true)
           .map(backup => {
             return backup.name;
           });
@@ -174,20 +200,22 @@ export default {
         })
       }
     },
-    deleteItem(name) {
+    async deleteItem(name) {
       if (name) {
-        this.$swal.fire({
+        let result = await this.$swal.fire({
           title: 'Are you sure to delete this backup file?',
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
           cancelButtonColor: '#d33',
           confirmButtonText: 'Confirm'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            this.performDelete([name]);
-          }
-        })
+        }).then(result => {
+          return result.isConfirmed;
+        });
+
+        if(result) {
+          this.performDelete(new Array(name));
+        }
       }
     },
     performDelete(items) {
@@ -200,23 +228,15 @@ export default {
       this.$store.dispatch('backups/downloadBackup', {name: name}, {root: true})
           .then(() => this.$store.commit('app/setLoading', false));
     },
-  },
-  watch: {
-    backups: function (newValue) {
-      if (newValue && newValue.length) {
-        for (let i = 0; i < newValue.length; i++) {
-          if (newValue[i].checked) {
-            this.multipleDelete = true;
-            break;
-          }
-
-          if (i === newValue.length - 1) {
-            this.multipleDelete = false;
-          }
-        }
+    updateKeepDays() {
+      this.$v.keepDays.$touch();
+      if (!this.$v.keepDays.$invalid) {
+        this.$store.commit('app/setLoading', true);
+        this.$store.dispatch('app/updateKeepDays', {value: this.keepDays}, {root: true})
+            .then(() => {
+              this.$store.commit('app/setLoading', false);
+            });
       }
-
-      this.backups = newValue;
     },
   },
 }

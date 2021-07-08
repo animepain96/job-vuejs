@@ -4,9 +4,10 @@
       <CCard>
         <CCardHeader>
           <CRow :class="['align-items-center']">
-            <CCol md="7"><h3 :class="['mb-0']">Job Management</h3></CCol>
+            <CCol md="7"><h3 :class="['mb-0']">{{ this.$tc('views.jobs.title') }}</h3></CCol>
             <CCol md="5">
-              <CButton v-c-tooltip="'Create New'" @click="showModal = true" :class="['ml-auto', 'float-md-right']"
+              <CButton v-c-tooltip="this.$tc('buttons.crud.create')" @click="showModal = true"
+                       :class="['ml-auto', 'float-md-right']"
                        color="success">
                 <CIcon name="cil-plus"></CIcon>
               </CButton>
@@ -16,18 +17,22 @@
         <CCardBody>
           <CRow>
             <CCol :class="'text-right'">
-              <p :class="'font-weight-bold mb-1'">Total this Month: <span style="font-size: 16px;"><span
+              <p :class="'font-weight-bold mb-1'">{{ this.$tc('views.jobs.total_monthly') }}: <span
+                  style="font-size: 16px;"><span
                   :class="'text-danger'">{{ monthlyRevenueUSD.toLocaleString() }}USD</span> - <span
                   :class="'text-primary'">{{ monthlyRevenueYen.toLocaleString() }}JPY</span></span></p>
-              <p :class="'font-weight-bold mb-1'">Rate: <span style="font-size: 16px;"><span
+              <p :class="'font-weight-bold mb-1'">{{ this.$tc('views.jobs.rate') }}: <span
+                  style="font-size: 16px;"><span
                   :class="'text-danger'">1USD</span> - <span
                   :class="'text-primary'">{{ rate }}JPY</span></span></p>
             </CCol>
           </CRow>
           <CDataTable
+              :key="lang"
               :sorterValue="sortBy"
               :responsive="true"
-              :tableFilter="{ placeholder: 'Search...'}"
+              :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
+              :itemsPerPageSelect="{ label: tc('table_tool.items_per_page.title')}"
               items-per-page-select
               sorter
               hover
@@ -137,7 +142,7 @@
                     size="sm"
                     @click="toggleDetails(item, index)"
                 >
-                  {{ Boolean(item._toggled) ? 'Hide' : 'Show' }}
+                  {{ Boolean(item._toggled) ? tc('buttons.crud.hide') : tc('buttons.crud.show') }}
                 </CButton>
               </td>
             </template>
@@ -147,7 +152,7 @@
                   <CRow>
                     <CCol md="3">
                       <div class="form-group">
-                        <span :style="'display:block;'" :class="'font-weight-bold'" v-text="'Customer'"/>
+                        <span :style="'display:block;'" :class="'font-weight-bold'" v-text="tc('views.jobs.table.customer')"/>
                         <span :style="'display:block;'" v-text="item.customer.name"
                               v-show="!(selected.id === item.id && isEdit && editField === 'customer')"></span>
                         <CSelect :custom="true" :options="customers"
@@ -164,7 +169,7 @@
                     </CCol>
                     <CCol md="3">
                       <div class="form-group">
-                        <span :style="'display:block;'" :class="'font-weight-bold'" v-text="'Type'"/>
+                        <span :style="'display:block;'" :class="'font-weight-bold'" v-text="tc('views.jobs.table.method')"/>
                         <span :style="'display:block;'" v-text="item.type.name"
                               v-show="!(selected.id === item.id && isEdit && editField === 'type')"></span>
                         <CSelect :custom="true" :options="types"
@@ -181,7 +186,7 @@
                     </CCol>
                     <CCol md="3">
                       <div class="form-group">
-                        <span :style="'display:block;'" :class="'font-weight-bold'" v-text="'Method'"/>
+                        <span :style="'display:block;'" :class="'font-weight-bold'" v-text="tc('views.jobs.table.method')"/>
                         <span :style="'display:block;'" v-text="item.method.name"
                               v-show="!(selected.id === item.id && isEdit && editField === 'method')"></span>
                         <CSelect :custom="true" :options="methods"
@@ -198,7 +203,7 @@
                     </CCol>
                     <CCol md="3">
                       <div class="form-group">
-                        <span :style="'display:block;'" v-text="'Deadline'" :class="'font-weight-bold'"></span>
+                        <span :style="'display:block;'" v-text="tc('views.jobs.table.deadline')" :class="'font-weight-bold'"></span>
                         <span :style="'display:block;'" v-text="formattedDate(item.deadline)"
                               v-show="!(selected.id === item.id && isEdit && editField === 'deadline')"></span>
                         <div class="form-group" v-if="selected.id === item.id && isEdit && editField === 'deadline'">
@@ -216,7 +221,7 @@
                     </CCol>
                     <CCol md="3">
                       <div class="form-group">
-                        <span :style="'display:block;'" v-text="'Finish Date'" :class="'font-weight-bold'"></span>
+                        <span :style="'display:block;'" v-text="tc('views.jobs.table.finish_date')" :class="'font-weight-bold'"></span>
                         <span :style="'display:block;'" v-text="formattedDate(item.finish_date)"
                               v-show="!(selected.id === item.id && isEdit && editField === 'finish_date')"></span>
                         <div class="form-group" v-if="selected.id === item.id && isEdit && editField === 'finish_date'">
@@ -234,7 +239,7 @@
                     </CCol>
                     <CCol md="3">
                       <div class="form-group">
-                        <span :style="'display:block;'" v-text="'Note'" :class="'font-weight-bold'"></span>
+                        <span :style="'display:block;'" v-text="tc('views.jobs.table.note')" :class="'font-weight-bold'"></span>
                         <span :style="'display:block;'" v-text="item.note"
                               v-show="!(selected.id === item.id && isEdit && editField === 'note')"></span>
                         <CTextarea rows="4" v-model="job.note"
@@ -256,7 +261,6 @@
       </CCard>
     </CCol>
     <CreateJobModal
-        title="Create Job"
         :show-modal="showModal"
         :rate="rate"
         @update:show="(value) => this.showModal = value"
@@ -283,15 +287,15 @@ export default {
   data() {
     return {
       fields: [
-        {key: 'id', name: 'ID', _style: 'width: 5%;'},
-        {key: 'action', name: 'Action', _style: 'width: 7%;'},
-        {key: 'name', name: 'Name', _style: 'width: 15%;'},
-        {key: 'price', name: 'Price', _style: 'width: 15%;'},
-        {key: 'price_yen', name: 'Price Yen', _style: 'width: 15%;'},
-        {key: 'start_date', name: 'Start Date', _style: 'width: 15%;'},
-        {key: 'pay_date', name: 'Pay Date', _style: 'width: 15%;'},
-        {key: 'paid', name: 'Paid', _style: 'width: 8%;'},
-        {key: 'show_details', name: 'Detail', _style: 'width: 5%;'},
+        {key: 'id', label : this.$tc('views.jobs.table.id'), _style: 'width: 5%;'},
+        {key: 'action', label : this.$tc('views.jobs.table.action'), _style: 'width: 7%;'},
+        {key: 'name', label : this.$tc('views.jobs.table.name'), _style: 'width: 15%;'},
+        {key: 'price', label : this.$tc('views.jobs.table.price'), _style: 'width: 15%;'},
+        {key: 'price_yen', label : this.$tc('views.jobs.table.price_yen'), _style: 'width: 15%;'},
+        {key: 'start_date', label : this.$tc('views.jobs.table.start_date'), _style: 'width: 15%;'},
+        {key: 'pay_date', label : this.$tc('views.jobs.table.pay_date'), _style: 'width: 15%;'},
+        {key: 'paid', label : this.$tc('views.jobs.table.paid'), _style: 'width: 8%;'},
+        {key: 'show_details', label : this.$tc('views.jobs.table.details'), _style: 'width: 5%;'},
         /*{key: 'customer', name: 'Customer'},
         {key: 'type', name: 'Customer'},
         {key: 'method', name: 'Customer'},
@@ -365,6 +369,12 @@ export default {
     this.$store.dispatch('jobs/getRate');
   },
   computed: {
+    lang() {
+      return this.$store.state.app.lang;
+    },
+    tc() {
+      return this.$tc;
+    },
     v() {
       return this.$v;
     },
@@ -484,23 +494,28 @@ export default {
         note: '',
       };
     },
-    deleteJob(item) {
-      this.$swal.fire({
+    async deleteJob(item) {
+      this.cancelEdit();
+      this.selected = item;
+
+      let result = await this.$swal.fire({
         title: 'Are you sure to delete this job?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
         confirmButtonText: 'Confirm'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.performDelete(item);
-        }
+      }).then(result => {
+        return result.isConfirmed;
       });
+
+      if (result) {
+        this.performDelete();
+      }
     },
-    performDelete(item) {
+    performDelete() {
       this.$store.commit('app/setLoading', true);
-      this.$store.dispatch('jobs/delete', item, {root: true})
+      this.$store.dispatch('jobs/delete', this.selected, {root: true})
           .then(() => this.$store.commit('app/setLoading', false));
     },
     convertCurrency(value) {

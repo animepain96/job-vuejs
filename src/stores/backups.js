@@ -1,4 +1,4 @@
-import HTTP from "@/helpers/http";
+import HTTP, {handleError} from "@/helpers/http";
 import {DELETE_BACKUP, DOWNLOAD_BACKUP, GET_BACKUP, MANUAL_BACKUP} from "@/constants/backupsAPI";
 import {toastAlert} from "@/helpers/alert";
 
@@ -24,10 +24,7 @@ const backups = {
                     toastAlert('There was an error. Please try again.', 'error');
                     return false;
                 })
-                .catch(() => {
-                    toastAlert('There was an error. Please try again.', 'error');
-                    return false;
-                });
+                .catch(error => handleError(error));
         },
         manualBackup({dispatch}) {
             return HTTP(true).get(MANUAL_BACKUP)
@@ -42,10 +39,7 @@ const backups = {
                     toastAlert('There was an error. Please try again.', 'error');
                     return false;
                 })
-                .catch(() => {
-                    toastAlert('There was an error. Please try again.', 'error');
-                    return false;
-                });
+                .catch(error => handleError(error));
         },
         deleteBackup({commit, state}, backups) {
             return HTTP(true).post(DELETE_BACKUP, backups)
@@ -62,11 +56,7 @@ const backups = {
 
                     toastAlert('There was an error. Please try again.', 'error');
                     return false;
-                }).catch((error) => {
-                    console.log(error);
-                    toastAlert('There was an error. Please try again.', 'error');
-                    return false;
-                });
+                }).catch(error => handleError(error));
         },
         downloadBackup({commit}, backup) {
             return HTTP(true).get(DOWNLOAD_BACKUP, {
@@ -89,9 +79,7 @@ const backups = {
 
                     toastAlert('The request backup could not be found.', 'error');
                     return false;
-                }).catch(() => {
-                    return false;
-                });
+                }).catch(error => handleError(error));
         },
     },
 };

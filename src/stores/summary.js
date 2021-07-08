@@ -1,6 +1,5 @@
-import HTTP from "@/helpers/http";
+import HTTP, {handleError} from "@/helpers/http";
 import {CHART_REPORT} from "@/constants/summaryAPI";
-import {toastAlert} from "@/helpers/alert";
 
 const summary = {
     namespaced: true,
@@ -22,9 +21,7 @@ const summary = {
                 .then(response => {
                     commit('updateAnnualRevenue', response.data.data);
                     return true;
-                }).catch(() => {
-                    return false;
-                });
+                }).catch(error => handleError(error));
         },
     },
 };

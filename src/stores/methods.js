@@ -1,4 +1,4 @@
-import HTTP from "@/helpers/http";
+import HTTP, {handleError} from "@/helpers/http";
 import {DELETE_METHOD, METHOD_LIST, UPDATE_METHOD, CREATE_METHOD} from "@/constants/methodAPI";
 import {toastAlert} from "@/helpers/alert";
 
@@ -21,9 +21,7 @@ const methods = {
             }).then(response => {
                 commit('updateList', response.data);
                 return true;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         },
         update({commit, state}, payload){
             return HTTP(true).patch(UPDATE_METHOD(payload.id), {
@@ -49,9 +47,7 @@ const methods = {
 
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         },
         delete({commit, state}, method) {
             return HTTP(true).delete(DELETE_METHOD(method.id), {
@@ -74,9 +70,7 @@ const methods = {
 
                 toastAlert('There was an error. Please try again.', 'error')
                 return false;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         },
         create({commit, state}, method) {
             return HTTP(true).post(CREATE_METHOD, {
@@ -96,9 +90,7 @@ const methods = {
                 }
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         },
     },
 };

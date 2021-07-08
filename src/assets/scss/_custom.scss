@@ -34,8 +34,10 @@
   vertical-align: middle;
 }
 
-.inline-edit-wrap span {
-  margin-right: 1rem;
+.inline-edit-wrap span:not([class]) {
+  margin-right: 2rem;
+  text-overflow: ellipsis;
+  display: block;
 }
 
 .inline-edit-wrap .form-group {
@@ -61,5 +63,9 @@
   margin-top: 0.25rem;
   font-size: 80%;
   color: #e55353;
+}
+
+.table th, .table td {
+  vertical-align: middle;
 }
 

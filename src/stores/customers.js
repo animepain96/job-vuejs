@@ -1,4 +1,4 @@
-import HTTP from "@/helpers/http";
+import HTTP, {handleError} from "@/helpers/http";
 import {CREATE_CUSTOMER, CUSTOMER_LIST, DELETE_CUSTOMER, UPDATE_CUSTOMER} from "@/constants/customersAPI";
 import {toastAlert} from "@/helpers/alert";
 
@@ -21,9 +21,7 @@ const customers = {
             }).then(response => {
                 commit('updateList', response.data);
                 return true;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         },
         update({commit, state}, payload) {
             return HTTP(true).patch(UPDATE_CUSTOMER(payload.id), payload, {
@@ -46,9 +44,7 @@ const customers = {
 
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         },
         delete({commit, state}, customer) {
             return HTTP(true).delete(DELETE_CUSTOMER(customer.id), {
@@ -70,9 +66,7 @@ const customers = {
 
                 toastAlert('There was an error. Please try again.', 'error')
                 return false;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         },
         create({commit, state}, customer) {
             return HTTP(true).post(CREATE_CUSTOMER, {
@@ -92,9 +86,7 @@ const customers = {
                 }
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         }
     },
 };

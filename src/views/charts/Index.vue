@@ -4,14 +4,14 @@
       <CCard>
         <CCardHeader>
           <CRow :class="['align-items-center']">
-            <CCol md="12"><h3 :class="['mb-0']">Chart Report</h3></CCol>
+            <CCol md="12"><h3 :class="['mb-0']">{{ this.$tc('views.chart_report.title') }}</h3></CCol>
           </CRow>
         </CCardHeader>
         <CCardBody>
           <CChartLine
               style="height:340px"
               :datasets="datasets"
-              labels="months"
+              :labels="this.$t('views.chart_report.months')"
               :options="options"
           />
         </CCardBody>
@@ -36,7 +36,7 @@ export default {
         maintainAspectRatio: false,
         title: {
           display: true,
-          text: 'Annual Revenue',
+          text: this.$tc('views.chart_report.chart_title'),
         },
         legend: {
           display: false,

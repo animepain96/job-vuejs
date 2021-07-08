@@ -1,4 +1,4 @@
-import HTTP from "@/helpers/http";
+import HTTP, {handleError} from "@/helpers/http";
 import {CHANGE_PASSWORD, GET_USER, POST_LOGIN} from "@/constants/authAPI";
 import {toastAlert} from "@/helpers/alert";
 
@@ -16,6 +16,9 @@ const auth = {
         setUser(state, user) {
             state.user = user;
         },
+        setToken(state, token) {
+          state.token = token;
+        },
     },
     actions: {
         postLogin({commit}, payload) {
@@ -28,13 +31,11 @@ const auth = {
                     commit('setAuth', {user: response.data.data.user, token: response.data.data.access_token});
                     window.$cookies.set('token', response.data.data.access_token);
                     return true;
-                } else {
-                    toastAlert('Your email or password is invalid. Please try again.', 'error');
-                    return false;
                 }
-            }).catch(() => {
+
+                toastAlert('Your username or password is invalid.', 'error');
                 return false;
-            });
+            }).catch(error => handleError(error));
         },
         logout({commit}) {
             commit('setAuth', {user: null, token: null});
@@ -48,11 +49,7 @@ const auth = {
                         return true;
                     }
 
-                }).catch(error => {
-                    if(error.response.status !== 401) {
-                        return false;
-                    }
-                });
+                }).catch(error => handleError(error));
         },
         changePassword({dispatch}, payload) {
             return HTTP(true).patch(CHANGE_PASSWORD, payload)
@@ -65,9 +62,7 @@ const auth = {
 
                     toastAlert('There was an error. Please try again.', 'error');
                     return false;
-                }).catch(() => {
-                    return false;
-                });
+                }).catch(error => handleError(error));
         }
     },
 };

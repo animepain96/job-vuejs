@@ -1,7 +1,8 @@
 <template>
   <CForm @submit.prevent="handleForm">
     <CModal
-        :title="title"
+        :close-on-backdrop="false"
+        :title="tc('views.jobs.create_job.title')"
         color="primary"
         :show.sync="show"
         size="xl"
@@ -11,9 +12,9 @@
           <CInput
               v-model.trim="job.name"
               :addLabelClasses="'font-weight-bold'"
-              label="Name"
+              :label="tc('views.jobs.create_job.name')"
               :is-valid="this.$v.job.name.$dirty ? !this.$v.job.name.$error : null"
-              invalid-feedback="This field is required."
+              :invalid-feedback="!this.$v.job.name.required ? 'This field is required.' : 'This field is require 255 maximum characters.'"
           />
         </CCol>
         <CCol xl="6">
@@ -21,7 +22,7 @@
               :value.sync="job.customer"
               :options="[{value: ' ', label: ' ', disabled: true}].concat(customers)"
               :addLabelClasses="'font-weight-bold'"
-              label="Customer"
+              :label="tc('views.jobs.create_job.customer')"
               :is-valid="this.$v.job.customer.$dirty ? !this.$v.job.customer.$error : null"
               invalid-feedback="This field is required."
           />
@@ -31,7 +32,7 @@
               :value.sync="job.method"
               :options="[{value: ' ', label: ' ', disabled: true}].concat(methods)"
               :addLabelClasses="'font-weight-bold'"
-              label="Method"
+              :label="this.$tc('views.jobs.create_job.method')"
               :is-valid="this.$v.job.method.$dirty ? !this.$v.job.method.$error : null"
               invalid-feedback="This field is required."
           />
@@ -41,30 +42,34 @@
               :value.sync="job.type"
               :options="[{value: ' ', label: ' ', disabled: true}].concat(types)"
               :addLabelClasses="'font-weight-bold'"
-              label="Type"
+              :label="tc('views.jobs.create_job.type')"
               :is-valid="this.$v.job.type.$dirty ? !this.$v.job.type.$error : null"
               invalid-feedback="This field is required."
           />
         </CCol>
         <CCol xl="6">
           <div :class="'form-group'">
-            <label :class="'font-weight-bold'" v-text="'Start Date'"/>
+            <label :class="'font-weight-bold'" v-text="this.$tc('views.jobs.create_job.start_date')"/>
             <DatePicker :class="{'is-invalid': this.$v.job.start_date.$error && this.$v.job.start_date.$dirty}"
                         :input-class="{'is-invalid': this.$v.job.start_date.$error && this.$v.job.start_date.$dirty, 'form-control': true, 'is-valid': !this.$v.job.start_date.$error && this.$v.job.start_date.$dirty}"
                         v-model="job.start_date" type="date" format="DD-MM-YYYY"/>
-            <div :class="'invalid-feedback'" v-if="this.$v.job.start_date.$error && this.$v.job.start_date.$dirty">This
-              field is required.
+            <div :class="'invalid-feedback'" v-if="this.$v.job.start_date.$error && this.$v.job.start_date.$dirty">
+              {{
+                !this.$v.job.start_date.required ? 'This field is required.' : 'This field require value less than Finish date.'
+              }}
             </div>
           </div>
         </CCol>
         <CCol xl="6">
           <div :class="'form-group'">
-            <label :class="'font-weight-bold'" v-text="'Finish Date'"/>
+            <label :class="'font-weight-bold'" v-text="tc('views.jobs.create_job.finish_date')"/>
             <DatePicker :class="{'is-invalid': this.$v.job.finish_date.$error && this.$v.job.finish_date.$dirty}"
                         :input-class="{'is-invalid': this.$v.job.finish_date.$error && this.$v.job.finish_date.$dirty, 'form-control': true, 'is-valid': !this.$v.job.finish_date.$error && this.$v.job.finish_date.$dirty}"
                         v-model="job.finish_date" type="date" format="DD-MM-YYYY"/>
             <div :class="'invalid-feedback'" v-if="this.$v.job.finish_date.$error && this.$v.job.finish_date.$dirty">
-              This field is required.
+              {{
+                !this.$v.job.finish_date.required ? 'This field is required.' : 'This field require value greater than Start date.'
+              }}
             </div>
           </div>
         </CCol>
@@ -76,7 +81,7 @@
                     type="number"
                     :disabled="true"
                     :addLabelClasses="'font-weight-bold'"
-                    label="Price USD"
+                    :label="this.$tc('views.jobs.create_job.price')"
                     v-model="job.price"
                 />
               </CCol>
@@ -84,11 +89,11 @@
                 <CInput
                     type="number"
                     :addLabelClasses="'font-weight-bold'"
-                    label="Price YEN"
+                    :label="tc('views.jobs.create_job.price_yen')"
                     v-model="job.price_yen"
                     @input="(value) => updatePrice(value)"
                     :is-valid="this.$v.job.price_yen.$dirty ? !this.$v.job.price_yen.$error : null"
-                    invalid-feedback="This field is required."
+                    :invalid-feedback="!this.$v.job.price_yen.required ? 'This field is required.' : 'This field is require numeric value.'"
                 />
               </CCol>
               <CCol xl="12">
@@ -110,8 +115,8 @@
         </CCol>
       </CRow>
       <template v-slot:footer>
-        <CButton @click="show = false" color="secondary">Cancel</CButton>
-        <CButton type="submit" color="primary">Save</CButton>
+        <CButton @click="show = false" color="secondary">{{ tc('buttons.crud.cancel') }}</CButton>
+        <CButton type="submit" color="primary">{{ tc('buttons.crud.save') }}</CButton>
       </template>
     </CModal>
   </CForm>
@@ -119,7 +124,7 @@
 
 <script>
 import DatePicker from "vue2-datepicker";
-import {required} from 'vuelidate/lib/validators';
+import {required, integer, minValue} from 'vuelidate/lib/validators';
 
 const date_gt = (value, vm) => value >= vm.start_date;
 const date_lt = (value, vm) => value <= vm.finish_date;
@@ -130,7 +135,6 @@ export default {
   },
   props: {
     showModal: Boolean,
-    title: String,
     rate: Number,
     customers: Array,
     types: Array,
@@ -186,10 +190,15 @@ export default {
       },
       price_yen: {
         required,
+        integer,
+        minValue: minValue(1),
       },
     },
   },
   computed: {
+    tc() {
+      return this.$tc;
+    },
     show: {
       get() {
         return this.showModal;
@@ -212,7 +221,7 @@ export default {
         this.$store.commit('app/setLoading', true);
         this.$store.dispatch('jobs/create', this.job)
             .then((result) => {
-              if(result) {
+              if (result) {
                 this.resetInitialValues();
                 this.$v.$reset();
               }

@@ -4,28 +4,29 @@
       <CCard>
         <CCardHeader>
           <CRow :class="['align-items-center']">
-            <CCol md="7"><h3 :class="['mb-0']">Customer Management</h3></CCol>
+            <CCol md="7"><h3 :class="['mb-0']">{{ this.$tc('views.customers.title') }}</h3></CCol>
             <CCol md="5">
-              <CButton v-c-tooltip="'Create New'" @click="() => {this.isCreate = true; this.cancelEdit(); }" :class="['ml-auto', 'float-md-right']"
+              <CButton v-c-tooltip="this.$tc('buttons.crud.create')" @click="() => {this.isCreate = true; this.cancelEdit(); }"
+                       :class="['ml-auto', 'float-md-right']"
                        color="success">
                 <CIcon name="cil-plus"></CIcon>
               </CButton>
               <CForm @submit.prevent="createCustomer">
                 <CModal
                     color="primary"
-                    title="Create Customer"
+                    :title="tc('views.customers.create_customer.title')"
                     :show.sync="isCreate"
                 >
                   <CInput
                       v-model.trim="customer.name"
-                      label="Customer name"
+                      :label="tc('views.customers.create_customer.name')"
                       horizontal
                       :is-valid="this.$v.customer.name.$dirty ? !this.$v.customer.name.$error : null"
                       :invalid-feedback="!this.$v.customer.name.required ? 'This field is required.' : 'This field required 255 maximum characters.'"
                   />
                   <template v-slot:footer>
-                    <CButton @click="isCreate = false" color="secondary">Cancel</CButton>
-                    <CButton type="submit" color="primary">Save</CButton>
+                    <CButton @click="isCreate = false" color="secondary">{{ tc('buttons.crud.cancel') }}</CButton>
+                    <CButton type="submit" color="primary">{{ tc('buttons.crud.save') }}</CButton>
                   </template>
                 </CModal>
               </CForm>
@@ -36,26 +37,28 @@
           <CRow>
             <CCol md="3">
               <CInput
-                  v-model="unpaidThresholdComputed"
-                  label="Unpaid Threshold"
+                  v-model.number="unpaidThreshold"
+                  :label="tc('views.customers.unpaid_threshold')"
                   addLabelClasses="font-weight-bold"
                   :is-valid="this.$v.unpaidThreshold.$dirty ? !this.$v.unpaidThreshold.$error : null"
                   :invalid-feedback="!this.$v.unpaidThreshold.required ? 'This field is required.' : 'This field required numeric value.'"
               >
                 <template #append>
-                  <CButton @click="updateUnpaidThreshold" color="primary" v-text="'Save'"/>
+                  <CButton @click="updateUnpaidThreshold" color="primary" v-text="tc('buttons.crud.save')"/>
                 </template>
               </CInput>
             </CCol>
             <CCol md="4" class="offset-md-5">
               <CRow>
                 <CCol md="6">
-                  <CSelect :custom="true" label="Sort By" addLabelClasses="font-weight-bold"
+                  <CSelect :custom="true" :label="tc('views.customers.sort_by.title')"
+                           addLabelClasses="font-weight-bold"
                            :options="sortOptions"
                            :value.sync="sortBy"/>
                 </CCol>
                 <CCol md="6">
-                  <CSelect :custom="true" label="Unpaid List" addLabelClasses="font-weight-bold"
+                  <CSelect :custom="true" :label="tc('views.customers.unpaid_list.title')"
+                           addLabelClasses="font-weight-bold"
                            :options="unpaidOptions" :value.sync="unpaid"/>
                 </CCol>
               </CRow>
@@ -65,7 +68,8 @@
               :sort-by="sortBy"
               :responsive="true"
               :sorterValue="sortState"
-              :tableFilter="{ placeholder: 'Search...'}"
+              :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
+              :itemsPerPageSelect="{ label: tc('table_tool.items_per_page.title')}"
               items-per-page-select
               sorter
               hover
@@ -91,7 +95,7 @@
                     @keyup="updateCustomer"
                 />
                 <CButton
-                    v-c-tooltip="'Edit'"
+                    v-c-tooltip="tc('buttons.crud.edit')"
                     size="sm"
                     color="secondary"
                     :class="'inline-edit-button'"
@@ -115,7 +119,7 @@
                     @keyup="updateCustomer"
                 />
                 <CButton
-                    v-c-tooltip="'Edit'"
+                    v-c-tooltip="tc('buttons.crud.edit')"
                     size="sm"
                     color="secondary"
                     :class="'inline-edit-button'"
@@ -134,7 +138,7 @@
             <template #action="{item}">
               <td>
                 <CButton
-                    v-c-tooltip="'Delete'"
+                    v-c-tooltip="tc('buttons.crud.delete')"
                     size="sm"
                     color="danger"
                     @click="deleteCustomer(item)"
@@ -151,7 +155,7 @@
 </template>
 
 <script>
-import {required, maxLength, numeric} from 'vuelidate/lib/validators';
+import {required, maxLength, integer, minValue} from 'vuelidate/lib/validators';
 import CCustomDataTable from "@/views/custom/CCustomDataTable";
 
 export default {
@@ -161,11 +165,11 @@ export default {
   data() {
     return {
       fields: [
-        {key: 'id', name: 'ID', _style: "width: 10%;"},
-        {key: 'action', _style: "width: 10%;"},
-        {key: 'name', name: 'Name', _style: "width: 30%;"},
-        {key: 'note', name: 'Note', _style: "width: 30%;"},
-        {key: 'unpaid', name: 'Unpaid', _style: "width: 20%;"},
+        {key: 'id', label: this.$tc('views.customers.table.id'), _style: "width: 10%;"},
+        {key: 'action', label: this.$tc('views.customers.table.action'), _style: "width: 10%;"},
+        {key: 'name', label: this.$tc('views.customers.table.name'), _style: "width: 30%;"},
+        {key: 'note', label: this.$tc('views.customers.table.note'), _style: "width: 30%;"},
+        {key: 'unpaid', label: this.$tc('views.customers.table.unpaid'), _style: "width: 20%;"},
       ],
       customer: {
         name: '',
@@ -183,16 +187,16 @@ export default {
         asc: false,
       },
       sortOptions: [
-        {value: 0, label: 'Most Recent'},
-        {value: 1, label: 'Newest'},
-        {value: 2, label: 'Oldest'},
+        {value: 0, label: this.$tc('views.customers.sort_by.most_recent')},
+        {value: 1, label: this.$tc('views.customers.sort_by.newest')},
+        {value: 2, label: this.$tc('views.customers.sort_by.oldest')},
       ],
       unpaidOptions: [
-        {value: 0, label: 'All List'},
-        {value: 1, label: 'Unpaid List'},
+        {value: 0, label: this.$tc('views.customers.unpaid_list.all')},
+        {value: 1, label: this.$tc('views.customers.unpaid_list.unpaid')},
       ],
-      unpaidThreshold: 0,
       editField: '',
+      unpaidThreshold: 0,
     };
   },
   validations: {
@@ -207,23 +211,20 @@ export default {
     },
     unpaidThreshold: {
       required,
-      numeric,
+      integer,
+      minValue: minValue(1),
     },
   },
   created() {
     this.$store.dispatch('customers/getList');
+    this.$store.dispatch('app/getUnpaidThreshold')
+        .then(() => {
+          this.unpaidThreshold = this.$store.state.app.unpaidThreshold;
+        });
   },
   computed: {
-    loading() {
-      return this.$store.state.app.tableLoading;
-    },
-    unpaidThresholdComputed: {
-      get() {
-        return this.$store.state.app.unpaidThreshold;
-      },
-      set(value) {
-        this.unpaidThreshold = value;
-      },
+    tc() {
+      return this.$tc;
     },
     v() {
       return this.$v;
@@ -244,7 +245,7 @@ export default {
 
       if (this.unpaid === 1) {
         result = result.filter((customer) => {
-          if (customer.unpaid > this.unpaidThresholdComputed) {
+          if (customer.unpaid > this.unpaidThreshold) {
             return customer;
           }
         });
@@ -284,21 +285,23 @@ export default {
         this.cancelEdit();
       }
     },
-    deleteCustomer(item) {
+    async deleteCustomer(item) {
       this.cancelEdit();
       this.selected = item;
-      this.$swal.fire({
+      let result = await this.$swal.fire({
         title: 'Are you sure to delete this customer?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
         confirmButtonText: 'Confirm'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.performDelete();
-        }
-      })
+      }).then(result => {
+        return result.isConfirmed;
+      });
+
+      if (result) {
+        this.performDelete();
+      }
     },
     performDelete() {
       this.$store.commit('app/setLoading', true);
@@ -335,7 +338,7 @@ export default {
       this.$v.unpaidThreshold.$touch();
       if (!this.$v.unpaidThreshold.$invalid) {
         this.$store.commit('app/setLoading', true);
-        this.$store.dispatch('app/updateUnpaidThreshold', {unpaid_threshold: this.unpaidThreshold}, {root: true})
+        this.$store.dispatch('app/updateUnpaidThreshold', {value: this.unpaidThreshold}, {root: true})
             .then(() => {
               this.$store.commit('app/setLoading', false);
             });

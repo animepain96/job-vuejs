@@ -4,56 +4,56 @@
       <CCard>
         <CCardHeader>
           <CRow :class="['align-items-center']">
-            <CCol md="12"><h3 :class="['mb-0']" v-text="'Report Management'"/></CCol>
+            <CCol md="12"><h3 :class="['mb-0']" v-text="this.$tc('views.reports.title')"/></CCol>
           </CRow>
         </CCardHeader>
         <CCardBody>
           <CRow>
             <CCol md="3" lg="2">
-              <label :class="'font-weight-bold'" v-text="'From'"/>
+              <label :class="'font-weight-bold'" v-text="this.$tc('views.reports.filter.from')"/>
               <DatePicker type="date" format="DD-MM-YYYY" v-model="query.from"/>
             </CCol>
             <CCol md="3" lg="2">
-              <label :class="'font-weight-bold'" v-text="'To'"/>
+              <label :class="'font-weight-bold'" v-text="this.$tc('views.reports.filter.to')"/>
               <DatePicker type="date" format="DD-MM-YYYY" v-model="query.to"/>
             </CCol>
             <CCol md="3" lg="2">
-              <label :class="'font-weight-bold'" v-text="'Mode'"/>
+              <label :class="'font-weight-bold'" v-text="this.$tc('views.reports.filter.mode')"/>
               <CSelect :custom="true" :options="modeOptions" :value="query.mode"
                        @change="(e) => this.query.mode = e.target.value"/>
             </CCol>
             <CCol md="3" lg="2">
-              <label :class="'font-weight-bold'" v-text="'Customer'"/>
-              <CSelect :custom="true" :options="[{value: 0, label: 'ALL'}].concat(customers)" :value="query.customer"
+              <label :class="'font-weight-bold'" v-text="this.$tc('views.reports.filter.customer')"/>
+              <CSelect :custom="true" :options="[{value: 0, label: tc('views.reports.filter.options.all')}].concat(customers)" :value="query.customer"
                        @change="(e) => this.query.customer = e.target.value"/>
             </CCol>
             <CCol md="3" lg="2">
-              <label :class="'font-weight-bold'" v-text="'Type'"/>
-              <CSelect :custom="true" :options="[{value: 0, label: 'ALL'}].concat(types)" :value="query.type"
+              <label :class="'font-weight-bold'" v-text="this.$tc('views.reports.filter.type')"/>
+              <CSelect :custom="true" :options="[{value: 0, label: tc('views.reports.filter.options.all')}].concat(types)" :value="query.type"
                        @change="(e) => this.query.type = e.target.value"/>
             </CCol>
             <CCol md="3" lg="2">
-              <label :class="'font-weight-bold'" v-text="'Method'"/>
-              <CSelect :custom="true" :options="[{value: 0, label: 'ALL'}].concat(methods)" :value="query.method"
+              <label :class="'font-weight-bold'" v-text="this.$tc('views.reports.filter.method')"/>
+              <CSelect :custom="true" :options="[{value: 0, label: tc('views.reports.filter.options.all')}].concat(methods)" :value="query.method"
                        @change="(e) => this.query.method = e.target.value"/>
             </CCol>
             <CCol md="3" lg="2">
-              <label :class="'font-weight-bold'" v-text="'Paid'"/>
+              <label :class="'font-weight-bold'" v-text="this.$tc('views.reports.filter.paid')"/>
               <CSelect :custom="true" :options="paidOptions" :value="query.paid"
                        @change="(e) => this.query.paid = e.target.value"/>
             </CCol>
             <CCol md="12">
-              <CButton color="primary" v-text="'View'" @click="getList"/>
-              <CButton :class="'ml-2'" color="dark" v-text="'Chart'" @click="showModal = !showModal"/>
+              <CButton color="primary" v-text="this.$tc('buttons.crud.view')" @click="getList"/>
+              <CButton :class="'ml-2'" color="dark" v-text="this.$tc('buttons.crud.chart')" @click="showModal = !showModal"/>
             </CCol>
           </CRow>
           <hr/>
           <CRow>
             <CCol :class="'text-right'">
-              <p :class="'font-weight-bold mb-1'">Total: <span style="font-size: 16px;"><span
+              <p :class="'font-weight-bold mb-1'">{{ this.$tc('views.reports.total') }}: <span style="font-size: 16px;"><span
                   :class="'text-danger'">{{ totalRevenueUSD.toLocaleString() }}USD</span> - <span
                   :class="'text-primary'">{{ totalRevenueYen.toLocaleString() }}JPY</span></span></p>
-              <p :class="'font-weight-bold mb-1'">Rate: <span style="font-size: 16px;"><span
+              <p :class="'font-weight-bold mb-1'">{{ this.$tc('views.reports.rate') }}: <span style="font-size: 16px;"><span
                   :class="'text-danger'">1USD</span> - <span
                   :class="'text-primary'">{{ rate }}JPY</span></span></p>
             </CCol>
@@ -61,7 +61,8 @@
           <CDataTable
               :sorter-value="sortBy"
               :responsive="false"
-              :tableFilter="{ placeholder: 'Search...'}"
+              :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
+              :itemsPerPageSelect="{ label: tc('table_tool.items_per_page.title')}"
               items-per-page-select
               sorter
               hover
@@ -78,7 +79,7 @@
               <td>
                 <CButtonGroup class="mr-3">
                   <CButton
-                      v-c-tooltip="'Delete'"
+                      v-c-tooltip="tc('buttons.crud.delete')"
                       size="sm"
                       color="danger"
                       @click="deleteJob(item)"
@@ -93,7 +94,7 @@
                 <span v-text="item.name" v-show="!(selected.id === item.id && isEdit && editField === 'name')"></span>
                 <CInput v-if="selected.id === item.id && isEdit && editField === 'name'" type="text" v-model="job.name"
                         @keyup="(e) => updateJob(e)"/>
-                <CButton size="sm" color="secondary" :class="'inline-edit-button'"
+                <CButton v-c-tooltip="tc('buttons.crud.edit')" size="sm" color="secondary" :class="'inline-edit-button'"
                          @click="() => editJob(item, 'name')"
                          v-show="!(selected.id === item.id && isEdit && editField === 'name')">
                   <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
@@ -112,7 +113,7 @@
                 <CInput v-if="selected.id === item.id && isEdit && editField === 'price_yen'" type="text"
                         v-model="job.price_yen"
                         @keyup="(e) => updateJob(e)"/>
-                <CButton v-c-tooltip="'Edit'" size="sm" color="secondary" :class="'inline-edit-button'"
+                <CButton v-c-tooltip="tc('buttons.crud.edit')" size="sm" color="secondary" :class="'inline-edit-button'"
                          @click="() => {editJob(item, 'price_yen');}"
                          v-show="!(selected.id === item.id && isEdit && editField === 'price_yen')">
                   <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
@@ -127,7 +128,7 @@
                             v-if="selected.id === item.id && isEdit && editField === 'start_date'"
                             @change="(e) => updateJob(e, true)"
                             @keypress="(e) => updateJob(e)"/>
-                <CButton v-c-tooltip="'Edit'" size="sm" color="secondary" :class="'inline-edit-button'"
+                <CButton v-c-tooltip="tc('buttons.crud.edit')" size="sm" color="secondary" :class="'inline-edit-button'"
                          @click="() => editJob(item, 'start_date')"
                          v-show="!(selected.id === item.id && isEdit && editField === 'start_date')">
                   <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
@@ -142,7 +143,7 @@
                             v-if="selected.id === item.id && isEdit && editField === 'pay_date'"
                             @change="(e) => updateJob(e, true)"
                             @keypress="(e) => updateJob(e)"/>
-                <CButton v-c-tooltip="'Edit'" size="sm" color="secondary" :class="'inline-edit-button'"
+                <CButton v-c-tooltip="tc('buttons.crud.edit')" size="sm" color="secondary" :class="'inline-edit-button'"
                          @click="() => editJob(item, 'pay_date')"
                          v-show="!(selected.id === item.id && isEdit && editField === 'pay_date')">
                   <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
@@ -164,7 +165,7 @@
                     size="sm"
                     @click="toggleDetails(item, index)"
                 >
-                  {{ Boolean(item._toggled) ? 'Hide' : 'Show' }}
+                  {{ Boolean(item._toggled) ? tc('buttons.crud.hide') : tc('buttons.crud.show') }}
                 </CButton>
               </td>
             </template>
@@ -173,7 +174,7 @@
                 <CCardBody>
                   <CRow>
                     <CCol md="3">
-                      <span :style="'display:block;'" :class="'font-weight-bold'" v-text="'Customer'"/>
+                      <span :style="'display:block;'" :class="'font-weight-bold'" v-text="tc('views.jobs.table.customer')"/>
                       <span :style="'display:block;'" v-text="item.customer.name"
                             v-show="!(selected.id === item.id && isEdit && editField === 'customer')"></span>
                       <CSelect :custom="true" :options="customers"
@@ -181,14 +182,14 @@
                                :value="item.customer_id"
                                @input="job.customer = $event.target.value"
                                @change="(e) => updateJob(e, true)"/>
-                      <CButton v-c-tooltip="'Edit'" size="sm" color="secondary" :class="'inline-edit-button'"
+                      <CButton v-c-tooltip="tc('buttons.crud.edit')" size="sm" color="secondary" :class="'inline-edit-button'"
                                @click="() => editJob(item, 'customer')"
                                v-show="!(selected.id === item.id && isEdit && editField === 'customer')">
                         <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
                       </CButton>
                     </CCol>
                     <CCol md="3">
-                      <span :style="'display:block;'" :class="'font-weight-bold'" v-text="'Type'"/>
+                      <span :style="'display:block;'" :class="'font-weight-bold'" v-text="tc('views.jobs.table.type')"/>
                       <span :style="'display:block;'" v-text="item.type.name"
                             v-show="!(selected.id === item.id && isEdit && editField === 'type')"></span>
                       <CSelect :custom="true" :options="types"
@@ -196,14 +197,14 @@
                                v-if="selected.id === item.id && isEdit && editField === 'type'"
                                @input="job.type = $event.target.value"
                                @change="(e) => updateJob(e, true)"/>
-                      <CButton v-c-tooltip="'Edit'" size="sm" color="secondary" :class="'inline-edit-button'"
+                      <CButton v-c-tooltip="tc('buttons.crud.edit')" size="sm" color="secondary" :class="'inline-edit-button'"
                                @click="() => editJob(item, 'type')"
                                v-show="!(selected.id === item.id && isEdit && editField === 'type')">
                         <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
                       </CButton>
                     </CCol>
                     <CCol md="3">
-                      <span :style="'display:block;'" :class="'font-weight-bold'" v-text="'Method'"/>
+                      <span :style="'display:block;'" :class="'font-weight-bold'" v-text="tc('views.jobs.table.method')"/>
                       <span :style="'display:block;'" v-text="item.method.name"
                             v-show="!(selected.id === item.id && isEdit && editField === 'method')"></span>
                       <CSelect :custom="true" :options="methods"
@@ -211,7 +212,7 @@
                                v-if="selected.id === item.id && isEdit && editField === 'method'"
                                @input="job.method = $event.target.value"
                                @change="(e) => updateJob(e, true)"/>
-                      <CButton v-c-tooltip="'Edit'" size="sm" color="secondary" :class="'inline-edit-button'"
+                      <CButton v-c-tooltip="tc('buttons.crud.edit')" size="sm" color="secondary" :class="'inline-edit-button'"
                                @click="() => editJob(item, 'method')"
                                v-show="!(selected.id === item.id && isEdit && editField === 'method')">
                         <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
@@ -219,14 +220,14 @@
                     </CCol>
                     <CCol md="3">
                       <div class="form-group">
-                        <span :style="'display:block;'" v-text="'Deadline'" :class="'font-weight-bold'"></span>
+                        <span :style="'display:block;'" v-text="tc('views.jobs.table.deadline')" :class="'font-weight-bold'"></span>
                         <span :style="'display:block;'" v-text="formattedDate(item.deadline)"
                               v-show="!(selected.id === item.id && isEdit && editField === 'deadline')"></span>
                         <DatePicker type="date" format="DD-MM-YYYY" v-model="job.deadline"
                                     v-if="selected.id === item.id && isEdit && editField === 'deadline'"
                                     @change="(e) => updateJob(e, true)"
                                     @keypress="(e) => updateJob(e)"/>
-                        <CButton v-c-tooltip="'Edit'" size="sm" color="secondary" :class="'inline-edit-button'"
+                        <CButton v-c-tooltip="tc('buttons.crud.edit')" size="sm" color="secondary" :class="'inline-edit-button'"
                                  @click="() => {editJob(item, 'deadline');}"
                                  v-show="!(selected.id === item.id && isEdit && editField === 'deadline')">
                           <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
@@ -235,14 +236,14 @@
                     </CCol>
                     <CCol md="3">
                       <div class="form-group">
-                        <span :style="'display:block;'" v-text="'Finish Date'" :class="'font-weight-bold'"></span>
+                        <span :style="'display:block;'" v-text="tc('views.jobs.table.finish_date')" :class="'font-weight-bold'"></span>
                         <span :style="'display:block;'" v-text="formattedDate(item.finish_date)"
                               v-show="!(selected.id === item.id && isEdit && editField === 'finish_date')"></span>
                         <DatePicker type="date" format="DD-MM-YYYY" v-model="job.finish_date"
                                     v-if="selected.id === item.id && isEdit && editField === 'finish_date'"
                                     @change="(e) => updateJob(e, true)"
                                     @keypress="(e) => updateJob(e)"/>
-                        <CButton v-c-tooltip="'Edit'" size="sm" color="secondary" :class="'inline-edit-button'"
+                        <CButton v-c-tooltip="tc('buttons.crud.edit')" size="sm" color="secondary" :class="'inline-edit-button'"
                                  @click="() => {editJob(item, 'finish_date');}"
                                  v-show="!(selected.id === item.id && isEdit && editField === 'finish_date')">
                           <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
@@ -251,12 +252,12 @@
                     </CCol>
                     <CCol md="3">
                       <div class="form-group">
-                        <span :style="'display:block;'" v-text="'Note'" :class="'font-weight-bold'"></span>
+                        <span :style="'display:block;'" v-text="tc('views.jobs.table.note')" :class="'font-weight-bold'"></span>
                         <span :style="'display:block;'" v-text="item.note"
                               v-show="!(selected.id === item.id && isEdit && editField === 'note')"></span>
                         <CTextarea v-model="job.note" v-if="selected.id === item.id && isEdit && editField === 'note'"
                                    @keyup="(e) => updateJob(e)"/>
-                        <CButton v-c-tooltip="'Edit'" size="sm" color="secondary" :class="'inline-edit-button'"
+                        <CButton v-c-tooltip="tc('buttons.crud.edit')" size="sm" color="secondary" :class="'inline-edit-button'"
                                  @click="() => {editJob(item, 'note');}"
                                  v-show="!(selected.id === item.id && isEdit && editField === 'note')">
                           <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
@@ -289,15 +290,15 @@ export default {
   data() {
     return {
       fields: [
-        {key: 'id', name: 'ID', _style: 'width: 5%;'},
-        {key: 'action', name: 'Action', _style: 'width: 7%;'},
-        {key: 'name', name: 'Name', _style: 'width: 15%;'},
-        {key: 'price', name: 'Price', _style: 'width: 15%;'},
-        {key: 'price_yen', name: 'Price Yen', _style: 'width: 15%;'},
-        {key: 'start_date', name: 'Start Date', _style: 'width: 15%;'},
-        {key: 'pay_date', name: 'Pay Date', _style: 'width: 15%;'},
-        {key: 'paid', name: 'Paid', _style: 'width: 8%;'},
-        {key: 'show_details', name: 'Detail', _style: 'width: 5%;'},
+        {key: 'id', label: this.$tc('views.jobs.table.id'), _style: 'width: 5%;'},
+        {key: 'action', label: this.$tc('views.jobs.table.action'), _style: 'width: 7%;'},
+        {key: 'name', label: this.$tc('views.jobs.table.name'), _style: 'width: 15%;'},
+        {key: 'price', label: this.$tc('views.jobs.table.price'), _style: 'width: 15%;'},
+        {key: 'price_yen', label: this.$tc('views.jobs.table.price_yen'), _style: 'width: 15%;'},
+        {key: 'start_date', label: this.$tc('views.jobs.table.start_date'), _style: 'width: 15%;'},
+        {key: 'pay_date', label: this.$tc('views.jobs.table.pay_date'), _style: 'width: 15%;'},
+        {key: 'paid', label: this.$tc('views.jobs.table.paid'), _style: 'width: 8%;'},
+        {key: 'show_details', label: this.$tc('views.jobs.table.details'), _style: 'width: 5%;'},
         /*{key: 'customer', name: 'Customer'},
         {key: 'type', name: 'Customer'},
         {key: 'method', name: 'Customer'},
@@ -330,25 +331,25 @@ export default {
       paidOptions: [
         {
           value: 0,
-          label: 'ALL',
+          label: this.$tc('views.reports.filter.options.all'),
         },
         {
           value: 1,
-          label: 'YES',
+          label: this.$tc('views.reports.filter.options.yes'),
         },
         {
           value: 2,
-          label: 'NO',
+          label: this.$tc('views.reports.filter.options.no'),
         },
       ],
       modeOptions: [
         {
           value: 0,
-          label: 'Sale',
+          label: this.$tc('views.reports.filter.options.sale'),
         },
         {
           value: 1,
-          label: 'Payment',
+          label: this.$tc('views.reports.filter.options.payment'),
         },
       ],
       showModal: false,
@@ -360,6 +361,9 @@ export default {
     this.$store.dispatch('jobs/getRate');
   },
   computed: {
+    tc() {
+      return this.$tc;
+    },
     query() {
       return this.$store.state.reports.query;
     },
@@ -457,9 +461,10 @@ export default {
         this.cancelEdit();
       }
     },
-    deleteJob(item) {
+    async deleteJob(item) {
       this.cancelEdit();
-      this.$swal.fire({
+      this.selected = item;
+      let result = await this.$swal.fire({
         title: 'Are you sure to delete this job?',
         icon: 'warning',
         showCancelButton: true,
@@ -467,14 +472,16 @@ export default {
         cancelButtonColor: '#d33',
         confirmButtonText: 'Confirm'
       }).then((result) => {
-        if (result.isConfirmed) {
-          this.performDelete(item);
-        }
-      })
+        return result.isConfirmed;
+      });
+
+      if (result) {
+        this.performDelete();
+      }
     },
-    performDelete(item) {
+    performDelete() {
       this.$store.commit('app/setLoading', true);
-      this.$store.dispatch('reports/delete', item, {root: true})
+      this.$store.dispatch('reports/delete', this.selected, {root: true})
           .then(() => this.$store.commit('app/setLoading', false));
     },
     convertCurrency(value) {

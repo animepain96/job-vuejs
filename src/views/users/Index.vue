@@ -4,9 +4,9 @@
       <CCard>
         <CCardHeader>
           <CRow :class="['align-items-center']">
-            <CCol md="7"><h3 :class="['mb-0']">Users Management</h3></CCol>
+            <CCol md="7"><h3 :class="['mb-0']">{{ tc('views.users.title') }}</h3></CCol>
             <CCol md="5">
-              <CButton v-c-tooltip="'Create New'" @click="isCreate = true" :class="['ml-auto', 'float-md-right']"
+              <CButton v-c-tooltip="tc('buttons.crud.create')" @click="isCreate = true" :class="['ml-auto', 'float-md-right']"
                        color="success">
                 <CIcon name="cil-plus"></CIcon>
               </CButton>
@@ -16,7 +16,8 @@
         <CCardBody>
           <CDataTable
               :sorterValue="sortBy"
-              :tableFilter="{ placeholder: 'Search...'}"
+              :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
+              :itemsPerPageSelect="{ label: tc('table_tool.items_per_page.title')}"
               items-per-page-select
               sorter
               hover
@@ -31,16 +32,15 @@
           >
             <template #action="{item}">
               <td>
-                <CButtonGroup>
-                  <CButton @click="resetPassword(item)" v-c-tooltip="'Reset Password'" color="primary" size="sm"
-                           v-if="item.id !== 1">
+                <CButtonGroup v-if="item.id !== 1 && currentUser.id === 1">
+                  <CButton @click="resetPassword(item)" v-c-tooltip="tc('buttons.crud.reset_password')" color="primary" size="sm">
                     <CIcon name="cil-lock-locked"/>
                   </CButton>
-                  <CButton @click="deleteUser(item)" v-c-tooltip="'Delete'" color="danger" size="sm"
-                           v-if="item.id !== 1">
+                  <CButton @click="deleteUser(item)" v-c-tooltip="tc('buttons.crud.delete')" color="danger" size="sm">
                     <CIcon name="cil-trash"/>
                   </CButton>
                 </CButtonGroup>
+                <CBadge color="secondary" v-text="tc('views.users.unavailable')" v-if="!(item.id !== 1 && currentUser.id === 1)" />
               </td>
             </template>
             <template #id="{item}">
@@ -60,11 +60,12 @@
                     :invalid-feedback="!v.user.name.required ? 'This field is required.' : 'This field required 255 maximum characters.'"
                 />
                 <CButton
-                    v-c-tooltip="'Edit'"
+                    v-c-tooltip="tc('buttons.crud.edit')"
                     size="sm"
                     color="secondary"
                     :class="'inline-edit-button'"
                     @click="() => editUser(item, 'name')"
+                    v-if="item.id !== 1"
                     v-show="!(selected.id === item.id && isEdit && editField === 'name') && item.id !== 1"
                 >
                   <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
@@ -72,16 +73,16 @@
               </td>
             </template>
             <template #email="{item}">
-              <td :class="'inline-edit-wrap'">
+              <td>
                 <span v-text="item.email"></span>
               </td>
             </template>
             <template #role="{item}">
               <td :class="'inline-edit-wrap'">
                 <CBadge v-show="!(isEdit && selected.id === item.id && editField === 'role')"
-                        v-if="item.role === 'user'" color="primary" v-text="'User'"/>
+                        v-if="item.role === 'user'" color="primary" v-text="tc('views.users.roles.user')"/>
                 <CBadge v-show="!(isEdit && selected.id === item.id && editField === 'role')"
-                        v-if="item.role === 'admin'" color="danger" v-text="'Admin'"/>
+                        v-if="item.role === 'admin'" color="danger" v-text="item.id === 1 ? tc('views.users.roles.super_admin') : tc('views.users.roles.admin')"/>
                 <CSelect
                     :disabled="item.id === 1"
                     v-if="isEdit && selected.id === item.id && editField === 'role'"
@@ -92,10 +93,10 @@
                     :is-valid="v.user.role.$dirty ? !v.user.role.$error : null"
                     :invalid-feedback="!v.user.role.required ? 'This field is required.' : 'This field is invalid format.'"
                 />
-                <CButton v-c-tooltip="'Edit'" size="sm" color="secondary" :class="'inline-edit-button'"
+                <CButton v-c-tooltip="tc('buttons.crud.edit')" size="sm" color="secondary" :class="'inline-edit-button'"
                          @click="() => editUser(item, 'role')"
-                         v-if="item.id !== 1"
-                         v-show="!(selected.id === item.id && isEdit && editField === 'role')">
+                         v-if="item.id !== 1 && currentUser.id === 1"
+                         v-show="!(selected.id === item.id && isEdit && editField === 'role' && item.id !== 1)">
                   <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
                 </CButton>
               </td>
@@ -129,12 +130,13 @@ export default {
   data() {
     return {
       fields: [
-        {key: 'id', name: 'ID', _style: "width: 10%;"},
-        {key: 'action', name: 'Action', _style: "width: 12.5%;"},
-        {key: 'name', name: 'Name', _style: "width: 25%;"},
-        {key: 'email', name: 'Email', _style: "width: 25%;"},
-        {key: 'role', name: 'Role', _style: "width: 20%;"},
-        {key: 'active', name: 'Active', _style: "width: 12.5%;"},
+        {key: 'id', label: this.$tc('views.users.table.id'), _style: "width: 5%;"},
+        {key: 'action', label: this.$tc('views.users.table.action'), _style: "width: 10%;"},
+        {key: 'name', label: this.$tc('views.users.table.name'), _style: "width: 20%;"},
+        {key: 'username', label: this.$tc('views.users.table.username'), _style: "width: 20%;"},
+        {key: 'email', label: this.$tc('views.users.table.email'), _style: "width: 20%;"},
+        {key: 'role', label: this.$tc('views.users.table.role'), _style: "width: 15%;"},
+        {key: 'active', label: this.$tc('views.users.table.active'), _style: "width: 10%;"},
       ],
       sortBy: {
         column: 'id',
@@ -169,11 +171,17 @@ export default {
     this.$store.dispatch('users/getUsers');
   },
   computed: {
+    tc() {
+      return this.$tc;
+    },
     v() {
       return this.$v;
     },
     users() {
       return this.$store.state.users.users;
+    },
+    currentUser() {
+      return this.$store.state.auth.user;
     },
   },
   methods: {
@@ -200,11 +208,10 @@ export default {
               payload,
           ).then(status => {
             if (status) {
-              this.cancelEdit();
             } else {
-              this.cancelEdit();
               e.target.checked = !e.target.checked;
             }
+            this.cancelEdit();
             this.$store.commit('app/setLoading', false);
           });
         } else if (e.keyCode === 27) {
@@ -242,24 +249,27 @@ export default {
         }
       });
     },
-    deleteUser(item) {
+    async deleteUser(item) {
       this.cancelEdit();
-      this.$swal.fire({
+      this.selected = item;
+      let result = await this.$swal.fire({
         title: 'Are you sure to delete this user?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
         confirmButtonText: 'Confirm'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.performDelete(item);
-        }
+      }).then(result => {
+        return result.isConfirmed;
       });
+
+      if (result) {
+        this.performDelete();
+      }
     },
-    performDelete(item) {
+    performDelete() {
       this.$store.commit('app/setLoading', true);
-      this.$store.dispatch('users/deleteUser', item, {root: true})
+      this.$store.dispatch('users/deleteUser', this.selected, {root: true})
           .then(() => this.$store.commit('app/setLoading', false));
     },
   }

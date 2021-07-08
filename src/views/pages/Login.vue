@@ -7,13 +7,13 @@
             <CCard class="p-4">
               <CCardBody>
                 <CForm @submit.prevent="login">
-                  <h1>Login</h1>
-                  <p class="text-muted">Sign In to your account</p>
+                  <h1>{{ this.$tc('views.login.title') }}</h1>
+                  <p class="text-muted">{{ this.$tc('views.login.description') }}</p>
                   <CInput
-                      v-model="user.email"
-                      placeholder="Email"
-                      :is-valid="this.$v.user.email.$dirty ? !this.$v.user.email.$error : null"
-                      :invalid-feedback="!this.$v.user.email.required ? 'This field is required.' : 'This field is not valid email.'"
+                      v-model="user.username"
+                      :placeholder="this.$tc('views.login.username')"
+                      :is-valid="this.$v.user.username.$dirty ? !this.$v.user.username.$error : null"
+                      :invalid-feedback="!this.$v.user.username.required ? 'This field is required.' : 'This field is require 3 minimum characters.'"
                   >
                     <template #prepend-content>
                       <CIcon name="cil-user"/>
@@ -21,7 +21,7 @@
                   </CInput>
                   <CInput
                       v-model="user.password"
-                      placeholder="Password"
+                      :placeholder="this.$tc('views.login.password')"
                       type="password"
                       :is-valid="this.$v.user.password.$dirty ? !this.$v.user.password.$error : null"
                       :invalid-feedback="!this.$v.user.password.required ? 'This field is required.' : 'This field is require 6 minimum characters.'"
@@ -32,7 +32,7 @@
                   </CInput>
                   <CRow>
                     <CCol class="text-left">
-                      <CButton type="submit" color="primary" class="px-4">Login</CButton>
+                      <CButton type="submit" color="primary" class="px-4">{{ this.$tc('views.login.submit') }}</CButton>
                     </CCol>
                   </CRow>
                 </CForm>
@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import {required, email, minLength} from 'vuelidate/lib/validators';
+import {required, minLength} from 'vuelidate/lib/validators';
 import Overlay from "@/views/custom/Overlay";
 
 export default {
@@ -57,16 +57,16 @@ export default {
   data() {
     return {
       user: {
-        email: '',
+        username: '',
         password: '',
       },
     };
   },
   validations: {
     user: {
-      email: {
+      username: {
         required,
-        email,
+        minLength: minLength(3),
       },
       password: {
         required,

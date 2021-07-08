@@ -1,4 +1,4 @@
-import HTTP from "@/helpers/http";
+import HTTP, {handleError} from "@/helpers/http";
 import {TYPE_LIST, UPDATE_TYPE, DELETE_TYPE, CREATE_TYPE} from "@/constants/typeAPI";
 import {toastAlert} from "@/helpers/alert";
 
@@ -26,9 +26,7 @@ const types = {
 
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         },
         update({commit, state}, payload){
             return HTTP(true).patch(UPDATE_TYPE(payload.id), {
@@ -54,9 +52,7 @@ const types = {
 
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         },
         delete({commit, state}, type) {
             return HTTP(true).delete(DELETE_TYPE(type.id), {
@@ -79,9 +75,7 @@ const types = {
 
                 toastAlert('There was an error. Please try again.', 'error')
                 return false;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         },
         create({commit, state}, type) {
             return HTTP(true).post(CREATE_TYPE, {
@@ -101,9 +95,7 @@ const types = {
                 }
                 toastAlert('There was an error. Please try again.', 'error');
                 return false;
-            }).catch(() => {
-                return false;
-            });
+            }).catch(error => handleError(error));
         },
     },
 };

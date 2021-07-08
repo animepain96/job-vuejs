@@ -4,28 +4,28 @@
       <CCard>
         <CCardHeader>
           <CRow :class="['align-items-center']">
-            <CCol md="7"><h3 :class="['mb-0']">Type Management</h3></CCol>
+            <CCol md="7"><h3 :class="['mb-0']">{{ this.$tc('views.types.title') }}</h3></CCol>
             <CCol md="5">
-              <CButton v-c-tooltip="'Create New'" @click="() => {this.isCreate = true; this.cancelEdit();}" :class="['ml-auto', 'float-md-right']"
+              <CButton v-c-tooltip="tc('buttons.crud.create')" @click="() => {this.isCreate = true; this.cancelEdit();}" :class="['ml-auto', 'float-md-right']"
                        color="success">
                 <CIcon name="cil-plus"></CIcon>
               </CButton>
               <CForm @submit.prevent="createType">
                 <CModal
                     color="primary"
-                    title="Create Type"
+                    :title="tc('views.types.create_type.title')"
                     :show.sync="isCreate"
                 >
                   <CInput
                       v-model.trim="type.name"
-                      label="Type name"
+                      :label="tc('views.types.create_type.name')"
                       horizontal
                       :is-valid="this.$v.type.name.$dirty ? !this.$v.type.name.$error : null"
                       :invalid-feedback="!this.$v.type.name.required ? 'This field is required.' : 'This field required 255 maximum characters.'"
                   />
                   <template v-slot:footer>
-                    <CButton @click="isCreate = false" color="secondary">Cancel</CButton>
-                    <CButton type="submit" color="primary">Save</CButton>
+                    <CButton @click="isCreate = false" color="secondary">{{ tc('buttons.crud.cancel') }}</CButton>
+                    <CButton type="submit" color="primary">{{ tc('buttons.crud.save') }}</CButton>
                   </template>
                 </CModal>
               </CForm>
@@ -36,7 +36,8 @@
           <CDataTable
               :sorterValue="sortBy"
               :responsive=false
-              :tableFilter="{ placeholder: 'Search...'}"
+              :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
+              :itemsPerPageSelect="{ label: tc('table_tool.items_per_page.title')}"
               items-per-page-select
               sorter
               hover
@@ -122,6 +123,9 @@ export default {
     this.$store.dispatch('types/getList');
   },
   computed: {
+    tc() {
+      return this.$tc;
+    },
     v() {
       return this.$v;
     },
@@ -173,10 +177,10 @@ export default {
             });
       }
     },
-    deleteType(item) {
+    async deleteType(item) {
       this.cancelEdit();
       this.selected = item;
-      this.$swal.fire({
+      let result = await this.$swal.fire({
         title: 'Are you sure to delete this type?',
         icon: 'warning',
         showCancelButton: true,
@@ -184,10 +188,12 @@ export default {
         cancelButtonColor: '#d33',
         confirmButtonText: 'Confirm'
       }).then((result) => {
-        if (result.isConfirmed) {
-          this.performDelete();
-        }
+        return result.isConfirmed;
       });
+
+      if(result) {
+        this.performDelete();
+      }
     },
     performDelete() {
       this.$store.commit('app/setLoading', true);
