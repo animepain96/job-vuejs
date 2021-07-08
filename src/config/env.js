@@ -1,5 +1,5 @@
 const env = {
-    API: 'https://job-laravel.herokuapp.com/',
+    API: 'http://job-api.work',
 };
 
 export default env;

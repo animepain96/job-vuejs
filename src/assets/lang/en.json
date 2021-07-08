@@ -173,19 +173,19 @@
         "active": "Active"
       },
       "roles": {
-        "user": "Người dùng",
-        "admin": "Quản lí",
-        "super_admin": "Siêu Cấp Quản lí"
+        "user": "User",
+        "admin": "Admin",
+        "super_admin": "Super Admin"
       },
-      "unavailable": "Không khả dụng",
+      "unavailable": "Unavailable",
       "create_user": {
-        "title": "Tạo mới Người dùng",
-        "name": "Tên",
-        "username": "Tên Người dùng",
-        "email": "Địa chỉ Email",
-        "password": "Mật khẩu",
-        "confirm_password": "Xác nhận Mật khẩu",
-        "active": "Hoạt động"
+        "title": "Create new User",
+        "name": "Name",
+        "username": "Username",
+        "email": "Email",
+        "password": "Password",
+        "confirm_password": "Confirm Password",
+        "active": "Active"
       }
     },
     "backups": {
