@@ -387,7 +387,7 @@
 import DatePicker from 'vue2-datepicker';
 import ChartModal from "@/views/reports/ChartModal";
 
-import moment from 'moment';
+import moment from 'moment/src/moment';
 import {integer, maxLength, required} from "vuelidate/lib/validators";
 
 export default {

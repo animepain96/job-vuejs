@@ -349,7 +349,7 @@ import {required, maxLength, integer} from 'vuelidate/lib/validators';
 import DatePicker from 'vue2-datepicker';
 import CreateJobModal from "@/views/jobs/CreateJobModal";
 
-import moment from 'moment';
+import moment from 'moment/src/moment';
 import {date} from '@/helpers/validate';
 
 export default {
