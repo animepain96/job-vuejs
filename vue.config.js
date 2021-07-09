@@ -1,4 +1,5 @@
 module.exports = {
+  mode: 'production',
   lintOnSave: false,
   runtimeCompiler: true,
   configureWebpack: {
