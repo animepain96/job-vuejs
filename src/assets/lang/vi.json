@@ -159,7 +159,8 @@
         "Tháng 10",
         "Tháng 11",
         "Tháng 12"
-      ]
+      ],
+      "revenue": "Doanh thu"
     },
     "users": {
       "title": "Quản lí Người dùng",
@@ -218,7 +219,8 @@
       "reset_password": "Cấp lại Mật khẩu",
       "manual_backup": "Sao lưu Thủ công",
       "download": "Tải về",
-      "delete_items": "Xóa tập tin được chọn"
+      "delete_items": "Xóa tập tin được chọn",
+      "confirm": "Xác nhận"
     }
   },
   "header": {
@@ -226,9 +228,9 @@
     "password": "Thay đổi Mật khẩu",
     "logout": "Đăng xuất",
     "lang": {
-      "title": "Ngôn ngữ",
+      "title": "VI",
       "en": "Tiếng Anh",
-      "vn": "Tiếng Việt"
+      "vi": "Tiếng Việt"
     }
   },
   "footer": {
@@ -236,7 +238,19 @@
   },
   "validations": {
     "required": "Trường nhập liệu này là bắt buộc.",
-    "max_length": "Trường nhập liệu không quá  kí tự."
+    "max_length": "Trường nhập liệu không quá :value kí tự.",
+    "min_value": "Trường nhập liệu yêu cầu giá trị tối thiểu là :value.",
+    "numeric": "Trường nhập liệu yêu cầu giá trị số.",
+    "gt": "Trường nhập liệu phải có giá trị lớn hơn :value.",
+    "lt": "Trường nhập liệu phải có giá trị nhỏ hơn :value.",
+    "email": "Trường nhập liệu phải có giá trị là Email.",
+    "same": "Trường nhập liệu có giá trị không khớp.",
+    "min_length": "Trường nhập liệu có phải lớn hơn :value kí tự."
+  },
+  "alerts": {
+    "jobs": {
+      "delete": "Bạn có muốn xóa Công việc này?"
+    }
   },
   "table_tool": {
     "filter": {

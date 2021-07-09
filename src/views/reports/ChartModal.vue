@@ -56,9 +56,6 @@ export default {
     CChartPie,
   },
   props: {
-    title: {
-      type: String,
-    },
     showModal: {
       type: Boolean,
     },

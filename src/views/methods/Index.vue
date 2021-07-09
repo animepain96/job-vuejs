@@ -6,13 +6,14 @@
           <CRow :class="['align-items-center']">
             <CCol md="7"><h3 :class="['mb-0']">{{ this.$tc('views.methods.title') }}</h3></CCol>
             <CCol md="5">
-              <CButton v-c-tooltip="this.$tc('buttons.crud.create')"
+              <CButton v-c-tooltip="{content: this.$tc('buttons.crud.create')}"
                        @click="() => {this.isCreate = true; this.cancelEdit();}" :class="['ml-auto', 'float-md-right']"
                        color="success">
                 <CIcon name="cil-plus"></CIcon>
               </CButton>
               <CForm @submit.prevent="createMethod">
                 <CModal
+                    :close-on-backdrop="false"
                     color="primary"
                     :title="this.$tc('views.methods.create.title')"
                     :show.sync="isCreate"
@@ -22,7 +23,7 @@
                       :label="this.$tc('views.methods.table.name')"
                       horizontal
                       :is-valid="this.$v.method.name.$dirty ? !this.$v.method.name.$error : null"
-                      :invalid-feedback="!this.$v.method.name.required ? 'This field is required.' : 'This field required 255 maximum characters.'"
+                      :invalid-feedback="!v.method.name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
                   />
                   <template v-slot:footer>
                     <CButton @click="isCreate = false" color="secondary">{{ tc('buttons.crud.cancel') }}</CButton>
@@ -36,7 +37,7 @@
         <CCardBody>
           <CDataTable
               :sorterValue="sortBy"
-              :responsive=false
+              responsive
               :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
               :itemsPerPageSelect="{ label: tc('table_tool.items_per_page.title')}"
               items-per-page-select
@@ -59,10 +60,10 @@
                     v-model="method.name"
                     v-if="item.id === selected.id && isEdit"
                     :is-valid="v.method.name.$dirty ? !v.method.name.$error : null"
-                    :invalid-feedback="!v.method.name.required ? 'This field is required.' : 'This field required 255 maximum characters.'"
+                    :invalid-feedback="!v.method.name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
                     @keyup="updateMethod"
                 />
-                <CButton v-c-tooltip="tc('buttons.crud.edit')" size="sm" color="secondary" :class="'inline-edit-button'"
+                <CButton v-c-tooltip="{content: tc('buttons.crud.edit')}" size="sm" color="secondary" :class="'inline-edit-button'"
                          @click="() => editMethod(item)"
                          v-show="!(selected.id === item.id && isEdit)">
                   <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
@@ -72,7 +73,7 @@
             <template #action="{item}">
               <td>
                 <CButton
-                    v-c-tooltip="tc('buttons.crud.delete')"
+                    v-c-tooltip="{content: tc('buttons.crud.delete')}"
                     size="sm"
                     color="danger"
                     @click="deleteMethod(item)"
@@ -94,11 +95,6 @@ import {required, maxLength} from 'vuelidate/lib/validators'
 export default {
   data() {
     return {
-      fields: [
-        {key: 'id', label: this.$tc('views.methods.table.id'), _style: "width: 20%;"},
-        {key: 'action', label: this.$tc('views.methods.table.action'), _style: "width: 30%;"},
-        {key: 'name', label: this.$tc('views.methods.table.name'), _style: "width: 50%;"},
-      ],
       sortBy: {
         column: 'id',
         asc: false,
@@ -125,6 +121,13 @@ export default {
     this.$store.dispatch('methods/getList');
   },
   computed: {
+    fields() {
+      return [
+        {key: 'id', label: this.$tc('views.methods.table.id'), _style: "width: 20%;"},
+        {key: 'action', label: this.$tc('views.methods.table.action'), _style: "width: 20%;"},
+        {key: 'name', label: this.$tc('views.methods.table.name'), _style: "width: 60%;"},
+      ];
+    },
     tc() {
       return this.$tc;
     },

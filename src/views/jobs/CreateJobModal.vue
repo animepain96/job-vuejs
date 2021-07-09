@@ -7,7 +7,7 @@
         :show.sync="show"
         size="xl"
     >
-      <CRow :class="'pl-3 pr-3'">
+      <CRow>
         <CCol xl="6">
           <CInput
               v-model.trim="job.name"

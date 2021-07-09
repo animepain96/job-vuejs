@@ -6,13 +6,14 @@
           <CRow :class="['align-items-center']">
             <CCol md="7"><h3 :class="['mb-0']">{{ this.$tc('views.customers.title') }}</h3></CCol>
             <CCol md="5">
-              <CButton v-c-tooltip="this.$tc('buttons.crud.create')" @click="() => {this.isCreate = true; this.cancelEdit(); }"
+              <CButton v-c-tooltip="{content: this.$tc('buttons.crud.create')}" @click="() => {this.isCreate = true; this.cancelEdit(); }"
                        :class="['ml-auto', 'float-md-right']"
                        color="success">
                 <CIcon name="cil-plus"></CIcon>
               </CButton>
               <CForm @submit.prevent="createCustomer">
                 <CModal
+                    :close-on-backdrop="false"
                     color="primary"
                     :title="tc('views.customers.create_customer.title')"
                     :show.sync="isCreate"
@@ -66,7 +67,7 @@
           </CRow>
           <CCustomDataTable
               :sort-by="sortBy"
-              :responsive="true"
+              responsive
               :sorterValue="sortState"
               :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
               :itemsPerPageSelect="{ label: tc('table_tool.items_per_page.title')}"
@@ -91,11 +92,11 @@
                     v-model="customer.name"
                     v-if="item.id === selected.id && isEdit && editField === 'name'"
                     :is-valid="v.customer.name.$dirty ? !v.customer.name.$error : null"
-                    :invalid-feedback="!v.customer.name.required ? 'This field is required.' : 'This field required 255 maximum characters.'"
+                    :invalid-feedback="!v.customer.name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
                     @keyup="updateCustomer"
                 />
                 <CButton
-                    v-c-tooltip="tc('buttons.crud.edit')"
+                    v-c-tooltip="{content: tc('buttons.crud.edit')}"
                     size="sm"
                     color="secondary"
                     :class="'inline-edit-button'"
@@ -115,11 +116,11 @@
                     v-model="customer.note"
                     v-if="item.id === selected.id && isEdit && editField === 'note'"
                     :is-valid="v.customer.note.$dirty ? !v.customer.note.$error : null"
-                    :invalid-feedback="!v.customer.note.required ? 'This field is required.' : 'This field required 10000 maximum characters.'"
+                    :invalid-feedback="tc('validations.max_length').replace(':value', Number(10000).toLocaleString($i18n.locale))"
                     @keyup="updateCustomer"
                 />
                 <CButton
-                    v-c-tooltip="tc('buttons.crud.edit')"
+                    v-c-tooltip="{content: tc('buttons.crud.edit')}"
                     size="sm"
                     color="secondary"
                     :class="'inline-edit-button'"
@@ -132,13 +133,13 @@
             </template>
             <template #unpaid="{item}">
               <td>
-                <span v-text="'$' + item.unpaid.toLocaleString()"></span>
+                <span v-text="'$' + item.unpaid.toLocaleString($i18n.locale)"></span>
               </td>
             </template>
             <template #action="{item}">
               <td>
                 <CButton
-                    v-c-tooltip="tc('buttons.crud.delete')"
+                    v-c-tooltip="{content: tc('buttons.crud.delete')}"
                     size="sm"
                     color="danger"
                     @click="deleteCustomer(item)"
@@ -164,13 +165,6 @@ export default {
   },
   data() {
     return {
-      fields: [
-        {key: 'id', label: this.$tc('views.customers.table.id'), _style: "width: 10%;"},
-        {key: 'action', label: this.$tc('views.customers.table.action'), _style: "width: 10%;"},
-        {key: 'name', label: this.$tc('views.customers.table.name'), _style: "width: 30%;"},
-        {key: 'note', label: this.$tc('views.customers.table.note'), _style: "width: 30%;"},
-        {key: 'unpaid', label: this.$tc('views.customers.table.unpaid'), _style: "width: 20%;"},
-      ],
       customer: {
         name: '',
         note: '',
@@ -186,15 +180,6 @@ export default {
         column: 'id',
         asc: false,
       },
-      sortOptions: [
-        {value: 0, label: this.$tc('views.customers.sort_by.most_recent')},
-        {value: 1, label: this.$tc('views.customers.sort_by.newest')},
-        {value: 2, label: this.$tc('views.customers.sort_by.oldest')},
-      ],
-      unpaidOptions: [
-        {value: 0, label: this.$tc('views.customers.unpaid_list.all')},
-        {value: 1, label: this.$tc('views.customers.unpaid_list.unpaid')},
-      ],
       editField: '',
       unpaidThreshold: 0,
     };
@@ -223,6 +208,28 @@ export default {
         });
   },
   computed: {
+    sortOptions() {
+      return [
+        {value: 0, label: this.$tc('views.customers.sort_by.most_recent')},
+        {value: 1, label: this.$tc('views.customers.sort_by.newest')},
+        {value: 2, label: this.$tc('views.customers.sort_by.oldest')},
+      ];
+    },
+    unpaidOptions() {
+      return [
+        {value: 0, label: this.$tc('views.customers.unpaid_list.all')},
+        {value: 1, label: this.$tc('views.customers.unpaid_list.unpaid')},
+      ];
+    },
+    fields() {
+      return [
+        {key: 'id', label: this.$tc('views.customers.table.id'), _style: "width: 10%;"},
+        {key: 'action', label: this.$tc('views.customers.table.action'), _style: "width: 10%;"},
+        {key: 'name', label: this.$tc('views.customers.table.name'), _style: "width: 30%;"},
+        {key: 'note', label: this.$tc('views.customers.table.note'), _style: "width: 30%;"},
+        {key: 'unpaid', label: this.$tc('views.customers.table.unpaid'), _style: "width: 20%;"},
+      ];
+    },
     tc() {
       return this.$tc;
     },

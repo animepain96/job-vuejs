@@ -14,6 +14,7 @@
       <CIcon name="logo" height="48" alt="Logo"/>
     </CHeaderBrand>
     <CHeaderNav class="d-md-down-none mr-auto">
+      <LanguageChanger />
     </CHeaderNav>
     <CHeaderNav class="mr-4">
       <TheHeaderDropdownAccnt/>
@@ -26,10 +27,12 @@
 
 <script>
 import TheHeaderDropdownAccnt from './TheHeaderDropdownAccnt';
+import LanguageChanger from "@/views/custom/LanguageChanger";
 
 export default {
   name: 'TheHeader',
   components: {
+    LanguageChanger,
     TheHeaderDropdownAccnt,
   },
 }

@@ -30,9 +30,9 @@ export default {
   created() {
     this.$store.dispatch('summary/getAnnualRevenue');
   },
-  data() {
-    return {
-      options: {
+  computed: {
+    options() {
+      return {
         maintainAspectRatio: false,
         title: {
           display: true,
@@ -44,7 +44,7 @@ export default {
         tooltips: {
           callbacks: {
             label: (tooltip,data) => {
-                return data.datasets[tooltip.datasetIndex].label + ': $' + parseInt(tooltip.value).toLocaleString();
+              return data.datasets[tooltip.datasetIndex].label + ': $' + parseInt(tooltip.value).toLocaleString();
             },
           },
         },
@@ -58,16 +58,14 @@ export default {
             },
           }],
         },
-      },
-    };
-  },
-  computed: {
+      };
+    },
     datasets() {
       return [
         {
           labels: this.months,
           data: this.revenues,
-          label: 'Annual Revenue',
+          label: this.$tc('views.chart_report.revenue'),
           backgroundColor: 'rgb(228,102,81,0.9)',
           borderColor: 'rgb(228,102,81)',
         }

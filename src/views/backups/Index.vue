@@ -6,7 +6,8 @@
           <CRow :class="['align-items-center']">
             <CCol md="7"><h3 :class="['mb-0']">{{ tc('views.backups.title') }}</h3></CCol>
             <CCol md="5">
-              <CButton v-c-tooltip="tc('buttons.crud.manual_backup')" @click="manualHandler" :class="['ml-auto', 'float-md-right']"
+              <CButton v-c-tooltip="{content: tc('buttons.crud.manual_backup')}" @click="manualHandler"
+                       :class="['ml-auto', 'float-md-right']"
                        color="success">
                 <CIcon name="cil-plus"></CIcon>
               </CButton>
@@ -16,7 +17,8 @@
         <CCardBody>
           <CRow>
             <CCol md="12" class="mb-2" v-if="currentUser.id !== 1">
-              <span v-text="tc('views.backups.keep_days')" class="font-weight-bold" />: <span class="font-weight-bold text-danger" v-text="keepDays" />
+              <span v-text="tc('views.backups.keep_days')" class="font-weight-bold"/>: <span
+                class="font-weight-bold text-danger" v-text="keepDays"/>
             </CCol>
             <CCol md="3" v-if="currentUser.id === 1">
               <CInput
@@ -24,7 +26,7 @@
                   :label="tc('views.backups.keep_days')"
                   addLabelClasses="font-weight-bold"
                   :is-valid="this.$v.keepDays.$dirty ? !this.$v.keepDays.$error : null"
-                  :invalid-feedback="!this.$v.keepDays.required ? 'This field is required.' : 'This field required numeric value.'"
+                  :invalid-feedback="!this.$v.keepDays.required ? tc('validations.required') : tc('validations.numeric')"
               >
                 <template #append>
                   <CButton @click="updateKeepDays" color="primary" v-text="tc('buttons.crud.save')"/>
@@ -34,7 +36,7 @@
           </CRow>
           <CDataTable
               :sorter-value="sortBy"
-              :responsive="false"
+              responsive
               :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
               :itemsPerPageSelect="{ label: tc('table_tool.items_per_page.title')}"
               items-per-page-select
@@ -83,19 +85,23 @@
             <template #action="{item}">
               <td>
                 <CButtonGroup>
-                  <CButton @click="downloadFile(item.name)" v-c-tooltip="tc('buttons.crud.download')" color="primary" size="sm">
+                  <CButton @click="downloadFile(item.name)" v-c-tooltip="{content: tc('buttons.crud.download')}"
+                           color="primary"
+                           size="sm">
                     <CIcon name="cil-cloud-download"/>
                   </CButton>
-                  <CButton v-if="currentUser.id === 1" @click="deleteItem(item.name)" v-c-tooltip="tc('buttons.crud.delete')" color="danger" size="sm">
+                  <CButton v-if="currentUser.id === 1" @click="deleteItem(item.name)"
+                           v-c-tooltip="{content: tc('buttons.crud.delete')}" color="danger" size="sm">
                     <CIcon name="cil-trash"/>
                   </CButton>
                 </CButtonGroup>
               </td>
             </template>
           </CDataTable>
-          <CButton v-if="multipleDelete && currentUser.id === 1" @click="deleteSelectedItems" class="delete-selected" color="danger" size="lg">
+          <CButton v-if="multipleDelete && currentUser.id === 1" @click="deleteSelectedItems" class="delete-selected"
+                   color="danger" size="lg">
             <CIcon name="cil-trash"/>
-            {{tc('buttons.crud.delete_items')}}
+            {{ tc('buttons.crud.delete_items') }}
           </CButton>
         </CCardBody>
       </CCard>
@@ -109,14 +115,6 @@ import {required, integer, minValue} from 'vuelidate/lib/validators';
 export default {
   data() {
     return {
-      fields: [
-        {key: 'checkbox', _style: 'width: 5%;'},
-        {key: 'name', label: this.$tc('views.backups.table.name'), _style: 'width: 25%;'},
-        {key: 'action', label: this.$tc('views.backups.table.action'), _style: 'width: 15%;'},
-        {key: 'type', label: this.$tc('views.backups.table.type'), _style: 'width: 15%;'},
-        {key: 'modified', label: this.$tc('views.backups.table.modified'), _style: 'width: 20%;'},
-        {key: 'size', label: this.$tc('views.backups.table.size'), _style: 'width: 10%;'},
-      ],
       sortBy: {
         column: 'modified',
         asc: false,
@@ -141,6 +139,16 @@ export default {
         });
   },
   computed: {
+    fields() {
+      return [
+        {key: 'checkbox', _style: 'width: 5%;'},
+        {key: 'name', label: this.$tc('views.backups.table.name'), _style: 'width: 25%;'},
+        {key: 'action', label: this.$tc('views.backups.table.action'), _style: 'width: 15%;'},
+        {key: 'type', label: this.$tc('views.backups.table.type'), _style: 'width: 15%;'},
+        {key: 'modified', label: this.$tc('views.backups.table.modified'), _style: 'width: 20%;'},
+        {key: 'size', label: this.$tc('views.backups.table.size'), _style: 'width: 10%;'},
+      ];
+    },
     tc() {
       return this.$tc;
     },
@@ -213,7 +221,7 @@ export default {
           return result.isConfirmed;
         });
 
-        if(result) {
+        if (result) {
           this.performDelete(new Array(name));
         }
       }
@@ -221,7 +229,12 @@ export default {
     performDelete(items) {
       this.$store.commit('app/setLoading', true);
       this.$store.dispatch('backups/deleteBackup', {name: items}, {root: true})
-          .then(() => this.$store.commit('app/setLoading', false));
+          .then(status => {
+                if (status) {
+                  this.multipleDelete = false
+                }
+              }
+          ).finally(() => this.$store.commit('app/setLoading', false));
     },
     downloadFile(name) {
       this.$store.commit('app/setLoading', true);

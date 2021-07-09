@@ -14,7 +14,7 @@
               addLabelClasses="font-weight-bold"
               :label="tc('views.users.create_user.name')"
               :is-valid="this.$v.user.name.$dirty ? !this.$v.user.name.$error : null"
-              :invalid-feedback="!this.$v.user.name.required ? 'This field is required.' : 'This field require 255 maximum characters.'"
+              :invalid-feedback="!this.$v.user.name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
           />
         </CCol>
         <CCol md="6">
@@ -23,7 +23,7 @@
               addLabelClasses="font-weight-bold"
               :label="tc('views.users.create_user.username')"
               :is-valid="this.$v.user.username.$dirty ? !this.$v.user.username.$error : null"
-              :invalid-feedback="!this.$v.user.username.required ? 'This field is required.' : 'Invalid email address.'"
+              :invalid-feedback="!this.$v.user.username.required ? tc('validations.required') :  tc('validations.max_length').replace(':value', 50)"
           />
         </CCol>
         <CCol md="6">
@@ -32,7 +32,7 @@
               addLabelClasses="font-weight-bold"
               :label="tc('views.users.create_user.email')"
               :is-valid="this.$v.user.email.$dirty ? !this.$v.user.email.$error : null"
-              :invalid-feedback="!this.$v.user.email.required ? 'This field is required.' : 'Invalid email address.'"
+              :invalid-feedback="!this.$v.user.email.required ? tc('validations.required') : tc('validations.email')"
           />
         </CCol>
         <CCol md="6">
@@ -42,7 +42,7 @@
               addLabelClasses="font-weight-bold"
               :label="tc('views.users.create_user.password')"
               :is-valid="this.$v.user.password.$dirty ? !this.$v.user.password.$error : null"
-              :invalid-feedback="!this.$v.user.password.required ? 'This field is required.' : 'This field require 6 minimum characters.'"
+              :invalid-feedback="!this.$v.user.password.required ? tc('validations.required') : tc('validations.min_length').replace(':value', 6)"
           />
         </CCol>
         <CCol md="6">
@@ -52,7 +52,7 @@
               addLabelClasses="font-weight-bold"
               :label="tc('views.users.create_user.confirm_password')"
               :is-valid="this.$v.user.password_confirmation.$dirty ? !this.$v.user.password_confirmation.$error : null"
-              :invalid-feedback="!this.$v.user.password_confirmation.required ? 'This field is required.' : 'Please type password again.'"
+              :invalid-feedback="!this.$v.user.password_confirmation.required ? tc('validations.required') : tc('validations.same')"
           />
         </CCol>
         <CCol md="6">

@@ -14,8 +14,7 @@ const app = {
         unpaidThreshold: 0,
         unpaidCount: 0,
         tableLoading: false,
-        keepDays: 0,
-        lang: 'en',
+        keepDays: 0
     },
     mutations: {
         setTableLoading(state, status) {
@@ -32,9 +31,6 @@ const app = {
         },
         setKeepDays(state, keepDays) {
             state.keepDays = keepDays;
-        },
-        setLang(state, lang) {
-            state.lang = lang;
         }
     },
     actions: {

@@ -159,7 +159,8 @@
         "October",
         "November",
         "December"
-      ]
+      ],
+      "revenue": "Revenue"
     },
     "users": {
       "title": "User Management",
@@ -218,20 +219,38 @@
       "reset_password": "Reset Password",
       "manual_backup": "Manual backup",
       "download": "Download",
-      "delete_items": "Delete selected items"
+      "delete_items": "Delete selected items",
+      "confirm": "Confirm"
     }
   },
   "header": {
     "settings": "Setting",
     "password": "Change Password",
-    "logout": "Logout"
+    "logout": "Logout",
+    "lang": {
+      "title": "EN",
+      "en": "English",
+      "vi": "Vietnamese"
+    }
   },
   "footer": {
     "by": "Designed by"
   },
   "validations": {
-    "required": "Trường nhập liệu này là bắt buộc.",
-    "max_length": "Trường nhập liệu không quá  kí tự."
+    "required": "This field is required.",
+    "max_length": "This field require :value maximum characters.",
+    "min_value": "This field require greater than :value.",
+    "numeric": "This field require numeric value.",
+    "gt": "The field require value greater than :value.",
+    "lt": "The field require value smaller than :value.",
+    "email": "This field require Email address.",
+    "same": "This field require has same value with other.",
+    "min_length": "The field require :value minimum characters."
+  },
+  "alerts": {
+    "jobs": {
+      "delete": "Do you want to delete this job?"
+    }
   },
   "table_tool": {
     "filter": {

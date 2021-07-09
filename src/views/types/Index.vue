@@ -12,6 +12,7 @@
               </CButton>
               <CForm @submit.prevent="createType">
                 <CModal
+                    :close-on-backdrop="false"
                     color="primary"
                     :title="tc('views.types.create_type.title')"
                     :show.sync="isCreate"
@@ -21,7 +22,7 @@
                       :label="tc('views.types.create_type.name')"
                       horizontal
                       :is-valid="this.$v.type.name.$dirty ? !this.$v.type.name.$error : null"
-                      :invalid-feedback="!this.$v.type.name.required ? 'This field is required.' : 'This field required 255 maximum characters.'"
+                      :invalid-feedback="!this.$v.type.name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
                   />
                   <template v-slot:footer>
                     <CButton @click="isCreate = false" color="secondary">{{ tc('buttons.crud.cancel') }}</CButton>
@@ -35,7 +36,7 @@
         <CCardBody>
           <CDataTable
               :sorterValue="sortBy"
-              :responsive=false
+              responsive
               :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
               :itemsPerPageSelect="{ label: tc('table_tool.items_per_page.title')}"
               items-per-page-select
@@ -58,7 +59,7 @@
                     v-model="type.name"
                     v-show="item.id === selected.id && isEdit"
                     :is-valid="v.type.name.$dirty ? !v.type.name.$error : null"
-                    :invalid-feedback="!v.type.name.required ? 'This field is required.' : 'This field required 255 maximum characters.'"
+                    :invalid-feedback="!v.type.name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
                     @keyup="updateType"
                 />
                 <CButton v-c-tooltip="'Edit'" size="sm" color="secondary" :class="'inline-edit-button'"
@@ -95,8 +96,8 @@ export default {
     return {
       fields: [
         {key: 'id', name: 'ID', _style: "width: 20%;"},
-        {key: 'action', _style: "width: 30%;"},
-        {key: 'name', name: 'Name', _style: "width: 50%;"},
+        {key: 'action', _style: "width: 20%;"},
+        {key: 'name', name: 'Name', _style: "width: 60%;"},
       ],
       sortBy: {
         column: 'id',

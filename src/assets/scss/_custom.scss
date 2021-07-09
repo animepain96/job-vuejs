@@ -69,3 +69,13 @@
   vertical-align: middle;
 }
 
+@media (max-width: 768px) {
+  .collapse-block .inline-edit-button {
+    position: relative;
+    right: auto;
+    top: auto;
+    margin-left: 0.8rem;
+    transform: none;
+  }
+}
+
