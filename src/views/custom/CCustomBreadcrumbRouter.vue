@@ -27,7 +27,7 @@ export default {
         const meta = route.meta || {}
         return {
           to: route,
-          text: i18n.tc(meta.label) || i18n.tc(route.name)
+          text: i18n.tc(meta.label) || route.name
         }
       })
     },

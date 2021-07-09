@@ -20,7 +20,7 @@
       <TheHeaderDropdownAccnt/>
     </CHeaderNav>
     <CSubheader class="px-3">
-      <CBreadcrumbRouter class="border-0 mb-0"/>
+      <CCustomBreadcrumbRouter class="border-0 mb-0"/>
     </CSubheader>
   </CHeader>
 </template>
@@ -28,10 +28,12 @@
 <script>
 import TheHeaderDropdownAccnt from './TheHeaderDropdownAccnt';
 import LanguageChanger from "@/views/custom/LanguageChanger";
+import CCustomBreadcrumbRouter from "@/views/custom/CCustomBreadcrumbRouter";
 
 export default {
   name: 'TheHeader',
   components: {
+    CCustomBreadcrumbRouter,
     LanguageChanger,
     TheHeaderDropdownAccnt,
   },

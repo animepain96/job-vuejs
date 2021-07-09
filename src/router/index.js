@@ -57,7 +57,7 @@ function configRoutes() {
             name: 'Home',
             component: TheContainer,
             meta: {
-                //label: 'routes.home'
+                label: 'routes.home'
             },
             children: [
                 {
@@ -66,7 +66,7 @@ function configRoutes() {
                     component: Jobs,
                     meta: {
                         auth: true,
-                        //label: 'routes.jobs',
+                        label: 'routes.jobs',
                     },
                 },
                 {
@@ -84,7 +84,7 @@ function configRoutes() {
                     component: Methods,
                     meta: {
                         auth: true,
-                        //label: 'routes.methods',
+                        label: 'routes.methods',
                     },
                 },
                 {
@@ -93,7 +93,7 @@ function configRoutes() {
                     component: Types,
                     meta: {
                         auth: true,
-                        //label: 'routes.types',
+                        label: 'routes.types',
                     },
                 },
                 {
@@ -102,7 +102,7 @@ function configRoutes() {
                     component: Reports,
                     meta: {
                         auth: true,
-                       //label: 'routes.report',
+                       label: 'routes.report',
                     },
                 },
                 {
@@ -111,7 +111,7 @@ function configRoutes() {
                     component: Charts,
                     meta: {
                         auth: true,
-                        //label: 'routes.chart_report',
+                        label: 'routes.chart_report',
                     },
                 },
                 {
@@ -120,7 +120,7 @@ function configRoutes() {
                     component: Password,
                     meta: {
                         auth: true,
-                        //label: 'routes.password',
+                        label: 'routes.password',
                     },
                 },
                 {
@@ -130,7 +130,7 @@ function configRoutes() {
                     meta: {
                         auth: true,
                         admin: true,
-                        //label: 'routes.users',
+                        label: 'routes.users',
                     },
                 },
                 {
@@ -140,7 +140,7 @@ function configRoutes() {
                     meta: {
                         auth: true,
                         admin: true,
-                        //label: 'routes.backups',
+                        label: 'routes.backups',
                     },
                 },
             ],
@@ -150,7 +150,7 @@ function configRoutes() {
             name: 'Not Found',
             component: NotFound,
             meta: {
-                //label: 'routes.404',
+                label: 'routes.404',
             }
         },
         {
@@ -158,14 +158,14 @@ function configRoutes() {
             name: 'Login',
             component: Login,
             meta: {
-                //label: 'routes.login',
+                label: 'routes.login',
             }
         },
         {
             path: '*',
             redirect: '/',
             meta: {
-                //label: 'routes.home',
+                label: 'routes.home',
             }
         },
     ]
