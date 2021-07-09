@@ -246,7 +246,7 @@ export default {
       this.user[field] = item[field];
     },
     resetPassword(item) {
-      this.$swal.fire({
+      let result = this.$swal.fire({
         title: 'Are you sure to reset password this user?',
         icon: 'warning',
         showCancelButton: true,
@@ -254,12 +254,14 @@ export default {
         cancelButtonColor: '#d33',
         confirmButtonText: 'Confirm'
       }).then((result) => {
-        if (result.isConfirmed) {
-          this.$store.commit('app/setLoading', true);
-          this.$store.dispatch('users/resetPassword', item, {root: true})
-              .then(() => this.$store.commit('app/setLoading', false));
-        }
+        return result.isConfirmed;
       });
+
+      if (result) {
+        this.$store.commit('app/setLoading', true);
+        this.$store.dispatch('users/resetPassword', item, {root: true})
+            .then(() => this.$store.commit('app/setLoading', false));
+      }
     },
     async deleteUser(item) {
       this.cancelEdit();

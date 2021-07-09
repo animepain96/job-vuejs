@@ -2,7 +2,6 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import authHelper from "@/helpers/authHelper";
 import {toastAlert} from "@/helpers/alert";
-import i18n from "@/helpers/i18n";
 
 // Containers
 const TheContainer = () => import('@/containers/TheContainer')
