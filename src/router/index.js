@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import authHelper from "@/helpers/authHelper";
 import {toastAlert} from "@/helpers/alert";
+import i18n from "@/helpers/i18n";
 
 // Containers
 const TheContainer = () => import('@/containers/TheContainer')
@@ -186,7 +187,7 @@ Router.beforeEach(async (to, from, next) => {
                     next({
                         path: '/',
                     });
-                    toastAlert('You do not have permission to view this page.', 'error');
+                    toastAlert(i18n.tc('alerts.auth.permission'), 'error');
                 }
             } else {
                 next();

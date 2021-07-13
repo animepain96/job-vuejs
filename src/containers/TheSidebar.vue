@@ -7,7 +7,7 @@
   >
     <CSidebarBrand class="d-md-down-none" to="/">
       <CImg style="object-fit: cover; object-position: center;" height="56px"
-            :src="require('@/assets/images/bpotech.png')" alt="BPOTech JSC."/>
+            :src="require('@/assets/images/logo-head.png')" alt="BPOTech JSC."/>
     </CSidebarBrand>
 
     <CRenderFunction flat :content-to-render="navData"/>
@@ -116,7 +116,7 @@ export default {
       let unpaidCount = this.$store.state.app.unpaidCount;
 
       return result.map(function (item) {
-        if (item.name === 'Customers') {
+        if (item.to === '/customers') {
           item.badge = {
             text: unpaidCount,
             color: 'danger',
