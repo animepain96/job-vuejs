@@ -1,6 +1,7 @@
 import HTTP, {handleError} from "@/helpers/http";
 import {CHANGE_PASSWORD, GET_USER, POST_LOGIN} from "@/constants/authAPI";
 import {toastAlert} from "@/helpers/alert";
+import i18n from "@/helpers/i18n";
 
 const auth = {
     namespaced: true,
@@ -33,7 +34,7 @@ const auth = {
                     return true;
                 }
 
-                toastAlert('Your username or password is invalid.', 'error');
+                toastAlert(i18n.tc('alerts.auth.invalid'), 'error');
                 return false;
             }).catch(error => handleError(error));
         },
@@ -55,12 +56,12 @@ const auth = {
             return HTTP(true).patch(CHANGE_PASSWORD, payload)
                 .then(response => {
                     if (response.data.status === 'success') {
-                        toastAlert('The password was successfully changed. Please login again.', 'success');
+                        toastAlert(i18n.tc('alerts.auth.password'), 'success');
                         dispatch('logout');
                         return true;
                     }
 
-                    toastAlert('There was an error. Please try again.', 'error');
+                    toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                     return false;
                 }).catch(error => handleError(error));
         }

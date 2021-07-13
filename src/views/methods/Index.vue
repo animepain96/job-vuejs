@@ -19,11 +19,11 @@
                     :show.sync="isCreate"
                 >
                   <CInput
-                      v-model.trim="method.name"
+                      v-model.trim="method.Name"
                       :label="this.$tc('views.methods.table.name')"
                       horizontal
-                      :is-valid="this.$v.method.name.$dirty ? !this.$v.method.name.$error : null"
-                      :invalid-feedback="!v.method.name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
+                      :is-valid="this.$v.method.Name.$dirty ? !this.$v.method.Name.$error : null"
+                      :invalid-feedback="!v.method.Name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
                   />
                   <template v-slot:footer>
                     <CButton @click="isCreate = false" color="secondary">{{ tc('buttons.crud.cancel') }}</CButton>
@@ -52,20 +52,20 @@
               :pagination="{ doubleArrows: false, align: 'center'}"
               @update:sorter-value="(e) => this.sortBy = e"
           >
-            <template #name="{item}">
+            <template #Name="{item}">
               <td :class="'inline-edit-wrap'">
-                <label v-text="item.name" v-show="item.id !== selected.id || !isEdit"></label>
+                <label v-text="item.Name" v-show="item.ID !== selected.ID || !isEdit"></label>
                 <CInput
                     type="text"
-                    v-model="method.name"
-                    v-if="item.id === selected.id && isEdit"
-                    :is-valid="v.method.name.$dirty ? !v.method.name.$error : null"
-                    :invalid-feedback="!v.method.name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
+                    v-model="method.Name"
+                    v-if="item.ID === selected.ID && isEdit"
+                    :is-valid="v.method.Name.$dirty ? !v.method.Name.$error : null"
+                    :invalid-feedback="!v.method.Name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
                     @keyup="updateMethod"
                 />
                 <CButton v-c-tooltip="{content: tc('buttons.crud.edit')}" size="sm" color="secondary" :class="'inline-edit-button'"
                          @click="() => editMethod(item)"
-                         v-show="!(selected.id === item.id && isEdit)">
+                         v-show="!(selected.ID === item.ID && isEdit)">
                   <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
                 </CButton>
               </td>
@@ -96,11 +96,11 @@ export default {
   data() {
     return {
       sortBy: {
-        column: 'id',
+        column: 'ID',
         asc: false,
       },
       method: {
-        name: '',
+        Name: '',
       },
       selected: {},
       isEdit: false,
@@ -111,7 +111,7 @@ export default {
   },
   validations: {
     method: {
-      name: {
+      Name: {
         required,
         maxLength: maxLength(255),
       },
@@ -123,9 +123,9 @@ export default {
   computed: {
     fields() {
       return [
-        {key: 'id', label: this.$tc('views.methods.table.id'), _style: "width: 20%;"},
+        {key: 'ID', label: this.$tc('views.methods.table.id'), _style: "width: 20%;"},
         {key: 'action', label: this.$tc('views.methods.table.action'), _style: "width: 20%;"},
-        {key: 'name', label: this.$tc('views.methods.table.name'), _style: "width: 60%;"},
+        {key: 'Name', label: this.$tc('views.methods.table.name'), _style: "width: 60%;"},
       ];
     },
     tc() {
@@ -142,20 +142,20 @@ export default {
     editMethod(item) {
       this.selected = item;
       this.isEdit = true;
-      this.method.name = item.name;
+      this.method.Name = item.Name;
     },
     updateMethod(e) {
       if (e.keyCode === 13) {
         this.$v.method.$touch();
         if (!this.$v.method.$invalid) {
           this.$store.commit('app/setLoading', true);
-          this.$store.dispatch('methods/update', {id: this.selected.id, name: this.method.name}, {root: true})
+          this.$store.dispatch('methods/update', {ID: this.selected.ID, Name: this.method.Name}, {root: true})
               .then(status => {
                 if (status) {
                   this.isEdit = false;
                   this.$v.method.$reset();
                   this.method = {
-                    name: '',
+                    Name: '',
                   };
                 }
                 this.$store.commit('app/setLoading', false);
@@ -175,7 +175,7 @@ export default {
                 this.isCreate = false;
                 this.$v.method.$reset();
                 this.method = {
-                  name: '',
+                  Name: '',
                 };
               }
               this.$store.commit('app/setLoading', false);
@@ -186,12 +186,13 @@ export default {
       this.cancelEdit();
       this.selected = item;
       let result = await this.$swal.fire({
-        title: 'Are you sure to delete this method?',
+        title: this.$tc('alerts.methods.delete'),
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Confirm'
+        confirmButtonText: this.$tc('buttons.crud.confirm'),
+        cancelButtonText: this.$tc('buttons.crud.cancel')
       }).then((result) => {
         return result.isConfirmed;
       });
@@ -208,7 +209,7 @@ export default {
     cancelEdit() {
       this.isEdit = false;
       this.method = {
-        name: '',
+        Name: '',
       };
       this.editField = '';
       this.$v.method.$reset();

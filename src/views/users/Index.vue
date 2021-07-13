@@ -159,6 +159,9 @@ export default {
       role: {
         required,
       },
+      active: {
+
+      }
     },
   },
   created() {
@@ -245,14 +248,15 @@ export default {
       this.isEdit = true;
       this.user[field] = item[field];
     },
-    resetPassword(item) {
-      let result = this.$swal.fire({
-        title: 'Are you sure to reset password this user?',
+    async resetPassword(item) {
+      let result = await this.$swal.fire({
+        title: this.$tc('alerts.users.password'),
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Confirm'
+        confirmButtonText: this.$tc('buttons.crud.confirm'),
+        cancelButtonText: this.$tc('buttons.crud.cancel')
       }).then((result) => {
         return result.isConfirmed;
       });
@@ -267,12 +271,13 @@ export default {
       this.cancelEdit();
       this.selected = item;
       let result = await this.$swal.fire({
-        title: 'Are you sure to delete this user?',
+        title: this.$tc('alerts.users.delete'),
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Confirm'
+        confirmButtonText: this.$tc('buttons.crud.confirm'),
+        cancelButtonText: this.$tc('buttons.crud.cancel')
       }).then(result => {
         return result.isConfirmed;
       });

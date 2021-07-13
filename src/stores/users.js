@@ -1,6 +1,7 @@
 import HTTP, {handleError} from "@/helpers/http";
 import {CREATE_USER, DELETE_USER, GET_USERS, RESET_PASSWORD, UPDATE_USER} from "@/constants/userAPI";
 import {toastAlert} from "@/helpers/alert";
+import i18n from "@/helpers/i18n";
 
 const users = {
     namespaced: true,
@@ -21,7 +22,7 @@ const users = {
                         return true;
                     }
 
-                    toastAlert('Your email or password is invalid. Please try again.', 'error');
+                    toastAlert(i18n.tc('alerts.auth.invalid'), 'error');
                     return false;
                 }).catch(error => handleError(error));
         },
@@ -33,11 +34,11 @@ const users = {
                         users.push(response.data.data);
                         commit('setUsers', users);
 
-                        toastAlert('The user was created successfully.', 'success');
+                        toastAlert(i18n.tc('alerts.users.success_create'), 'success');
                         return true;
                     }
 
-                    toastAlert('Unable to create user. Please try again.', 'error');
+                    toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                     return false;
                 }).catch(error => {
                     handleError(error);
@@ -56,11 +57,11 @@ const users = {
                         users.splice(users.findIndex((item) => item.id === response.data.data.id), 1);
                         commit('setUsers', users);
 
-                        toastAlert('The user was deleted successfully.', 'success');
+                        toastAlert(i18n.tc('alerts.users.success_delete'), 'success');
                         return true;
                     }
 
-                    toastAlert('Unable to delete user. Please try again.', 'error');
+                    toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                     return false;
                 }).catch(error => handleError(error));
         },
@@ -68,11 +69,11 @@ const users = {
             return HTTP(true).post(RESET_PASSWORD(user.id))
                 .then(response => {
                     if(response.data.status === 'success') {
-                        toastAlert('The user was reset password successfully.', 'success');
+                        toastAlert(i18n.tc('alerts.users.success_password'), 'success');
                         return true;
                     }
 
-                    toastAlert('Unable to reset password for user. Please try again.', 'error');
+                    toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                     return false;
                 }).catch(error => handleError(error));
         },
@@ -92,7 +93,7 @@ const users = {
                         return true;
                     }
 
-                    toastAlert('Unable to update user. Please try again.', 'error');
+                    toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                     return false;
                 }).catch(error => handleError(error));
         },

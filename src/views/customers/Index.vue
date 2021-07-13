@@ -19,11 +19,11 @@
                     :show.sync="isCreate"
                 >
                   <CInput
-                      v-model.trim="customer.name"
+                      v-model.trim="customer.Name"
                       :label="tc('views.customers.create_customer.name')"
                       horizontal
-                      :is-valid="this.$v.customer.name.$dirty ? !this.$v.customer.name.$error : null"
-                      :invalid-feedback="!this.$v.customer.name.required ? 'This field is required.' : 'This field required 255 maximum characters.'"
+                      :is-valid="this.$v.customer.Name.$dirty ? !this.$v.customer.Name.$error : null"
+                      :invalid-feedback="!this.$v.customer.Name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
                   />
                   <template v-slot:footer>
                     <CButton @click="isCreate = false" color="secondary">{{ tc('buttons.crud.cancel') }}</CButton>
@@ -84,15 +84,15 @@
               @update:sorter-value="(e) => this.sortState = e"
           >
 
-            <template #name="{item}">
+            <template #Name="{item}">
               <td :class="'inline-edit-wrap'">
-                <span v-text="item.name" v-show="!(selected.id === item.id && isEdit && editField === 'name')"></span>
+                <span v-text="item.Name" v-show="!(selected.ID === item.ID && isEdit && editField === 'Name')"></span>
                 <CInput
                     type="text"
-                    v-model="customer.name"
-                    v-if="item.id === selected.id && isEdit && editField === 'name'"
-                    :is-valid="v.customer.name.$dirty ? !v.customer.name.$error : null"
-                    :invalid-feedback="!v.customer.name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
+                    v-model="customer.Name"
+                    v-if="item.ID === selected.ID && isEdit && editField === 'Name'"
+                    :is-valid="v.customer.Name.$dirty ? !v.customer.Name.$error : null"
+                    :invalid-feedback="!v.customer.Name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
                     @keyup="updateCustomer"
                 />
                 <CButton
@@ -100,22 +100,22 @@
                     size="sm"
                     color="secondary"
                     :class="'inline-edit-button'"
-                    @click="() => editCustomer(item, 'name')"
-                    v-show="!(selected.id === item.id && isEdit && editField === 'name')"
+                    @click="() => editCustomer(item, 'Name')"
+                    v-show="!(selected.ID === item.ID && isEdit && editField === 'Name')"
                 >
                   <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
                 </CButton>
               </td>
             </template>
-            <template #note="{item}">
+            <template #Note="{item}">
               <td :class="'inline-edit-wrap'">
-                <span v-text="item.note" v-show="!(selected.id === item.id && isEdit && editField === 'note')"></span>
+                <span v-text="item.Note" v-show="!(selected.ID === item.ID && isEdit && editField === 'Note')"></span>
                 <CTextarea
                     rows="4"
                     type="text"
-                    v-model="customer.note"
-                    v-if="item.id === selected.id && isEdit && editField === 'note'"
-                    :is-valid="v.customer.note.$dirty ? !v.customer.note.$error : null"
+                    v-model="customer.Note"
+                    v-if="item.ID === selected.ID && isEdit && editField === 'Note'"
+                    :is-valid="v.customer.Note.$dirty ? !v.customer.Note.$error : null"
                     :invalid-feedback="tc('validations.max_length').replace(':value', Number(10000).toLocaleString($i18n.locale))"
                     @keyup="updateCustomer"
                 />
@@ -124,16 +124,16 @@
                     size="sm"
                     color="secondary"
                     :class="'inline-edit-button'"
-                    @click="() => editCustomer(item, 'note')"
-                    v-show="!(selected.id === item.id && isEdit && editField === 'note')"
+                    @click="() => editCustomer(item, 'Note')"
+                    v-show="!(selected.ID === item.ID && isEdit && editField === 'Note')"
                 >
                   <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
                 </CButton>
               </td>
             </template>
-            <template #unpaid="{item}">
+            <template #Unpaid="{item}">
               <td>
-                <span v-text="'$' + item.unpaid.toLocaleString($i18n.locale)"></span>
+                <span v-text="'$' + item.Unpaid.toLocaleString($i18n.locale)"></span>
               </td>
             </template>
             <template #action="{item}">
@@ -166,18 +166,16 @@ export default {
   data() {
     return {
       customer: {
-        name: '',
-        note: '',
+        Name: '',
+        Note: '',
       },
-      selected: {
-        name: '',
-      },
+      selected: {},
       isEdit: false,
       isCreate: false,
       sortBy: 0,
       unpaid: 0,
       sortState: {
-        column: 'id',
+        column: 'ID',
         asc: false,
       },
       editField: '',
@@ -186,11 +184,11 @@ export default {
   },
   validations: {
     customer: {
-      name: {
+      Name: {
         required,
         maxLength: maxLength(255),
       },
-      note: {
+      Note: {
         maxLength: maxLength(10000),
       },
     },
@@ -223,11 +221,11 @@ export default {
     },
     fields() {
       return [
-        {key: 'id', label: this.$tc('views.customers.table.id'), _style: "width: 10%;"},
+        {key: 'ID', label: this.$tc('views.customers.table.id'), _style: "width: 10%;"},
         {key: 'action', label: this.$tc('views.customers.table.action'), _style: "width: 10%;"},
-        {key: 'name', label: this.$tc('views.customers.table.name'), _style: "width: 30%;"},
-        {key: 'note', label: this.$tc('views.customers.table.note'), _style: "width: 30%;"},
-        {key: 'unpaid', label: this.$tc('views.customers.table.unpaid'), _style: "width: 20%;"},
+        {key: 'Name', label: this.$tc('views.customers.table.name'), _style: "width: 30%;"},
+        {key: 'Note', label: this.$tc('views.customers.table.note'), _style: "width: 30%;"},
+        {key: 'Unpaid', label: this.$tc('views.customers.table.unpaid'), _style: "width: 20%;"},
       ];
     },
     tc() {
@@ -240,9 +238,9 @@ export default {
       let result = this.$store.state.customers.customers;
       result = result.map((customer) => {
         //get unpaid
-        customer.unpaid = customer.jobs.reduce((total, job) => {
-          if (!job.paid) {
-            return total + job.price;
+        customer.Unpaid = customer.jobs.reduce((total, job) => {
+          if (!job.Paid) {
+            return total + job.Price;
           }
           return total + 0;
         }, 0);
@@ -252,7 +250,7 @@ export default {
 
       if (this.unpaid === 1) {
         result = result.filter((customer) => {
-          if (customer.unpaid > this.unpaidThreshold) {
+          if (customer.Unpaid > this.unpaidThreshold) {
             return customer;
           }
         });
@@ -274,7 +272,7 @@ export default {
         if (!this.$v.customer[this.editField].$invalid) {
           this.$store.commit('app/setLoading', true);
           this.$store.dispatch('customers/update', {
-            id: this.selected.id,
+            ID: this.selected.ID,
             field: this.editField,
             value: this.customer[this.editField]
           }, {root: true})
@@ -282,7 +280,7 @@ export default {
                 if (status) {
                   this.isEdit = false;
                   this.$v.customer.$reset();
-                  this.customer.name = '';
+                  this.customer.Name = '';
                   this.editField = '';
                 }
                 this.$store.commit('app/setLoading', false);
@@ -296,12 +294,13 @@ export default {
       this.cancelEdit();
       this.selected = item;
       let result = await this.$swal.fire({
-        title: 'Are you sure to delete this customer?',
+        title: this.$tc('alerts.customers.delete'),
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Confirm'
+        confirmButtonText: this.$tc('buttons.crud.confirm'),
+        cancelButtonText: this.$tc('buttons.crud.cancel')
       }).then(result => {
         return result.isConfirmed;
       });
@@ -324,7 +323,7 @@ export default {
               if (status) {
                 this.isCreate = false;
                 this.customer = {
-                  name: '',
+                  Name: '',
                 };
                 this.$v.customer.$reset();
               }
@@ -335,8 +334,8 @@ export default {
     cancelEdit() {
       this.isEdit = false;
       this.customer = {
-        name: '',
-        note: '',
+        Name: '',
+        Note: '',
       };
       this.editField = '';
       this.$v.customer.$reset();

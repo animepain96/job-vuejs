@@ -16,7 +16,7 @@
       </CCol>
       <CCol xl="6">
         <CDataTable
-            :sorter-value="{column: 'price', asc: false}"
+            :sorter-value="{column: 'Price', asc: false}"
             :responsive="false"
             :itemsPerPageSelect="{ label: tc('table_tool.items_per_page.title')}"
             sorter
@@ -29,14 +29,14 @@
             :active-page="1"
             :pagination="{ doubleArrows: false, align: 'center'}"
         >
-          <template #price="{item}">
+          <template #Price="{item}">
             <td>
-              {{'$' + convertCurrency(item.price)}}
+              {{'$' + convertCurrency(item.Price)}}
             </td>
           </template>
-          <template #price_yen="{item}">
+          <template #PriceYen="{item}">
             <td>
-              {{'¥' + convertCurrency(item.price_yen)}}
+              {{'¥' + convertCurrency(item.PriceYen)}}
             </td>
           </template>
         </CDataTable>
@@ -77,9 +77,9 @@ export default {
     },
     fields() {
       return [
-        {key: 'name', label: this.$tc('views.reports.chart.table.name'), _style: 'width: 40%;'},
-        {key: 'price', label: this.$tc('views.reports.chart.table.price'), _style: 'width: 30%;'},
-        {key: 'price_yen', label: this.$tc('views.reports.chart.table.price_yen'), _style: 'width: 30%;'},
+        {key: 'Name', label: this.$tc('views.reports.chart.table.name'), _style: 'width: 40%;'},
+        {key: 'Price', label: this.$tc('views.reports.chart.table.price'), _style: 'width: 30%;'},
+        {key: 'PriceYen', label: this.$tc('views.reports.chart.table.price_yen'), _style: 'width: 30%;'},
       ];
     },
     show: {
@@ -94,12 +94,12 @@ export default {
       let result = [];
 
       this.data.reduce((res, item) => {
-        if (!res[`${item.customer.id}`]) {
-          res[`${item.customer.id}`] = {id: item.customer.id, name: item.customer.name, price: 0, price_yen: 0};
-          result.push(res[`${item.customer.id}`]);
+        if (!res[`${item.customer.ID}`]) {
+          res[`${item.customer.ID}`] = {ID: item.customer.ID, Name: item.customer.Name, Price: 0, PriceYen: 0};
+          result.push(res[`${item.customer.ID}`]);
         }
-        res[`${item.customer.id}`].price += item.price;
-        res[`${item.customer.id}`].price_yen += item.price_yen;
+        res[`${item.customer.ID}`].Price += item.Price;
+        res[`${item.customer.ID}`].PriceYen += item.PriceYen;
         return res;
       }, {});
 
@@ -109,7 +109,7 @@ export default {
       return [
         {
           data: this.items.map((item) => {
-            return item.price;
+            return item.Price;
           }),
           backgroundColor: this.colors,
         },
@@ -117,7 +117,7 @@ export default {
     },
     labels() {
       return this.items.map((item) => {
-        return item.name;
+        return item.Name;
       });
     },
     options() {
@@ -128,7 +128,7 @@ export default {
           text: this.$tc('views.reports.chart.chart_title'),
         },
         legend: {
-          display: true,
+          display: false,
         },
         tooltips: {
           callbacks: {
@@ -143,7 +143,7 @@ export default {
   methods: {
     convertCurrency(value) {
       if (!isNaN(value)) {
-        return value.toLocaleString();
+        return Number(value).toLocaleString(this.$i18n.locale);
       }
       return 0;
     },

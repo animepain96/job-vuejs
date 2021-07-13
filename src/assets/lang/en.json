@@ -249,7 +249,43 @@
   },
   "alerts": {
     "jobs": {
-      "delete": "Do you want to delete this job?"
+      "delete": "Do you want to delete this job?",
+      "success_delete": "The job was successfully deleted.",
+      "success_create": "The job was successfully created."
+    },
+    "customers": {
+      "delete": "Do you want to delete this customer?",
+      "success_delete": "The customer was successfully deleted.",
+      "success_create": "The customer was successfully created."
+    },
+    "methods": {
+      "delete": "Do you want to delete this method?",
+      "success_delete": "The method was successfully deleted.",
+      "success_create": "The method was successfully created."
+    },
+    "types": {
+      "delete": "Do you want to delete this type?",
+      "success_delete": "The type was successfully deleted.",
+      "success_create": "The type was successfully created."
+    },
+    "backups": {
+      "not_found": "The backup not found.",
+      "success_delete": "The backup was successfully deleted.",
+      "success_create": "The backup was successfully created."
+    },
+    "auth": {
+      "invalid": "Your username or password is invalid",
+      "password": "Your password was successfully changed. Please login to continue."
+    },
+    "users": {
+      "delete": "Do you want to delete this user?",
+      "password": "Do you want to reset password for this user?",
+      "success_delete": "The user was successfully deleted.",
+      "success_create": "The user was successfully created.",
+      "success_password": "The user password was successfully reset."
+    },
+    "app": {
+      "server_error": "There was an error. Please try again."
     }
   },
   "table_tool": {

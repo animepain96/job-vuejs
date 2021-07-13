@@ -1,6 +1,7 @@
 import {ADDITION_LIST, CREATE_JOB, DELETE_JOB, GET_RATE, JOB_LIST, UPDATE_JOB} from "@/constants/jobAPI";
 import {toastAlert} from "@/helpers/alert";
 import HTTP, {handleError} from "@/helpers/http";
+import i18n from "@/helpers/i18n";
 
 const jobs = {
     namespaced: true,
@@ -36,7 +37,7 @@ const jobs = {
                     return true;
                 }
 
-                toastAlert('There was an error. Please try again.', 'error');
+                toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                 return false;
             }).catch(error => handleError(error));
         },
@@ -57,19 +58,19 @@ const jobs = {
                     return true;
                 }
 
-                toastAlert('There was an error. Please try again.', 'error');
+                toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                 return false;
             }).catch(error => handleError(error));
         },
         updateJob({commit, state}, payload) {
-            return HTTP(true).patch(UPDATE_JOB(payload.id), payload.data, {
+            return HTTP(true).patch(UPDATE_JOB(payload.ID), payload.data, {
                 headers: {
                     Accept: 'application/json',
                 }
             }).then(response => {
                 if (response.data.status === 'success') {
                     let jobs = state.jobs.map(job => {
-                        if (job.id === response.data.data.id) {
+                        if (job.ID === response.data.data.ID) {
                             let responseJob = response.data.data;
                             if(job._toggled) {
                                 responseJob._toggled = job._toggled;
@@ -84,7 +85,7 @@ const jobs = {
                     return true;
                 }
 
-                toastAlert('There was an error. Please try again.', 'error');
+                toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                 return false;
             }).catch(error => handleError(error));
         },
@@ -100,30 +101,30 @@ const jobs = {
                     return true;
                 }
 
-                toastAlert('There was an error when get Exchange Rate. Please try again.', 'error');
+                toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                 return false;
             }).catch(error => handleError(error));
         },
         delete({commit, state}, job) {
-            return HTTP(true).delete(DELETE_JOB(job.id), {
+            return HTTP(true).delete(DELETE_JOB(job.ID), {
                 headers: {
                     Accept: 'application/json',
                 }
             }).then(response => {
                 if (response.data.status && response.data.status === 'success') {
                     let jobs = state.jobs.filter((item) => {
-                        if (job.id !== item.id) {
+                        if (job.ID !== item.ID) {
                             return item;
                         }
                     });
 
                     commit('updateList', jobs);
-                    toastAlert('The job was deleted successfully.', 'success');
+                    toastAlert(i18n.tc('alerts.jobs.success_delete'), 'success');
 
                     return true;
                 }
 
-                toastAlert('There was an error. Please try again.', 'error')
+                toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                 return false;
             }).catch(error => handleError(error));
         },
@@ -138,12 +139,12 @@ const jobs = {
                     jobs.push(response.data.data);
 
                     commit('updateList', jobs);
-                    toastAlert('The job was created successfully.', 'success');
+                    toastAlert(i18n.tc('alerts.jobs.success_create'), 'success');
 
                     return true;
                 }
 
-                toastAlert('There was an error. Please try again.', 'error')
+                toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                 return false;
             }).catch(error => handleError(error));
         }

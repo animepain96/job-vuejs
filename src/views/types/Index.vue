@@ -18,11 +18,11 @@
                     :show.sync="isCreate"
                 >
                   <CInput
-                      v-model.trim="type.name"
+                      v-model.trim="type.Name"
                       :label="tc('views.types.create_type.name')"
                       horizontal
-                      :is-valid="this.$v.type.name.$dirty ? !this.$v.type.name.$error : null"
-                      :invalid-feedback="!this.$v.type.name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
+                      :is-valid="this.$v.type.Name.$dirty ? !this.$v.type.Name.$error : null"
+                      :invalid-feedback="!this.$v.type.Name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
                   />
                   <template v-slot:footer>
                     <CButton @click="isCreate = false" color="secondary">{{ tc('buttons.crud.cancel') }}</CButton>
@@ -51,20 +51,20 @@
               :pagination="{ doubleArrows: false, align: 'center'}"
               @update:sorter-value="(e) => this.sortBy = e"
           >
-            <template #name="{item}">
+            <template #Name="{item}">
               <td :class="'inline-edit-wrap'">
-                <label v-text="item.name" v-show="item.id !== selected.id || !isEdit"></label>
+                <label v-text="item.Name" v-show="item.ID !== selected.ID || !isEdit"></label>
                 <CInput
                     type="text"
-                    v-model="type.name"
-                    v-show="item.id === selected.id && isEdit"
-                    :is-valid="v.type.name.$dirty ? !v.type.name.$error : null"
-                    :invalid-feedback="!v.type.name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
+                    v-model="type.Name"
+                    v-show="item.ID === selected.ID && isEdit"
+                    :is-valid="v.type.Name.$dirty ? !v.type.Name.$error : null"
+                    :invalid-feedback="!v.type.Name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
                     @keyup="updateType"
                 />
                 <CButton v-c-tooltip="'Edit'" size="sm" color="secondary" :class="'inline-edit-button'"
                          @click="() => editType(item)"
-                         v-show="!(selected.id === item.id && isEdit)">
+                         v-show="!(selected.ID === item.ID && isEdit)">
                   <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
                 </CButton>
               </td>
@@ -94,17 +94,12 @@ import {required, maxLength} from 'vuelidate/lib/validators';
 export default {
   data() {
     return {
-      fields: [
-        {key: 'id', name: 'ID', _style: "width: 20%;"},
-        {key: 'action', _style: "width: 20%;"},
-        {key: 'name', name: 'Name', _style: "width: 60%;"},
-      ],
       sortBy: {
-        column: 'id',
+        column: 'ID',
         asc: false,
       },
       type: {
-        name: '',
+        Name: '',
       },
       selected: {},
       isEdit: false,
@@ -114,7 +109,7 @@ export default {
   },
   validations: {
     type: {
-      name: {
+      Name: {
         required,
         maxLength: maxLength(255),
       },
@@ -124,6 +119,13 @@ export default {
     this.$store.dispatch('types/getList');
   },
   computed: {
+    fields() {
+      return [
+        {key: 'ID', label: this.$tc('views.types.table.id'), _style: "width: 20%;"},
+        {key: 'action', label: this.$tc('views.types.table.action'), _style: "width: 20%;"},
+        {key: 'Name', label: this.$tc('views.types.table.name'), _style: "width: 60%;"},
+      ];
+    },
     tc() {
       return this.$tc;
     },
@@ -138,19 +140,19 @@ export default {
     editType(item) {
       this.selected = item;
       this.isEdit = true;
-      this.type.name = item.name;
+      this.type.Name = item.Name;
     },
     updateType(e) {
       if(e.keyCode === 13) {
         this.$v.type.$touch();
         if (!this.$v.type.$invalid) {
           this.$store.commit('app/setLoading', true);
-          this.$store.dispatch('types/update', {id: this.selected.id, name: this.type.name}, {root: true})
+          this.$store.dispatch('types/update', {ID: this.selected.ID, Name: this.type.Name}, {root: true})
               .then(status => {
                 if (status) {
                   this.isEdit = false;
                   this.type = {
-                    name: '',
+                    Name: '',
                   };
                   this.$v.type.$reset();
                 }
@@ -170,7 +172,7 @@ export default {
               if (status) {
                 this.isCreate = false;
                 this.type = {
-                  name: '',
+                  Name: '',
                 };
                 this.$v.type.$reset();
               }
@@ -182,12 +184,13 @@ export default {
       this.cancelEdit();
       this.selected = item;
       let result = await this.$swal.fire({
-        title: 'Are you sure to delete this type?',
+        title: this.$tc('alerts.types.delete'),
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Confirm'
+        confirmButtonText: this.$tc('buttons.crud.confirm'),
+        cancelButtonText: this.$tc('buttons.crud.cancel'),
       }).then((result) => {
         return result.isConfirmed;
       });
@@ -205,7 +208,7 @@ export default {
     },
     cancelEdit() {
       this.isEdit = false;
-      this.type.name = '';
+      this.type.Name = '';
       this.editField = '';
       this.$v.type.$reset();
     },

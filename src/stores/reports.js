@@ -3,6 +3,7 @@ import {GET_REPORT} from "@/constants/reportAPI";
 import {toastAlert} from "@/helpers/alert";
 import {DELETE_JOB, UPDATE_JOB} from "@/constants/jobAPI";
 import moment from "moment";
+import i18n from "@/helpers/i18n";
 
 const now = new Date();
 
@@ -56,14 +57,14 @@ const reports = {
             }).catch(error => handleError(error));
         },
         updateJob({commit, state}, payload) {
-            return HTTP(true).patch(UPDATE_JOB(payload.id), payload.data, {
+            return HTTP(true).patch(UPDATE_JOB(payload.ID), payload.data, {
                 headers: {
                     Accept: 'application/json',
                 }
             }).then(response => {
                 if (response.data.status === 'success') {
                     let jobs = state.jobs.map(job => {
-                        if (job.id === response.data.data.id) {
+                        if (job.ID === response.data.data.ID) {
                             let responseJob = response.data.data;
                             if(job._toggled) {
                                 responseJob._toggled = job._toggled;
@@ -78,30 +79,30 @@ const reports = {
                     return true;
                 }
 
-                toastAlert('There was an error. Please try again.', 'error');
+                toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                 return false;
             }).catch(error => handleError(error));
         },
         delete({commit, state}, job) {
-            return HTTP(true).delete(DELETE_JOB(job.id), {
+            return HTTP(true).delete(DELETE_JOB(job.ID), {
                 headers: {
                     Accept: 'application/json',
                 }
             }).then(response => {
                 if (response.data.status && response.data.status === 'success') {
                     let jobs = state.jobs.filter((item) => {
-                        if (job.id !== item.id) {
+                        if (job.ID !== item.ID) {
                             return item;
                         }
                     });
 
                     commit('updateList', jobs);
-                    toastAlert('The job was deleted successfully.', 'success');
+                    toastAlert(i18n.tc('alerts.jobs.success_delete'), 'success');
 
                     return true;
                 }
 
-                toastAlert('There was an error. Please try again.', 'error')
+                toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                 return false;
             }).catch(error => handleError(error));
         },

@@ -1,6 +1,7 @@
 import HTTP, {handleError} from "@/helpers/http";
 import {DELETE_METHOD, METHOD_LIST, UPDATE_METHOD, CREATE_METHOD} from "@/constants/methodAPI";
 import {toastAlert} from "@/helpers/alert";
+import i18n from "@/helpers/i18n";
 
 const methods = {
     namespaced: true,
@@ -24,8 +25,8 @@ const methods = {
             }).catch(error => handleError(error));
         },
         update({commit, state}, payload){
-            return HTTP(true).patch(UPDATE_METHOD(payload.id), {
-                name: payload.name,
+            return HTTP(true).patch(UPDATE_METHOD(payload.ID), {
+                Name: payload.Name,
             }, {
                 headers: {
                     Accept: 'application/json',
@@ -33,48 +34,47 @@ const methods = {
             }).then(response => {
                 if (response.data.status && response.data.status === 'success') {
                     let methods = state.methods.map((method) => {
-                        if (method.id === response.data.data.id) {
+                        if (method.ID === response.data.data.ID) {
                             return response.data.data;
                         }
                         return method;
                     });
 
                     commit('updateList', methods);
-                    toastAlert('The method was updated successfully.', 'success')
 
                     return true;
                 }
 
-                toastAlert('There was an error. Please try again.', 'error');
+                toastAlert(i18n.tc('alerts.app.server_error'), 'error')
                 return false;
             }).catch(error => handleError(error));
         },
         delete({commit, state}, method) {
-            return HTTP(true).delete(DELETE_METHOD(method.id), {
+            return HTTP(true).delete(DELETE_METHOD(method.ID), {
                 headers: {
                     Accept: 'application/json',
                 }
             }).then(response => {
                 if (response.data.status && response.data.status === 'success') {
                     let methods = state.methods.filter((item) => {
-                        if (method.id !== item.id) {
+                        if (method.ID !== item.ID) {
                             return item;
                         }
                     });
 
                     commit('updateList', methods);
-                    toastAlert('The method was deleted successfully.', 'success');
+                    toastAlert(i18n.tc('alerts.methods.success_delete'), 'success');
 
                     return true;
                 }
 
-                toastAlert('There was an error. Please try again.', 'error')
+                toastAlert(i18n.tc('alerts.app.server_error'), 'error')
                 return false;
             }).catch(error => handleError(error));
         },
         create({commit, state}, method) {
             return HTTP(true).post(CREATE_METHOD, {
-                name: method.name,
+                Name: method.Name,
             }, {
                 headers: {
                     Accept: 'application/json',
@@ -85,10 +85,11 @@ const methods = {
                     methods.push(response.data.data);
 
                     commit('updateList', methods);
-                    toastAlert('The method was created successfully.', 'success');
+                    toastAlert(i18n.tc('alerts.methods.success_create'), 'success');
+
                     return true;
                 }
-                toastAlert('There was an error. Please try again.', 'error');
+                toastAlert(i18n.tc('alerts.app.server_error'), 'error')
                 return false;
             }).catch(error => handleError(error));
         },

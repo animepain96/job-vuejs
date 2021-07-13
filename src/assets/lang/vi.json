@@ -249,8 +249,45 @@
   },
   "alerts": {
     "jobs": {
-      "delete": "Bạn có muốn xóa Công việc này?"
+      "delete": "Bạn có muốn xóa Công việc này?",
+      "success_delete": "Xóa Công việc thành công.",
+      "success_create": "Thêm Công việc thành công."
+    },
+    "customers": {
+      "delete": "Bạn có muốn xóa Khách hàng này?",
+      "success_delete": "Xóa Khách hàng thành công.",
+      "success_create": "Thêm Khách hàng thành công."
+    },
+    "methods": {
+      "delete": "Bạn có muốn xóa Phương thức này?",
+      "success_delete": "Xóa Phương thức thành công.",
+      "success_create": "Thêm Phương thức thành công."
+    },
+    "types": {
+      "delete": "Bạn có muốn xóa Phân loại này?",
+      "success_delete": "Xóa Phân loại thành công.",
+      "success_create": "Thêm Phân loại thành công."
+    },
+    "backups": {
+      "not_found": "Sao lưu không tồn tại.",
+      "success_delete": "Xóa Sao lưu thành công.",
+      "success_create": "Tạo mới Sao lưu thủ công thành công."
+    },
+    "auth": {
+      "invalid": "Tài khoản hoặc mật khẩu không chính xác.",
+      "password": "Thay đổi mật khẩu thành công. Vui lòng đăng nhập để tiếp tục."
+    },
+    "users": {
+      "delete": "Bạn có muốn xóa Người dùng này?",
+      "password": "Bạn có muốn khôi phục mật khẩu cho Người dùng này?",
+      "success_delete": "Xóa Người dùng thành công.",
+      "success_create": "Thêm Người dùng thành công.",
+      "success_password": "Khôi phục mật khẩu cho người dùng thành công."
+    },
+    "app": {
+      "server_error": "Có lỗi xảy ra. Vui lòng thử lại sau."
     }
+
   },
   "table_tool": {
     "filter": {

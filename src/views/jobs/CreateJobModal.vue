@@ -10,52 +10,52 @@
       <CRow>
         <CCol xl="6">
           <CInput
-              v-model.trim="job.name"
+              v-model.trim="job.Name"
               :addLabelClasses="'font-weight-bold'"
               :label="tc('views.jobs.create_job.name')"
-              :is-valid="this.$v.job.name.$dirty ? !this.$v.job.name.$error : null"
-              :invalid-feedback="!this.$v.job.name.required ? 'This field is required.' : 'This field is require 255 maximum characters.'"
+              :is-valid="this.$v.job.Name.$dirty ? !this.$v.job.Name.$error : null"
+              :invalid-feedback="!this.$v.job.Name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
           />
         </CCol>
         <CCol xl="6">
           <CSelect
-              :value.sync="job.customer"
+              :value.sync="job.Customer"
               :options="[{value: ' ', label: ' ', disabled: true}].concat(customers)"
               :addLabelClasses="'font-weight-bold'"
               :label="tc('views.jobs.create_job.customer')"
-              :is-valid="this.$v.job.customer.$dirty ? !this.$v.job.customer.$error : null"
-              invalid-feedback="This field is required."
+              :is-valid="this.$v.job.Customer.$dirty ? !this.$v.job.Customer.$error : null"
+              :invalid-feedback="tc('validations.required')"
           />
         </CCol>
         <CCol xl="6">
           <CSelect
-              :value.sync="job.method"
+              :value.sync="job.Method"
               :options="[{value: ' ', label: ' ', disabled: true}].concat(methods)"
               :addLabelClasses="'font-weight-bold'"
               :label="this.$tc('views.jobs.create_job.method')"
-              :is-valid="this.$v.job.method.$dirty ? !this.$v.job.method.$error : null"
-              invalid-feedback="This field is required."
+              :is-valid="this.$v.job.Method.$dirty ? !this.$v.job.Method.$error : null"
+              :invalid-feedback="tc('validations.required')"
           />
         </CCol>
         <CCol xl="6">
           <CSelect
-              :value.sync="job.type"
+              :value.sync="job.Type"
               :options="[{value: ' ', label: ' ', disabled: true}].concat(types)"
               :addLabelClasses="'font-weight-bold'"
               :label="tc('views.jobs.create_job.type')"
-              :is-valid="this.$v.job.type.$dirty ? !this.$v.job.type.$error : null"
-              invalid-feedback="This field is required."
+              :is-valid="this.$v.job.Type.$dirty ? !this.$v.job.Type.$error : null"
+              :invalid-feedback="tc('validations.required')"
           />
         </CCol>
         <CCol xl="6">
           <div :class="'form-group'">
             <label :class="'font-weight-bold'" v-text="this.$tc('views.jobs.create_job.start_date')"/>
-            <DatePicker :class="{'is-invalid': this.$v.job.start_date.$error && this.$v.job.start_date.$dirty}"
-                        :input-class="{'is-invalid': this.$v.job.start_date.$error && this.$v.job.start_date.$dirty, 'form-control': true, 'is-valid': !this.$v.job.start_date.$error && this.$v.job.start_date.$dirty}"
-                        v-model="job.start_date" type="date" format="DD-MM-YYYY"/>
-            <div :class="'invalid-feedback'" v-if="this.$v.job.start_date.$error && this.$v.job.start_date.$dirty">
+            <DatePicker :class="{'is-invalid': this.$v.job.StartDate.$error && this.$v.job.StartDate.$dirty}"
+                        :input-class="{'is-invalid': this.$v.job.StartDate.$error && this.$v.job.StartDate.$dirty, 'form-control': true, 'is-valid': !this.$v.job.StartDate.$error && this.$v.job.StartDate.$dirty}"
+                        v-model="job.StartDate" type="date" format="DD-MM-YYYY"/>
+            <div :class="'invalid-feedback'" v-if="this.$v.job.StartDate.$error && this.$v.job.StartDate.$dirty">
               {{
-                !this.$v.job.start_date.required ? 'This field is required.' : 'This field require value less than Finish date.'
+                tc('validations.required')
               }}
             </div>
           </div>
@@ -63,12 +63,12 @@
         <CCol xl="6">
           <div :class="'form-group'">
             <label :class="'font-weight-bold'" v-text="tc('views.jobs.create_job.finish_date')"/>
-            <DatePicker :class="{'is-invalid': this.$v.job.finish_date.$error && this.$v.job.finish_date.$dirty}"
-                        :input-class="{'is-invalid': this.$v.job.finish_date.$error && this.$v.job.finish_date.$dirty, 'form-control': true, 'is-valid': !this.$v.job.finish_date.$error && this.$v.job.finish_date.$dirty}"
-                        v-model="job.finish_date" type="date" format="DD-MM-YYYY"/>
-            <div :class="'invalid-feedback'" v-if="this.$v.job.finish_date.$error && this.$v.job.finish_date.$dirty">
+            <DatePicker :class="{'is-invalid': this.$v.job.FinishDate.$error && this.$v.job.FinishDate.$dirty}"
+                        :input-class="{'is-invalid': this.$v.job.FinishDate.$error && this.$v.job.FinishDate.$dirty, 'form-control': true, 'is-valid': !this.$v.job.FinishDate.$error && this.$v.job.FinishDate.$dirty}"
+                        v-model="job.FinishDate" type="date" format="DD-MM-YYYY"/>
+            <div :class="'invalid-feedback'" v-if="this.$v.job.FinishDate.$error && this.$v.job.FinishDate.$dirty">
               {{
-                !this.$v.job.finish_date.required ? 'This field is required.' : 'This field require value greater than Start date.'
+                tc('validations.required')
               }}
             </div>
           </div>
@@ -82,7 +82,7 @@
                     :disabled="true"
                     :addLabelClasses="'font-weight-bold'"
                     :label="this.$tc('views.jobs.create_job.price')"
-                    v-model="job.price"
+                    v-model="job.Price"
                 />
               </CCol>
               <CCol xl="6">
@@ -90,10 +90,10 @@
                     type="number"
                     :addLabelClasses="'font-weight-bold'"
                     :label="tc('views.jobs.create_job.price_yen')"
-                    v-model="job.price_yen"
+                    v-model="job.PriceYen"
                     @input="(value) => updatePrice(value)"
-                    :is-valid="this.$v.job.price_yen.$dirty ? !this.$v.job.price_yen.$error : null"
-                    :invalid-feedback="!this.$v.job.price_yen.required ? 'This field is required.' : 'This field is require numeric value.'"
+                    :is-valid="this.$v.job.PriceYen.$dirty ? !this.$v.job.PriceYen.$error : null"
+                    :invalid-feedback="!this.$v.job.PriceYen.required ? tc('validations.required') : tc('validations.numeric')"
                 />
               </CCol>
               <CCol xl="12">
@@ -107,10 +107,12 @@
         </CCol>
         <CCol xl="6">
           <CTextarea
-              v-model="job.note"
+              v-model="job.Note"
               :rows="4"
               :addLabelClasses="'font-weight-bold'"
               label="Note"
+              :is-valid="this.$v.job.Note.$dirty ? !this.$v.job.Note.$error : null"
+              :invalid-feedback="tc('validations.max_length').replace(':value', Number(10000).toLocaleString())"
           />
         </CCol>
       </CRow>
@@ -124,10 +126,7 @@
 
 <script>
 import DatePicker from "vue2-datepicker";
-import {required, integer, minValue} from 'vuelidate/lib/validators';
-
-const date_gt = (value, vm) => value >= vm.start_date;
-const date_lt = (value, vm) => value <= vm.finish_date;
+import {required, integer, minValue, maxLength} from 'vuelidate/lib/validators';
 
 export default {
   components: {
@@ -143,55 +142,56 @@ export default {
   data() {
     return {
       job: {
-        name: '',
-        customer: ' ',
-        method: ' ',
-        type: ' ',
-        start_date: new Date(),
-        finish_date: new Date(),
-        price_yen: '',
-        price: '',
-        note: '',
+        Name: '',
+        Customer: ' ',
+        Method: ' ',
+        Type: ' ',
+        StartDate: new Date(),
+        FinishDate: new Date(),
+        PriceYen: '',
+        Price: '',
+        Note: '',
       },
       initialValue: {
-        name: '',
-        customer: ' ',
-        method: ' ',
-        type: ' ',
-        start_date: new Date(),
-        finish_date: new Date(),
-        price_yen: '',
-        price: '',
-        note: '',
+        Name: '',
+        Customer: ' ',
+        Method: ' ',
+        Type: ' ',
+        StartDate: new Date(),
+        FinishDate: new Date(),
+        PriceYen: '',
+        Price: '',
+        Note: '',
       },
     };
   },
   validations: {
     job: {
-      name: {
+      Name: {
         required,
       },
-      customer: {
+      Customer: {
         required,
       },
-      method: {
+      Method: {
         required,
       },
-      type: {
+      Type: {
         required,
       },
-      start_date: {
+      StartDate: {
         required,
-        date_lt,
       },
-      finish_date: {
+      FinishDate: {
         required,
-        date_gt,
       },
-      price_yen: {
+      PriceYen: {
         required,
         integer,
         minValue: minValue(1),
+      },
+      Note: {
+        maxLength: maxLength(10000),
       },
     },
   },
@@ -211,7 +211,7 @@ export default {
   methods: {
     updatePrice(priceYen) {
       if (!isNaN(priceYen)) {
-        this.job.price = Math.round((1 / this.rate) * this.job.price_yen);
+        this.job.Price = Math.round((1 / this.rate) * this.job.PriceYen);
       }
       return 0;
     },
@@ -224,6 +224,7 @@ export default {
               if (result) {
                 this.resetInitialValues();
                 this.$v.$reset();
+                this.show = false;
               }
               this.$store.commit('app/setLoading', false)
             });

@@ -1,6 +1,7 @@
 import HTTP, {handleError} from "@/helpers/http";
 import {DELETE_BACKUP, DOWNLOAD_BACKUP, GET_BACKUP, MANUAL_BACKUP} from "@/constants/backupsAPI";
 import {toastAlert} from "@/helpers/alert";
+import i18n from "@/helpers/i18n";
 
 const backups = {
     namespaced: true,
@@ -21,7 +22,7 @@ const backups = {
                         return true;
                     }
 
-                    toastAlert('There was an error. Please try again.', 'error');
+                    toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                     return false;
                 })
                 .catch(error => handleError(error));
@@ -32,11 +33,11 @@ const backups = {
                     if (response.data.status === 'success') {
                         dispatch('getBackups');
 
-                        toastAlert('The backup was created successfully.', 'success');
+                        toastAlert(i18n.tc('alerts.backups.success_create'), 'success');
                         return true;
                     }
 
-                    toastAlert('There was an error. Please try again.', 'error');
+                    toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                     return false;
                 })
                 .catch(error => handleError(error));
@@ -50,11 +51,11 @@ const backups = {
                         });
                         commit('setBackups', stateBackups);
 
-                        toastAlert('The selected items was deleted successfully.', 'success');
+                        toastAlert(i18n.tc('alerts.backups.success_delete'), 'success');
                         return true;
                     }
 
-                    toastAlert('There was an error. Please try again.', 'error');
+                    toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                     return false;
                 }).catch(error => handleError(error));
         },
@@ -77,7 +78,7 @@ const backups = {
                         return true;
                     }
 
-                    toastAlert('The request backup could not be found.', 'error');
+                    toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                     return false;
                 }).catch(error => handleError(error));
         },

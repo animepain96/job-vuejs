@@ -1,6 +1,7 @@
 import HTTP, {handleError} from "@/helpers/http";
 import {TYPE_LIST, UPDATE_TYPE, DELETE_TYPE, CREATE_TYPE} from "@/constants/typeAPI";
 import {toastAlert} from "@/helpers/alert";
+import i18n from "@/helpers/i18n";
 
 const types = {
     namespaced: true,
@@ -24,13 +25,12 @@ const types = {
                     return true;
                 }
 
-                toastAlert('There was an error. Please try again.', 'error');
                 return false;
             }).catch(error => handleError(error));
         },
         update({commit, state}, payload){
-            return HTTP(true).patch(UPDATE_TYPE(payload.id), {
-                name: payload.name,
+            return HTTP(true).patch(UPDATE_TYPE(payload.ID), {
+                Name: payload.Name,
             }, {
                 headers: {
                     Accept: 'application/json',
@@ -38,48 +38,47 @@ const types = {
             }).then(response => {
                 if (response.data.status && response.data.status === 'success') {
                     let types = state.types.map((type) => {
-                        if (type.id === response.data.data.id) {
+                        if (type.ID === response.data.data.ID) {
                             return response.data.data;
                         }
                         return type;
                     });
 
                     commit('updateList', types);
-                    toastAlert('The type was updated successfully.', 'success')
 
                     return true;
                 }
 
-                toastAlert('There was an error. Please try again.', 'error');
+                toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                 return false;
             }).catch(error => handleError(error));
         },
         delete({commit, state}, type) {
-            return HTTP(true).delete(DELETE_TYPE(type.id), {
+            return HTTP(true).delete(DELETE_TYPE(type.ID), {
                 headers: {
                     Accept: 'application/json',
                 }
             }).then(response => {
                 if (response.data.status && response.data.status === 'success') {
                     let types = state.types.filter((item) => {
-                        if (type.id !== item.id) {
+                        if (type.ID !== item.ID) {
                             return item;
                         }
                     });
 
                     commit('updateList', types);
-                    toastAlert('The type was deleted successfully.', 'success');
+                    toastAlert(i18n.tc('alerts.types.success_delete'), 'error');
 
                     return true;
                 }
 
-                toastAlert('There was an error. Please try again.', 'error')
+                toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                 return false;
             }).catch(error => handleError(error));
         },
         create({commit, state}, type) {
             return HTTP(true).post(CREATE_TYPE, {
-                name: type.name,
+                Name: type.Name,
             }, {
                 headers: {
                     Accept: 'application/json',
@@ -90,10 +89,11 @@ const types = {
                     types.push(response.data.data);
 
                     commit('updateList', types);
-                    toastAlert('The type was created successfully.', 'success');
+                    toastAlert(i18n.tc('alerts.types.success_create'), 'error');
+
                     return true;
                 }
-                toastAlert('There was an error. Please try again.', 'error');
+                toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                 return false;
             }).catch(error => handleError(error));
         },

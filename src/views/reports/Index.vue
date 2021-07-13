@@ -74,8 +74,8 @@
             </CCol>
           </CRow>
           <CDataTable
-              :sorter-value="sortBy"
-              responsive
+              :sorterValue="sortBy"
+              :responsive="true"
               :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
               :itemsPerPageSelect="{ label: tc('table_tool.items_per_page.title')}"
               items-per-page-select
@@ -102,103 +102,103 @@
                 </CButton>
               </td>
             </template>
-            <template #name="{item}">
+            <template #Name="{item}">
               <td :class="'inline-edit-wrap'">
-                <span v-text="item.name" v-show="!(selected.id === item.id && isEdit && editField === 'name')"></span>
+                <span v-text="item.Name" v-show="!(selected.ID === item.ID && isEdit && editField === 'Name')"></span>
                 <CInput
-                    v-if="selected.id === item.id && isEdit && editField === 'name'"
+                    v-if="selected.ID === item.ID && isEdit && editField === 'Name'"
                     type="text"
-                    v-model="job.name"
+                    v-model="job.Name"
                     @keyup="(e) => updateJob(e)"
-                    :is-valid="v.job.name.$dirty ? !v.job.name.$error : null"
-                    :invalid-feedback="!v.job.name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
+                    :is-valid="v.job.Name.$dirty ? !v.job.Name.$error : null"
+                    :invalid-feedback="!v.job.Name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
                 />
                 <CButton v-c-tooltip="{content: tc('buttons.crud.edit')}" size="sm" color="secondary"
                          :class="'inline-edit-button'"
-                         @click="() => editJob(item, 'name')"
-                         v-show="!(selected.id === item.id && isEdit && editField === 'name')">
+                         @click="() => editJob(item, 'Name')"
+                         v-show="!(selected.ID === item.ID && isEdit && editField === 'Name')">
                   <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
                 </CButton>
               </td>
             </template>
-            <template #price="{item}">
+            <template #Price="{item}">
               <td :class="'inline-edit-wrap'">
-                <span v-text="'$' + convertCurrency(item.price)"></span>
+                <span v-text="'$' + convertCurrency(item.Price)"></span>
               </td>
             </template>
-            <template #price_yen="{item}">
+            <template #PriceYen="{item}">
               <td :class="'inline-edit-wrap'">
-                <span v-text="'¥' + convertCurrency(item.price_yen)"
-                      v-show="!(selected.id === item.id && isEdit && editField === 'price_yen')"></span>
+                <span v-text="'¥' + convertCurrency(item.PriceYen)"
+                      v-show="!(selected.ID === item.ID && isEdit && editField === 'PriceYen')"></span>
                 <CInput
-                    v-if="selected.id === item.id && isEdit && editField === 'price_yen'"
-                    v-model="job.price_yen"
+                    v-if="selected.ID === item.ID && isEdit && editField === 'PriceYen'"
+                    v-model="job.PriceYen"
                     @keyup="(e) => updateJob(e)"
-                    :is-valid="v.job.price_yen.$dirty ? !v.job.price_yen.$error : null"
-                    :invalid-feedback="!v.job.price_yen.required ? tc('validations.required') : tc('validations.numeric')"
+                    :is-valid="v.job.PriceYen.$dirty ? !v.job.PriceYen.$error : null"
+                    :invalid-feedback="!v.job.PriceYen.required ? tc('validations.required') : tc('validations.numeric')"
                 />
                 <CButton v-c-tooltip="{content: tc('buttons.crud.edit')}" size="sm" color="secondary"
                          :class="'inline-edit-button'"
-                         @click="() => {editJob(item, 'price_yen');}"
-                         v-show="!(selected.id === item.id && isEdit && editField === 'price_yen')">
+                         @click="() => {editJob(item, 'PriceYen');}"
+                         v-show="!(selected.ID === item.ID && isEdit && editField === 'PriceYen')">
                   <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
                 </CButton>
               </td>
             </template>
-            <template #start_date="{item}">
+            <template #StartDate="{item}">
               <td :class="'inline-edit-wrap'">
-                <span v-text="formattedDate(item.start_date)"
-                      v-show="!(selected.id === item.id && isEdit && editField === 'start_date')"></span>
+                <span v-text="formattedDate(item.StartDate)"
+                      v-show="!(selected.ID === item.ID && isEdit && editField === 'StartDate')"></span>
                 <DatePicker
-                    :class="{'is-invalid': v.job.start_date.$error }"
-                    :inputClass="{'is-valid': !v.job.start_date.$error, 'is-invalid': v.job.start_date.$error, 'form-control': true}"
-                    type="date" format="DD-MM-YYYY" v-model="job.start_date"
-                    v-if="selected.id === item.id && isEdit && editField === 'start_date'"
+                    :class="{'is-invalid': v.job.StartDate.$error }"
+                    :inputClass="{'is-valid': !v.job.StartDate.$error, 'is-invalid': v.job.StartDate.$error, 'form-control': true}"
+                    type="date" format="DD-MM-YYYY" v-model="job.StartDate"
+                    v-if="selected.ID === item.ID && isEdit && editField === 'StartDate'"
                     @change="(e) => updateJob(e, true)"
                 />
                 <div class="invalid-feedback"
-                     v-if="selected.id === item.id && v.job.start_date.$error && v.job.start_date.$dirty">
+                     v-if="selected.ID === item.ID && v.job.StartDate.$error && v.job.StartDate.$dirty">
                   {{
                     tc('validations.required')
                   }}
                 </div>
                 <CButton v-c-tooltip="{content: tc('buttons.crud.edit')}" size="sm" color="secondary"
                          :class="'inline-edit-button'"
-                         @click="() => editJob(item, 'start_date')"
-                         v-show="!(selected.id === item.id && isEdit && editField === 'start_date')">
+                         @click="() => editJob(item, 'StartDate')"
+                         v-show="!(selected.ID === item.ID && isEdit && editField === 'StartDate')">
                   <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
                 </CButton>
               </td>
             </template>
-            <template #pay_date="{item}">
+            <template #Paydate="{item}">
               <td :class="'inline-edit-wrap'">
-                <span v-text="formattedDate(item.pay_date)"
-                      v-show="!(selected.id === item.id && isEdit && editField === 'pay_date')"></span>
+                <span v-text="formattedDate(item.Paydate)"
+                      v-show="!(selected.ID === item.ID && isEdit && editField === 'Paydate')"></span>
                 <DatePicker
-                    :class="{'is-invalid': v.job.pay_date.$error }"
-                    :inputClass="{'is-valid': !v.job.pay_date.$error, 'is-invalid': v.job.pay_date.$error, 'form-control': true}"
-                    type="date" format="DD-MM-YYYY" v-model="job.pay_date"
-                    v-if="selected.id === item.id && isEdit && editField === 'pay_date'"
+                    :class="{'is-invalid': v.job.Paydate.$error }"
+                    :inputClass="{'is-valid': !v.job.Paydate.$error, 'is-invalid': v.job.Paydate.$error, 'form-control': true}"
+                    type="date" format="DD-MM-YYYY" v-model="job.Paydate"
+                    v-if="selected.ID === item.ID && isEdit && editField === 'Paydate'"
                     @change="(e) => updateJob(e, true)"
                 />
                 <div class="invalid-feedback"
-                     v-if="selected.id === item.id && v.job.pay_date.$error && v.job.pay_date.$dirty">
+                     v-if="selected.ID === item.ID && v.job.Paydate.$error && v.job.Paydate.$dirty">
                   {{
                     tc('validations.required')
                   }}
                 </div>
                 <CButton v-c-tooltip="{content: tc('buttons.crud.edit')}" size="sm" color="secondary"
                          :class="'inline-edit-button'"
-                         @click="() => editJob(item, 'pay_date')"
-                         v-show="!(selected.id === item.id && isEdit && editField === 'pay_date')">
+                         @click="() => editJob(item, 'Paydate')"
+                         v-show="!(selected.ID === item.ID && isEdit && editField === 'Paydate')">
                   <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
                 </CButton>
               </td>
             </template>
-            <template #paid="{item}">
+            <template #Paid="{item}">
               <td>
-                <CInputCheckbox :checked="item.paid > 0" :custom="true"
-                                @click="(e) => { editJob(item, 'paid'); updateJob(e, true); }"/>
+                <CInputCheckbox :checked="item.Paid > 0" :custom="true"
+                                @click="(e) => { editJob(item, 'Paid'); updateJob(e, true); }"/>
               </td>
             </template>
             <template #show_details="{item, index}">
@@ -226,20 +226,20 @@
                               v-text="tc('views.jobs.table.customer')"/>
                             <CButton v-c-tooltip="{content: tc('buttons.crud.edit')}" size="sm" color="secondary"
                                      :class="'inline-edit-button'"
-                                     @click="() => editJob(item, 'customer')"
-                                     v-show="!(selected.id === item.id && isEdit && editField === 'customer')">
+                                     @click="() => editJob(item, 'Customer')"
+                                     v-show="!(selected.ID === item.ID && isEdit && editField === 'Customer')">
                               <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
                             </CButton>
                           </div>
-                          <span class="mb-3" :style="'display:block;'" v-text="item.customer.name"
-                                v-show="!(selected.id === item.id && isEdit && editField === 'customer')"></span>
+                          <span class="mb-3" :style="'display:block;'" v-text="item.customer.Name"
+                                v-show="!(selected.ID === item.ID && isEdit && editField === 'Customer')"></span>
                           <CSelect
                               :custom="true" :options="customers"
-                              v-if="selected.id === item.id && isEdit && editField === 'customer'"
-                              :value="item.customer_id"
-                              @input="job.customer = $event.target.value"
+                              v-if="selected.ID === item.ID && isEdit && editField === 'Customer'"
+                              :value="item.CustomerID"
+                              @input="job.Customer = $event.target.value"
                               @change="(e) => updateJob(e, true)"
-                              :is-valid="v.job.customer.$dirty ? !v.job.customer.$error : null"
+                              :is-valid="v.job.Customer.$dirty ? !v.job.Customer.$error : null"
                               :invalid-feedback="tc('validations.required')"
                           />
                         </CCol>
@@ -249,20 +249,20 @@
                               v-text="tc('views.jobs.table.type')"/>
                             <CButton v-c-tooltip="{content: tc('buttons.crud.edit')}" size="sm" color="secondary"
                                      :class="'inline-edit-button'"
-                                     @click="() => editJob(item, 'type')"
-                                     v-show="!(selected.id === item.id && isEdit && editField === 'type')">
+                                     @click="() => editJob(item, 'Type')"
+                                     v-show="!(selected.ID === item.ID && isEdit && editField === 'Type')">
                               <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
                             </CButton>
                           </div>
-                          <span class="mb-3" :style="'display:block;'" v-text="item.type.name"
-                                v-show="!(selected.id === item.id && isEdit && editField === 'type')"></span>
+                          <span class="mb-3" :style="'display:block;'" v-text="item.type.Name"
+                                v-show="!(selected.ID === item.ID && isEdit && editField === 'Type')"></span>
                           <CSelect
                               :custom="true" :options="types"
-                              :value="item.type_id"
-                              v-if="selected.id === item.id && isEdit && editField === 'type'"
-                              @input="job.type = $event.target.value"
+                              :value="item.TypeID"
+                              v-if="selected.ID === item.ID && isEdit && editField === 'Type'"
+                              @input="job.Type = $event.target.value"
                               @change="(e) => updateJob(e, true)"
-                              :is-valid="v.job.type.$dirty ? !v.job.type.$error : null"
+                              :is-valid="v.job.Type.$dirty ? !v.job.Type.$error : null"
                               :invalid-feedback="tc('validations.required')"
                           />
                         </CCol>
@@ -272,20 +272,20 @@
                             v-text="tc('views.jobs.table.method')"/>
                             <CButton v-c-tooltip="{content: tc('buttons.crud.edit')}" size="sm" color="secondary"
                                      :class="'inline-edit-button'"
-                                     @click="() => editJob(item, 'method')"
-                                     v-show="!(selected.id === item.id && isEdit && editField === 'method')">
+                                     @click="() => editJob(item, 'Method')"
+                                     v-show="!(selected.ID === item.ID && isEdit && editField === 'Method')">
                               <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
                             </CButton>
                           </div>
-                          <span class="mb-3" :style="'display:block;'" v-text="item.method.name"
-                                v-show="!(selected.id === item.id && isEdit && editField === 'method')"></span>
+                          <span class="mb-3" :style="'display:block;'" v-text="item.method.Name"
+                                v-show="!(selected.ID === item.ID && isEdit && editField === 'Method')"></span>
                           <CSelect
                               :custom="true" :options="methods"
-                              :value="item.method_id"
-                              v-if="selected.id === item.id && isEdit && editField === 'method'"
-                              @input="job.method = $event.target.value"
+                              :value="item.MethodID"
+                              v-if="selected.ID === item.ID && isEdit && editField === 'Method'"
+                              @input="job.Method = $event.target.value"
                               @change="(e) => updateJob(e, true)"
-                              :is-valid="v.job.method.$dirty ? !v.job.method.$error : null"
+                              :is-valid="v.job.Method.$dirty ? !v.job.Method.$error : null"
                               :invalid-feedback="tc('validations.required')"
                           />
                         </CCol>
@@ -296,22 +296,22 @@
                               :class="'font-weight-bold'"/>
                               <CButton v-c-tooltip="{content: tc('buttons.crud.edit')}" size="sm" color="secondary"
                                        :class="'inline-edit-button'"
-                                       @click="() => {editJob(item, 'deadline');}"
-                                       v-show="!(selected.id === item.id && isEdit && editField === 'deadline')">
+                                       @click="() => {editJob(item, 'Deadline');}"
+                                       v-show="!(selected.ID === item.ID && isEdit && editField === 'deadline')">
                                 <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
                               </CButton>
                             </div>
-                            <span class="mb-3" :style="'display:block;'" v-text="formattedDate(item.deadline)"
-                                  v-show="!(selected.id === item.id && isEdit && editField === 'deadline')"></span>
+                            <span class="mb-3" :style="'display:block;'" v-text="formattedDate(item.Deadline)"
+                                  v-show="!(selected.ID === item.ID && isEdit && editField === 'Deadline')"></span>
                             <DatePicker
-                                :class="{'is-invalid': v.job.deadline.$error }"
-                                :inputClass="{'is-valid': !v.job.deadline.$error, 'is-invalid': v.job.deadline.$error, 'form-control': true}"
-                                type="date" format="DD-MM-YYYY" v-model="job.deadline"
-                                v-if="selected.id === item.id && isEdit && editField === 'deadline'"
+                                :class="{'is-invalid': v.job.Deadline.$error }"
+                                :inputClass="{'is-valid': !v.job.Deadline.$error, 'is-invalid': v.job.Deadline.$error, 'form-control': true}"
+                                type="date" format="DD-MM-YYYY" v-model="job.Deadline"
+                                v-if="selected.ID === item.ID && isEdit && editField === 'Deadline'"
                                 @change="(e) => updateJob(e, true)"
                             />
                             <div class="invalid-feedback"
-                                 v-if="selected.id === item.id && v.job.deadline.$error && v.job.deadline.$dirty">
+                                 v-if="selected.ID === item.ID && v.job.Deadline.$error && v.job.Deadline.$dirty">
                               {{
                                 tc('validations.required')
                               }}
@@ -325,21 +325,21 @@
                               :class="'font-weight-bold'"/>
                               <CButton v-c-tooltip="{content: tc('buttons.crud.edit')}" size="sm" color="secondary"
                                        :class="'inline-edit-button'"
-                                       @click="() => {editJob(item, 'finish_date');}"
-                                       v-show="!(selected.id === item.id && isEdit && editField === 'finish_date')">
+                                       @click="() => {editJob(item, 'FinishDate');}"
+                                       v-show="!(selected.ID === item.ID && isEdit && editField === 'FinishDate')">
                                 <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
                               </CButton>
                             </div>
-                            <span class="mb-3" :style="'display:block;'" v-text="formattedDate(item.finish_date)"
-                                  v-show="!(selected.id === item.id && isEdit && editField === 'finish_date')"></span>
+                            <span class="mb-3" :style="'display:block;'" v-text="formattedDate(item.FinishDate)"
+                                  v-show="!(selected.ID === item.ID && isEdit && editField === 'FinishDate')"></span>
                             <DatePicker
-                                :class="{'is-invalid': v.job.finish_date.$error }"
-                                :inputClass="{'is-valid': !v.job.finish_date.$error, 'is-invalid': v.job.finish_date.$error, 'form-control': true}"
-                                type="date" format="DD-MM-YYYY" v-model="job.finish_date"
-                                v-if="selected.id === item.id && isEdit && editField === 'finish_date'"
+                                :class="{'is-invalid': v.job.FinishDate.$error }"
+                                :inputClass="{'is-valid': !v.job.FinishDate.$error, 'is-invalid': v.job.FinishDate.$error, 'form-control': true}"
+                                type="date" format="DD-MM-YYYY" v-model="job.FinishDate"
+                                v-if="selected.ID === item.ID && isEdit && editField === 'FinishDate'"
                                 @change="(e) => updateJob(e, true)"
                             />
-                            <div :class="'invalid-feedback'" v-if="v.job.finish_date.$error && v.job.finish_date.$dirty">
+                            <div :class="'invalid-feedback'" v-if="v.job.FinishDate.$error && v.job.FinishDate.$dirty">
                               {{
                                 tc('validations.required')
                               }}
@@ -353,18 +353,18 @@
                               :class="'font-weight-bold'"/>
                               <CButton v-c-tooltip="{content: tc('buttons.crud.edit')}" size="sm" color="secondary"
                                        :class="'inline-edit-button'"
-                                       @click="() => {editJob(item, 'note');}"
-                                       v-show="!(selected.id === item.id && isEdit && editField === 'note')">
+                                       @click="() => {editJob(item, 'Note');}"
+                                       v-show="!(selected.ID === item.ID && isEdit && editField === 'Note')">
                                 <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
                               </CButton>
                             </div>
-                            <span class="mb-3" :style="'display:block;'" v-text="item.note"
-                                  v-show="!(selected.id === item.id && isEdit && editField === 'note')"></span>
+                            <span class="mb-3" :style="'display:block;'" v-text="item.Note"
+                                  v-show="!(selected.ID === item.ID && isEdit && editField === 'Note')"></span>
                             <CTextarea
-                                v-model="job.note"
-                                v-if="selected.id === item.id && isEdit && editField === 'note'"
+                                v-model="job.Note"
+                                v-if="selected.ID === item.ID && isEdit && editField === 'Note'"
                                 @keyup="(e) => updateJob(e)"
-                                :is-valid="v.job.note.$dirty ? !v.job.note.$error : null"
+                                :is-valid="v.job.Note.$dirty ? !v.job.Note.$error : null"
                                 :invalid-feedback="tc('validations.max_length').replace(':value', Number(10000).toLocaleString())"
                             />
                           </div>
@@ -389,6 +389,7 @@ import ChartModal from "@/views/reports/ChartModal";
 
 import moment from 'moment/src/moment';
 import {integer, maxLength, required} from "vuelidate/lib/validators";
+import {date} from "@/helpers/validate";
 
 export default {
   components: {
@@ -398,20 +399,20 @@ export default {
   data() {
     return {
       sortBy: {
-        column: 'id',
+        column: 'ID',
         asc: false,
       },
       job: {
-        name: '',
-        price_yen: '',
-        start_date: '',
-        pay_date: '',
-        customer: '',
-        type: '',
-        method: '',
-        deadline: '',
-        finish_date: '',
-        note: '',
+        Name: '',
+        PriceYen: '',
+        StartDate: '',
+        Paydate: '',
+        Customer: '',
+        Type: '',
+        Method: '',
+        Deadline: '',
+        FinishDate: '',
+        Note: '',
       },
       selected: {},
       isEdit: false,
@@ -424,36 +425,40 @@ export default {
   },
   validations: {
     job: {
-      name: {
+      Name: {
         required,
         maxLength: maxLength(255),
       },
-      price_yen: {
+      PriceYen: {
         required,
         integer,
       },
-      start_date: {
+      StartDate: {
+        required,
+        date,
+      },
+      Paydate: {
         required,
       },
-      pay_date: {
+      Customer: {
         required,
       },
-      customer: {
+      Type: {
         required,
       },
-      type: {
+      Method: {
         required,
       },
-      method: {
+      Paid: {
+
+      },
+      Deadline: {
         required,
       },
-      deadline: {
+      FinishDate: {
         required,
       },
-      finish_date: {
-        required,
-      },
-      note: {
+      Note: {
         maxLength: maxLength(10000),
       },
     },
@@ -494,15 +499,15 @@ export default {
     },
     fields() {
       return [
-        {key: 'id', label: this.$tc('views.jobs.table.id'), _style: 'width: 5%;'},
-        {key: 'action', label: this.$tc('views.jobs.table.action'), _style: 'width: 7%;'},
-        {key: 'name', label: this.$tc('views.jobs.table.name'), _style: 'width: 15%;'},
-        {key: 'price', label: this.$tc('views.jobs.table.price'), _style: 'width: 15%;'},
-        {key: 'price_yen', label: this.$tc('views.jobs.table.price_yen'), _style: 'width: 15%;'},
-        {key: 'start_date', label: this.$tc('views.jobs.table.start_date'), _style: 'width: 15%;'},
-        {key: 'pay_date', label: this.$tc('views.jobs.table.pay_date'), _style: 'width: 15%;'},
-        {key: 'paid', label: this.$tc('views.jobs.table.paid'), _style: 'width: 8%;'},
-        {key: 'show_details', label: this.$tc('views.jobs.table.details'), _style: 'width: 5%;'},
+        {key: 'ID', label : this.$tc('views.jobs.table.id'), _style: 'width: 5%;'},
+        {key: 'action', label : this.$tc('views.jobs.table.action'), _style: 'width: 7%;'},
+        {key: 'Name', label : this.$tc('views.jobs.table.name'), _style: 'width: 15%;'},
+        {key: 'Price', label : this.$tc('views.jobs.table.price'), _style: 'width: 15%;'},
+        {key: 'PriceYen', label : this.$tc('views.jobs.table.price_yen'), _style: 'width: 15%;'},
+        {key: 'StartDate', label : this.$tc('views.jobs.table.start_date'), _style: 'width: 15%;'},
+        {key: 'Paydate', label : this.$tc('views.jobs.table.pay_date'), _style: 'width: 15%;'},
+        {key: 'Paid', label : this.$tc('views.jobs.table.paid'), _style: 'width: 8%;'},
+        {key: 'show_details', label : this.$tc('views.jobs.table.details'), _style: 'width: 5%;'},
         /*{key: 'customer', name: 'Customer'},
         {key: 'type', name: 'Customer'},
         {key: 'method', name: 'Customer'},
@@ -522,12 +527,12 @@ export default {
     },
     totalRevenueYen() {
       return this.$store.state.reports.jobs.reduce((total, item) => {
-        return total + item.price_yen;
+        return total + item.PriceYen;
       }, 0);
     },
     totalRevenueUSD() {
       return this.$store.state.reports.jobs.reduce((total, item) => {
-        return total + item.price;
+        return total + item.Price;
       }, 0);
     },
     rate() {
@@ -538,17 +543,17 @@ export default {
     },
     customers() {
       return this.$store.state.jobs.customers.map((item) => {
-        return {value: item.id, label: item.name};
+        return {value: item.ID, label: item.Name};
       });
     },
     methods() {
       return this.$store.state.jobs.methods.map((item) => {
-        return {value: item.id, label: item.name};
+        return {value: item.ID, label: item.Name};
       });
     },
     types() {
       return this.$store.state.jobs.types.map((item) => {
-        return {value: item.id, label: item.name};
+        return {value: item.ID, label: item.Name};
       });
     }
   },
@@ -567,14 +572,14 @@ export default {
       }
       return null;
     },
-    editJob(item, field = 'name') {
+    editJob(item, field = 'Name') {
       this.selected = item;
       this.isEdit = true;
       this.editField = field;
-      if (['start_date', 'pay_date', 'deadline', 'finish_date'].includes(field)) {
+      if (['StartDate', 'Paydate', 'Deadline', 'FinishDate'].includes(field)) {
         this.job[field] = new Date(this.selected[field]);
-      } else if (['customer', 'type', 'method'].includes(field)) {
-        this.job[field] = this.selected[field].id;
+      } else if (['Customer', 'Type', 'Method'].includes(field)) {
+        this.job[field] = this.selected[field.toLowerCase()].ID;
       } else {
         this.job[field] = this.selected[field];
       }
@@ -590,22 +595,22 @@ export default {
           if (onChangeUpdate || e.keyCode === 13) {
             this.$store.commit('app/setLoading', true);
             var payload = {
-              id: this.selected.id,
+              ID: this.selected.ID,
               data: {
                 field: this.editField,
                 value: this.job[this.editField],
               }
             };
 
-            if (['start_date', 'pay_date', 'deadline', 'finish_date'].includes(this.editField)) {
+            if (['StartDate', 'Paydate', 'Deadline', 'FinishDate'].includes(this.editField)) {
               payload.data.value = moment(this.job[this.editField]).format('DD-MM-YYYY');
             }
 
-            if (this.editField === 'paid') {
+            if (this.editField === 'Paid') {
               payload.data.value = e.target.checked;
             }
 
-            if (['customer', 'type', 'method'].includes(this.editField)) {
+            if (['Customer', 'Type', 'Method'].includes(this.editField)) {
               payload.data.value = parseInt(this.job[this.editField]);
             }
 
@@ -621,9 +626,27 @@ export default {
         }
       }
     },
+    cancelEdit() {
+      this.isEdit = false;
+      this.editField = '';
+      this.editValue = '';
+      this.job = {
+        Name: '',
+        PriceYen: '',
+        StartDate: '',
+        Paydate: '',
+        Customer: '',
+        Type: '',
+        Method: '',
+        Deadline: '',
+        FinishDate: '',
+        Note: '',
+      };
+    },
     async deleteJob(item) {
       this.cancelEdit();
       this.selected = item;
+
       let result = await this.$swal.fire({
         title: this.$tc('alerts.jobs.delete'),
         icon: 'warning',
@@ -632,7 +655,7 @@ export default {
         cancelButtonColor: '#d33',
         confirmButtonText: this.$tc('buttons.crud.confirm'),
         cancelButtonText: this.$tc('buttons.crud.cancel')
-      }).then((result) => {
+      }).then(result => {
         return result.isConfirmed;
       });
 
@@ -647,33 +670,16 @@ export default {
     },
     convertCurrency(value) {
       if (!isNaN(value)) {
-        return Number(value).toLocaleString(this.$i18n.locale);
+        return value.toLocaleString();
       }
       return 0;
     },
     toggleDetails(job) {
-      this.$set(this.jobs[this.jobs.findIndex(item => item.id === job.id)], '_toggled', !job._toggled);
+      this.$set(this.jobs[this.jobs.findIndex(item => item.ID === job.ID)], '_toggled', !job._toggled);
       this.collapseDuration = 300;
       this.$nextTick(() => {
         this.collapseDuration = 0;
       })
-    },
-    cancelEdit() {
-      this.isEdit = false;
-      this.selected = {};
-      this.editField = '';
-      this.job = {
-        name: '',
-        price_yen: '',
-        start_date: '',
-        pay_date: '',
-        customer: '',
-        type: '',
-        method: '',
-        deadline: '',
-        finish_date: '',
-        note: '',
-      };
     },
   },
 }
