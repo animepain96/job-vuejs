@@ -275,7 +275,10 @@
     },
     "auth": {
       "invalid": "Tài khoản hoặc mật khẩu không chính xác.",
-      "password": "Thay đổi mật khẩu thành công. Vui lòng đăng nhập để tiếp tục."
+      "password": "Thay đổi mật khẩu thành công. Vui lòng đăng nhập để tiếp tục.",
+      "login": "Vui lòng đăng nhập để tiếp tục.",
+      "permission": "Người dùng không đủ quyền để thao tác.",
+      "data_invalid": "Dữ liệu nhập không chính xác."
     },
     "users": {
       "delete": "Bạn có muốn xóa Người dùng này?",

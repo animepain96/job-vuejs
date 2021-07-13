@@ -3,6 +3,7 @@ import env from "../config/env";
 import store from "@/store";
 import router from "@/router/index"
 import {toastAlert} from "@/helpers/alert";
+import i18n from "@/helpers/i18n";
 
 const configs = {
     baseURL: env.API,
@@ -18,22 +19,22 @@ export const handleError = (error) => {
                 if (store.state.auth.token) {
                     store.dispatch('auth/logout');
                     router.push({path: '/login'});
-                    toastAlert('Please login to your account before continue.', 'error');
+                    toastAlert(i18n.tc('alerts.auth.login'), 'error');
                 }
                 break;
             case 403:
                 router.push({path: '/'});
-                toastAlert('You do not have permission to view this page.', 'error');
+                toastAlert(i18n.tc('alerts.auth.permission'), 'error');
                 break;
             case 422:
-                toastAlert('Your data is invalid.', 'error');
+                toastAlert(i18n.tc('alerts.auth.data_invalid'), 'error');
                 break;
             default:
-                toastAlert('There was an error. Please try again.', 'error');
+                toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                 break;
         }
     } else {
-        toastAlert('Server error. Please try again.', 'error');
+        toastAlert(i18n.tc('alerts.app.server_error'), 'error');
     }
 
     return false;
