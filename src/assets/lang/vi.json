@@ -203,6 +203,11 @@
         "manual": "Thủ công",
         "auto": "Tự động"
       }
+    },
+    "page_404": {
+      "oops": "Ối dồi ôi. Bạn đang đi đâu đấy.",
+      "not_found": "Trang bạn yêu cầu không thể tìm thấy.",
+      "back_home": "Quay lại Trang chủ"
     }
   },
   "buttons": {

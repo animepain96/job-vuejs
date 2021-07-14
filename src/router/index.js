@@ -43,7 +43,7 @@ const Backups = () => import('@/views/backups/Index')
 Vue.use(VueRouter)
 
 const Router = new VueRouter({
-    mode: 'hash', // https://router.vuejs.org/api/#mode
+    mode: 'history', // https://router.vuejs.org/api/#mode
     linkActiveClass: 'active',
     scrollBehavior: () => ({y: 0}),
     routes: configRoutes(),
@@ -163,9 +163,9 @@ function configRoutes() {
         },
         {
             path: '*',
-            redirect: '/',
+            redirect: '/404',
             meta: {
-                label: 'routes.home',
+                label: 'routes.404',
             }
         },
     ]
