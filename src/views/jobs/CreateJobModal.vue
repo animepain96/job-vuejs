@@ -50,9 +50,11 @@
         <CCol xl="6">
           <div :class="'form-group'">
             <label :class="'font-weight-bold'" v-text="this.$tc('views.jobs.create_job.start_date')"/>
-            <DatePicker :class="{'is-invalid': this.$v.job.StartDate.$error && this.$v.job.StartDate.$dirty}"
-                        :input-class="{'is-invalid': this.$v.job.StartDate.$error && this.$v.job.StartDate.$dirty, 'form-control': true, 'is-valid': !this.$v.job.StartDate.$error && this.$v.job.StartDate.$dirty}"
-                        v-model="job.StartDate" type="date" format="DD-MM-YYYY"/>
+            <DatePicker
+                :lang="this.$i18n.locale"
+                :class="{'is-invalid': this.$v.job.StartDate.$error && this.$v.job.StartDate.$dirty}"
+                :input-class="{'is-invalid': this.$v.job.StartDate.$error && this.$v.job.StartDate.$dirty, 'form-control': true, 'is-valid': !this.$v.job.StartDate.$error && this.$v.job.StartDate.$dirty}"
+                v-model="job.StartDate" type="date" format="YYYY-MM-DD"/>
             <div :class="'invalid-feedback'" v-if="this.$v.job.StartDate.$error && this.$v.job.StartDate.$dirty">
               {{
                 tc('validations.required')
@@ -63,9 +65,11 @@
         <CCol xl="6">
           <div :class="'form-group'">
             <label :class="'font-weight-bold'" v-text="tc('views.jobs.create_job.finish_date')"/>
-            <DatePicker :class="{'is-invalid': this.$v.job.FinishDate.$error && this.$v.job.FinishDate.$dirty}"
-                        :input-class="{'is-invalid': this.$v.job.FinishDate.$error && this.$v.job.FinishDate.$dirty, 'form-control': true, 'is-valid': !this.$v.job.FinishDate.$error && this.$v.job.FinishDate.$dirty}"
-                        v-model="job.FinishDate" type="date" format="DD-MM-YYYY"/>
+            <DatePicker
+                :lang="this.$i18n.locale"
+                :class="{'is-invalid': this.$v.job.FinishDate.$error && this.$v.job.FinishDate.$dirty}"
+                :input-class="{'is-invalid': this.$v.job.FinishDate.$error && this.$v.job.FinishDate.$dirty, 'form-control': true, 'is-valid': !this.$v.job.FinishDate.$error && this.$v.job.FinishDate.$dirty}"
+                v-model="job.FinishDate" type="date" format="YYYY-MM-DD"/>
             <div :class="'invalid-feedback'" v-if="this.$v.job.FinishDate.$error && this.$v.job.FinishDate.$dirty">
               {{
                 tc('validations.required')
@@ -127,6 +131,7 @@
 <script>
 import DatePicker from "vue2-datepicker";
 import {required, integer, minValue, maxLength} from 'vuelidate/lib/validators';
+import "vue2-datepicker/locale/vi";
 
 export default {
   components: {

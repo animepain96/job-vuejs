@@ -1,5 +1,6 @@
 import HTTP, {handleError} from "@/helpers/http";
 import {CHART_REPORT} from "@/constants/summaryAPI";
+import {format} from "date-fns";
 
 const summary = {
     namespaced: true,
@@ -12,11 +13,10 @@ const summary = {
         },
     },
     actions: {
-        getAnnualRevenue({commit}) {
+        getAnnualRevenue({commit}, query) {
+
             return HTTP(true).get(CHART_REPORT, {
-                headers: {
-                    accept: 'application/json',
-                },
+                params: query,
             })
                 .then(response => {
                     commit('updateAnnualRevenue', response.data.data);

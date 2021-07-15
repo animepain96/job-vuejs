@@ -104,9 +104,10 @@
                 <span v-text="formattedDate(item.StartDate)"
                       v-show="!(selected.ID === item.ID && isEdit && editField === 'StartDate')"></span>
                 <DatePicker
+                    :lang="i18n.locale"
                     :class="{'is-invalid': v.job.StartDate.$error }"
                     :inputClass="{'is-valid': !v.job.StartDate.$error, 'is-invalid': v.job.StartDate.$error, 'form-control': true}"
-                    type="date" format="DD-MM-YYYY" v-model="job.StartDate"
+                    type="date" format="YYYY-MM-DD" v-model="job.StartDate"
                     v-if="selected.ID === item.ID && isEdit && editField === 'StartDate'"
                     @change="(e) => updateJob(e, true)"
                 />
@@ -129,9 +130,10 @@
                 <span v-text="formattedDate(item.Paydate)"
                       v-show="!(selected.ID === item.ID && isEdit && editField === 'Paydate')"></span>
                 <DatePicker
+                    :lang="i18n.locale"
                     :class="{'is-invalid': v.job.Paydate.$error }"
                     :inputClass="{'is-valid': !v.job.Paydate.$error, 'is-invalid': v.job.Paydate.$error, 'form-control': true}"
-                    type="date" format="DD-MM-YYYY" v-model="job.Paydate"
+                    type="date" format="YYYY-MM-DD" v-model="job.Paydate"
                     v-if="selected.ID === item.ID && isEdit && editField === 'Paydate'"
                     @change="(e) => updateJob(e, true)"
                 />
@@ -258,9 +260,10 @@
                             <span class="mb-3" :style="'display:block;'" v-text="formattedDate(item.Deadline)"
                                   v-show="!(selected.ID === item.ID && isEdit && editField === 'Deadline')"></span>
                             <DatePicker
+                                :lang="i18n.locale"
                                 :class="{'is-invalid': v.job.Deadline.$error }"
                                 :inputClass="{'is-valid': !v.job.Deadline.$error, 'is-invalid': v.job.Deadline.$error, 'form-control': true}"
-                                type="date" format="DD-MM-YYYY" v-model="job.Deadline"
+                                type="date" format="YYYY-MM-DD" v-model="job.Deadline"
                                 v-if="selected.ID === item.ID && isEdit && editField === 'Deadline'"
                                 @change="(e) => updateJob(e, true)"
                             />
@@ -287,9 +290,10 @@
                             <span class="mb-3" :style="'display:block;'" v-text="formattedDate(item.FinishDate)"
                                   v-show="!(selected.ID === item.ID && isEdit && editField === 'FinishDate')"></span>
                             <DatePicker
+                                :lang="i18n.locale"
                                 :class="{'is-invalid': v.job.FinishDate.$error }"
                                 :inputClass="{'is-valid': !v.job.FinishDate.$error, 'is-invalid': v.job.FinishDate.$error, 'form-control': true}"
-                                type="date" format="DD-MM-YYYY" v-model="job.FinishDate"
+                                type="date" format="YYYY-MM-DD" v-model="job.FinishDate"
                                 v-if="selected.ID === item.ID && isEdit && editField === 'FinishDate'"
                                 @change="(e) => updateJob(e, true)"
                             />
@@ -348,9 +352,8 @@
 import {required, maxLength, integer} from 'vuelidate/lib/validators';
 import DatePicker from 'vue2-datepicker';
 import CreateJobModal from "@/views/jobs/CreateJobModal";
-
-import moment from 'moment/src/moment';
-import {date} from '@/helpers/validate';
+import {format, isValid, parse} from "date-fns";
+import "vue2-datepicker/locale/vi";
 
 export default {
   components: {
@@ -394,7 +397,6 @@ export default {
       },
       StartDate: {
         required,
-        date,
       },
       Paydate: {
         required,
@@ -428,6 +430,9 @@ export default {
     this.$store.dispatch('jobs/getRate');
   },
   computed: {
+    i18n() {
+      return this.$i18n;
+    },
     fields() {
       return [
         {key: 'ID', label : this.$tc('views.jobs.table.id'), _style: 'width: 5%;'},
@@ -456,8 +461,8 @@ export default {
     monthlyRevenueYen() {
       let now = new Date();
       return this.$store.state.jobs.jobs.filter((item) => {
-        let startDate = moment(item.StartDate, 'YYYY-MM-DD');
-        return startDate._isAMomentObject && startDate.year() === now.getFullYear() && startDate.month() === now.getMonth();
+        let startDate = parse(item.StartDate, 'yyyy-MM-dd', new Date());
+        return isValid(startDate) && startDate.getFullYear() === now.getFullYear() && startDate.getMonth() === now.getMonth();
       }).reduce((total, item) => {
         return total + item.PriceYen;
       }, 0);
@@ -465,8 +470,8 @@ export default {
     monthlyRevenueUSD() {
       let now = new Date();
       return this.$store.state.jobs.jobs.filter((item) => {
-        let startDate = moment(item.StartDate, 'YYYY-MM-DD');
-        return startDate._isAMomentObject && startDate.year() === now.getFullYear() && startDate.month() === now.getMonth();
+        let startDate = parse(item.StartDate, 'yyyy-MM-dd', new Date());
+        return isValid(startDate) && startDate.getFullYear() === now.getFullYear() && startDate.getMonth() === now.getMonth();
       }).reduce((total, item) => {
         return total + item.Price;
       }, 0);
@@ -495,10 +500,7 @@ export default {
   },
   methods: {
     formattedDate(value) {
-      if (moment(value).isValid()) {
-        return moment(value).format('DD-MM-YYYY');
-      }
-      return null;
+      return value;
     },
     editJob(item, field = 'Name') {
       this.selected = item;
@@ -531,7 +533,7 @@ export default {
             };
 
             if (['StartDate', 'Paydate', 'Deadline', 'FinishDate'].includes(this.editField)) {
-              payload.data.value = moment(this.job[this.editField]).format('DD-MM-YYYY');
+              payload.data.value = format(this.job[this.editField], 'yyyy-MM-dd');
             }
 
             if (this.editField === 'Paid') {

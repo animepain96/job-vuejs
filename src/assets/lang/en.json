@@ -146,21 +146,9 @@
     "chart_report": {
       "title": "Chart Report",
       "chart_title": "Annual Revenue",
-      "months": [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December"
-      ],
-      "revenue": "Revenue"
+      "revenue": "Revenue",
+      "sale": "Sale",
+      "payment": "Payment"
     },
     "users": {
       "title": "User Management",
