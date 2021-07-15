@@ -262,6 +262,8 @@
       "success_create": "The type was successfully created."
     },
     "backups": {
+      "delete": "Do you want to delete this backup?",
+      "multi_delete": "Do you want to delete these backups?",
       "not_found": "The backup not found.",
       "success_delete": "The backup was successfully deleted.",
       "success_create": "The backup was successfully created."

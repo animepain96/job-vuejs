@@ -262,6 +262,8 @@
       "success_create": "Thêm Phân loại thành công."
     },
     "backups": {
+      "delete": "Bạn có muốn xóa Sao lưu này không?",
+      "multi_delete": "Bạn có muốn xóa những Sao lưu nào không?",
       "not_found": "Sao lưu không tồn tại.",
       "success_delete": "Xóa Sao lưu thành công.",
       "success_create": "Tạo mới Sao lưu thủ công thành công."

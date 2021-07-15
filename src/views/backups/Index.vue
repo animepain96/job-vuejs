@@ -195,12 +195,13 @@ export default {
 
       if (items.length) {
         this.$swal.fire({
-          title: 'Are you sure to delete these backups file?',
+          title: this.$tc('alerts.backups.multi_delete'),
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
           cancelButtonColor: '#d33',
-          confirmButtonText: 'Confirm'
+          confirmButtonText: this.$tc('buttons.crud.confirm'),
+          cancelButtonText: this.$tc('buttons.crud.cancel')
         }).then((result) => {
           if (result.isConfirmed) {
             this.performDelete(items);
@@ -211,12 +212,13 @@ export default {
     async deleteItem(name) {
       if (name) {
         let result = await this.$swal.fire({
-          title: 'Are you sure to delete this backup file?',
+          title: this.$tc('alerts.backups.delete'),
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
           cancelButtonColor: '#d33',
-          confirmButtonText: 'Confirm'
+          confirmButtonText: this.$tc('buttons.crud.confirm'),
+          cancelButtonText: this.$tc('buttons.crud.cancel')
         }).then(result => {
           return result.isConfirmed;
         });
