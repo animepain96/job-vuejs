@@ -34,7 +34,7 @@
               </CInput>
             </CCol>
           </CRow>
-          <CDataTable
+          <CCustomDataTable
               :sorter-value="sortBy"
               responsive
               :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
@@ -50,6 +50,7 @@
               :active-page="1"
               :pagination="{ doubleArrows: false, align: 'center'}"
               @update:sorter-value="(e) => this.sortBy = e"
+              :no-items-view="{ noResults: tc('table_tool.no_results'), noItems: tc('table_tool.no_items') }"
           >
             <template v-if="currentUser.id === 1" #checkbox-header>
               <CInputCheckbox :checked.sync="checkedAll" :custom="true"
@@ -97,7 +98,7 @@
                 </CButtonGroup>
               </td>
             </template>
-          </CDataTable>
+          </CCustomDataTable>
           <CButton v-if="multipleDelete && currentUser.id === 1" @click="deleteSelectedItems" class="delete-selected"
                    color="danger" size="lg">
             <CIcon name="cil-trash"/>
@@ -111,8 +112,12 @@
 
 <script>
 import {required, integer, minValue} from 'vuelidate/lib/validators';
+import CCustomDataTable from "@/views/custom/CCustomDataTable";
 
 export default {
+  components: {
+    CCustomDataTable,
+  },
   data() {
     return {
       sortBy: {

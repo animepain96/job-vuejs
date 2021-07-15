@@ -6,7 +6,8 @@
           <CRow :class="['align-items-center']">
             <CCol md="7"><h3 :class="['mb-0']">{{ this.$tc('views.customers.title') }}</h3></CCol>
             <CCol md="5">
-              <CButton v-c-tooltip="{content: this.$tc('buttons.crud.create')}" @click="() => {this.isCreate = true; this.cancelEdit(); }"
+              <CButton v-c-tooltip="{content: this.$tc('buttons.crud.create')}"
+                       @click="() => {this.isCreate = true; this.cancelEdit(); }"
                        :class="['ml-auto', 'float-md-right']"
                        color="success">
                 <CIcon name="cil-plus"></CIcon>
@@ -66,6 +67,7 @@
             </CCol>
           </CRow>
           <CCustomDataTable
+              :customerSort="true"
               :sort-by="sortBy"
               responsive
               :sorterValue="sortState"
@@ -82,8 +84,8 @@
               :active-page="1"
               :pagination="{ doubleArrows: true, align: 'center'}"
               @update:sorter-value="(e) => this.sortState = e"
+              :no-items-view="{ noResults: tc('table_tool.no_results'), noItems: tc('table_tool.no_items') }"
           >
-
             <template #Name="{item}">
               <td :class="'inline-edit-wrap'">
                 <span v-text="item.Name" v-show="!(selected.ID === item.ID && isEdit && editField === 'Name')"></span>

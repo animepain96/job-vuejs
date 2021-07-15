@@ -73,7 +73,7 @@
                   :class="'text-primary'">{{ rate }}JPY</span></span></p>
             </CCol>
           </CRow>
-          <CDataTable
+          <CCustomDataTable
               :sorterValue="sortBy"
               :responsive="true"
               :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
@@ -89,6 +89,7 @@
               :active-page="1"
               :pagination="{ doubleArrows: false, align: 'center'}"
               @update:sorter-value="(e) => this.sortBy = e"
+              :no-items-view="{ noResults: tc('table_tool.no_results'), noItems: tc('table_tool.no_items') }"
           >
             <template #action="{item}">
               <td>
@@ -375,7 +376,7 @@
                 </CCardBody>
               </CCollapse>
             </template>
-          </CDataTable>
+          </CCustomDataTable>
         </CCardBody>
       </CCard>
     </CCol>
@@ -388,11 +389,13 @@ import DatePicker from 'vue2-datepicker';
 import ChartModal from "@/views/reports/ChartModal";
 import {format} from "date-fns";
 import {integer, maxLength, required} from "vuelidate/lib/validators";
+import CCustomDataTable from "@/views/custom/CCustomDataTable";
 
 export default {
   components: {
     DatePicker,
     ChartModal,
+    CCustomDataTable,
   },
   data() {
     return {

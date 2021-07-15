@@ -34,7 +34,7 @@
           </CRow>
         </CCardHeader>
         <CCardBody>
-          <CDataTable
+          <CCustomDataTable
               :sorterValue="sortBy"
               responsive
               :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
@@ -50,6 +50,7 @@
               :active-page="1"
               :pagination="{ doubleArrows: false, align: 'center'}"
               @update:sorter-value="(e) => this.sortBy = e"
+              :no-items-view="{ noResults: tc('table_tool.no_results'), noItems: tc('table_tool.no_items') }"
           >
             <template #Name="{item}">
               <td :class="'inline-edit-wrap'">
@@ -81,7 +82,7 @@
                 </CButton>
               </td>
             </template>
-          </CDataTable>
+          </CCustomDataTable>
         </CCardBody>
       </CCard>
     </CCol>
@@ -90,8 +91,12 @@
 
 <script>
 import {required, maxLength} from 'vuelidate/lib/validators';
+import CCustomDataTable from "@/views/custom/CCustomDataTable";
 
 export default {
+  components: {
+    CCustomDataTable,
+  },
   data() {
     return {
       sortBy: {

@@ -297,7 +297,11 @@ export default {
     loading: Boolean,
     clickableRows: Boolean,
     noItemsView: Object,
-    cleaner: Boolean
+    cleaner: Boolean,
+    customerSort: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -411,41 +415,45 @@ export default {
           return -1 * flip;
         }
         if (a === b) {
-          let itemDate, item2Date;
-          switch (sort) {
-            case 1:
-              if (item.created_at > item2.created_at) {
-                return 1 * flip;
-              }
+          if(this.customerSort) {
+            let itemDate, item2Date;
+            switch (sort) {
+              case 1:
+                if (item.created_at > item2.created_at) {
+                  return 1 * flip;
+                }
 
-              if (item.created_at > item2.created_at) {
-                return -1 * flip;
-              }
+                if (item.created_at > item2.created_at) {
+                  return -1 * flip;
+                }
 
-              return 0;
-            case 2:
-              if (item.created_at > item2.created_at) {
-                return -1 * flip;
-              }
+                return 0;
+              case 2:
+                if (item.created_at > item2.created_at) {
+                  return -1 * flip;
+                }
 
-              if (item.created_at > item2.created_at) {
-                return 1 * flip;
-              }
-              return 0;
-            default:
-              itemDate = this.maxDate(item.jobs.map((job) => job.created_at));
-              item2Date = this.maxDate(item2.jobs.map((job) => job.created_at));
+                if (item.created_at > item2.created_at) {
+                  return 1 * flip;
+                }
+                return 0;
+              default:
+                itemDate = this.maxDate(item.jobs.map((job) => job.created_at));
+                item2Date = this.maxDate(item2.jobs.map((job) => job.created_at));
 
-              if (itemDate > item2Date) {
-                return -1 * flip;
-              }
+                if (itemDate > item2Date) {
+                  return -1 * flip;
+                }
 
-              if (itemDate > item2Date) {
-                return 1 * flip;
-              }
+                if (itemDate > item2Date) {
+                  return 1 * flip;
+                }
 
-              return 0;
+                return 0;
+            }
           }
+
+          return 0;
         }
       })
     },

@@ -294,6 +294,8 @@
     },
     "items_per_page": {
       "title": "Số lượng mỗi trang"
-    }
+    },
+    "no_results": "Không có dữ liệu phù hợp.",
+    "no_items": "Không có dữ liệu nào."
   }
 }

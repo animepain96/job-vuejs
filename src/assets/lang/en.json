@@ -293,6 +293,8 @@
     },
     "items_per_page": {
       "title": "Items per page"
-    }
+    },
+    "no_results": "There are no results data.",
+    "no_items": "There are no items data."
   }
 }
