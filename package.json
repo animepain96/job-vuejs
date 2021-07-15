@@ -22,6 +22,7 @@
   "copyright": "Copyright 2021 creativeLabs Łukasz Holeczek",
   "license": "MIT",
   "scripts": {
+    "build-report": "vue-cli-service build --report",
     "start": "node server.js",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",

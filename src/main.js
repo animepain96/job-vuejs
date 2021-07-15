@@ -3,7 +3,8 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import CoreuiVue from '@coreui/vue'
-import * as icons from '@coreui/icons'
+//import * as icons from '@coreui/icons'
+import {iconsSet as icons} from '@/assets/icons/icons'
 import VueSweetalert2 from "vue-sweetalert2"
 import store from './store'
 import Vuelidate from "vuelidate";
