@@ -11,7 +11,7 @@ const messages = {
 };
 
 export default new VueI18n({
-    locale: localStorage.lang,
+    locale: localStorage.lang ?? 'en',
     messages,
     fallbackLocale: 'en'
 });
