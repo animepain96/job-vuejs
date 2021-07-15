@@ -75,7 +75,7 @@ function configRoutes() {
                     component: Customers,
                     meta: {
                         auth: true,
-                        //label: 'routes.customers',
+                        label: 'routes.customers',
                     },
                 },
                 {
@@ -102,7 +102,7 @@ function configRoutes() {
                     component: Reports,
                     meta: {
                         auth: true,
-                       label: 'routes.report',
+                        label: 'routes.report',
                     },
                 },
                 {
@@ -197,6 +197,12 @@ Router.beforeEach(async (to, from, next) => {
         next();
     }
 
+});
+
+Router.afterEach((to, from) => {
+    Vue.nextTick(() => {
+        document.title = i18n.tc('app.title') + ' || ' + (i18n.tc(to.meta.label) || '');
+    });
 });
 
 export default Router;
