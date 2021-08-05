@@ -4,9 +4,10 @@ import store from "@/store";
 import router from "@/router/index"
 import {toastAlert} from "@/helpers/alert";
 import i18n from "@/helpers/i18n";
+import authHelper from "./authHelper";
 
 const configs = {
-    baseURL: env.API,
+    baseURL: env.API(),
     headers: {
         Accept: 'application/json',
     },
@@ -27,7 +28,14 @@ export const handleError = (error) => {
                 toastAlert(i18n.tc('alerts.auth.permission'), 'error');
                 break;
             case 422:
-                toastAlert(i18n.tc('alerts.auth.data_invalid'), 'error');
+                authHelper.isLogged().then((result) => {
+                    if(result) {
+                        toastAlert(i18n.tc('alerts.auth.data_invalid'), 'error');
+                    }
+                    else {
+                        toastAlert(i18n.tc('alerts.app.data_invalid'), 'error');
+                    }
+                });
                 break;
             default:
                 toastAlert(i18n.tc('alerts.app.server_error'), 'error');

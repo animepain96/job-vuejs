@@ -35,23 +35,21 @@
           </CRow>
         </CCardHeader>
         <CCardBody>
-          <CCustomDataTable
-              :sorterValue="sortBy"
+          <CDataTable
+              :loading="this.$store.state.methods.loading"
               responsive
-              :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
-              :itemsPerPageSelect="{ label: tc('table_tool.items_per_page.title')}"
-              items-per-page-select
-              sorter
+              :tableFilter="{external: true, label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
+              :itemsPerPageSelect="{external: true, label: tc('table_tool.items_per_page.title')}"
+              :sorter="{external: true}"
               hover
               striped
               :items="methods"
               :fields="fields"
-              :items-per-page="10"
               clickable-rows
-              :active-page="1"
-              :pagination="{ doubleArrows: false, align: 'center'}"
-              @update:sorter-value="(e) => this.sortBy = e"
               :no-items-view="{ noResults: tc('table_tool.no_results'), noItems: tc('table_tool.no_items') }"
+              @update:sorter-value="handleSortChange"
+              @pagination-change="handlePaginationChange"
+              @update:table-filter-value="handleFilterChange"
           >
             <template #Name="{item}">
               <td :class="'inline-edit-wrap'">
@@ -64,7 +62,8 @@
                     :invalid-feedback="!v.method.Name.required ? tc('validations.required') : tc('validations.max_length').replace(':value', 255)"
                     @keyup="updateMethod"
                 />
-                <CButton v-c-tooltip="{content: tc('buttons.crud.edit')}" size="sm" color="secondary" :class="'inline-edit-button'"
+                <CButton v-c-tooltip="{content: tc('buttons.crud.edit')}" size="sm" color="secondary"
+                         :class="'inline-edit-button'"
                          @click="() => editMethod(item)"
                          v-show="!(selected.ID === item.ID && isEdit)">
                   <CIcon name="cil-pen" size="custom-size" :class="'inline-edit-icon'"/>
@@ -83,7 +82,15 @@
                 </CButton>
               </td>
             </template>
-          </CCustomDataTable>
+          </CDataTable>
+          <CPagination
+              :class="{'disabled': this.$store.state.methods.loading}"
+              v-show="totalPages > 1"
+              :activePage.sync="page"
+              :pages="totalPages"
+              @update:activePage="handlePageChange"
+              align="center"
+          />
         </CCardBody>
       </CCard>
     </CCol>
@@ -92,12 +99,10 @@
 
 <script>
 import {required, maxLength} from 'vuelidate/lib/validators';
-import CCustomDataTable from "@/views/custom/CCustomDataTable";
+import {debounce} from "debounce";
+import {confirmAlert} from "../../helpers/alert";
 
 export default {
-  components: {
-    CCustomDataTable,
-  },
   data() {
     return {
       sortBy: {
@@ -123,9 +128,27 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('methods/getList');
+    this.$store.commit('methods/updateQuery', {per_page: 10, page: 1, order: null, sort_by: null, q: null});
+    this.$store.dispatch('methods/getList', this.$store.state.methods.query);
+    this.$store.watch(() => this.$store.state.methods.query, () => {
+          this.$store.dispatch('methods/getList', this.$store.state.methods.query);
+        },
+        {
+          deep: true
+        });
   },
   computed: {
+    page: {
+      get: function () {
+        return this.$store.state.methods.query.page;
+      },
+      set: function (value) {
+        this.$store.commit('methods/updateQuery', {page: value});
+      }
+    },
+    totalPages() {
+      return this.$store.state.methods.total_page;
+    },
     fields() {
       return [
         {key: 'ID', label: this.$tc('views.methods.table.id'), _style: "width: 20%;"},
@@ -144,6 +167,32 @@ export default {
     }
   },
   methods: {
+    handlePageChange(page) {
+      if (!isNaN(page) && this.page !== page) {
+        this.$store.commit('methods/updateQuery', {page: page});
+      }
+    },
+    handleSortChange(sorter) {
+      let order = {asc: false, column: 'ID'};
+      if (sorter.asc) {
+        order.asc = sorter.asc;
+      }
+      if (sorter.column) {
+        order.column = sorter.column;
+      }
+
+      this.$store.commit('methods/updateQuery', {order: order});
+    },
+    handleFilterChange: debounce(function (value) {
+      if (value !== this.$store.state.methods.query.q) {
+        this.$store.commit('methods/updateQuery', {q: value});
+      }
+    }, 300),
+    handlePaginationChange(value) {
+      if (!isNaN(value)) {
+        this.$store.commit('methods/updateQuery', {per_page: value});
+      }
+    },
     editMethod(item) {
       this.selected = item;
       this.isEdit = true;
@@ -153,7 +202,6 @@ export default {
       if (e.keyCode === 13) {
         this.$v.method.$touch();
         if (!this.$v.method.$invalid) {
-          this.$store.commit('app/setLoading', true);
           this.$store.dispatch('methods/update', {ID: this.selected.ID, Name: this.method.Name}, {root: true})
               .then(status => {
                 if (status) {
@@ -163,7 +211,7 @@ export default {
                     Name: '',
                   };
                 }
-                this.$store.commit('app/setLoading', false);
+                this.$store.dispatch('methods/getList', this.$store.state.methods.query);
               });
         }
       } else if (e.keyCode === 27) {
@@ -182,6 +230,7 @@ export default {
                 this.method = {
                   Name: '',
                 };
+                this.$store.dispatch('methods/getList', this.$store.state.methods.query);
               }
               this.$store.commit('app/setLoading', false);
             });
@@ -190,15 +239,7 @@ export default {
     async deleteMethod(item) {
       this.cancelEdit();
       this.selected = item;
-      let result = await this.$swal.fire({
-        title: this.$tc('alerts.methods.delete'),
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: this.$tc('buttons.crud.confirm'),
-        cancelButtonText: this.$tc('buttons.crud.cancel')
-      }).then((result) => {
+      let result = await confirmAlert(this.$tc('alerts.methods.delete'), this.$tc('buttons.crud.confirm'), this.$tc('buttons.crud.cancel'), 'warning').then((result) => {
         return result.isConfirmed;
       });
 
@@ -207,9 +248,8 @@ export default {
       }
     },
     performDelete() {
-      this.$store.commit('app/setLoading', true);
       this.$store.dispatch('methods/delete', this.selected, {root: true})
-          .then(() => this.$store.commit('app/setLoading', false));
+          .then(() => this.$store.dispatch('methods/getList', this.$store.state.methods.query));
     },
     cancelEdit() {
       this.isEdit = false;

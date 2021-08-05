@@ -230,6 +230,7 @@ export default {
                 this.resetInitialValues();
                 this.$v.$reset();
                 this.show = false;
+                this.$store.dispatch('jobs/getList', this.$store.state.jobs.query);
               }
               this.$store.commit('app/setLoading', false)
             });

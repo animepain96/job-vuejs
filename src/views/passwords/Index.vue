@@ -31,8 +31,9 @@
             </CRow>
           </CCardBody>
           <CCardFooter>
-            <CButton type="submit" color="primary" v-text="this.$tc('buttons.crud.save')" />
-            <CButton type="button" class="float-right" color="secondary" v-text="this.$tc('buttons.crud.cancel')" @click="goBack" />
+            <CButton type="submit" color="primary" v-text="this.$tc('buttons.crud.save')"/>
+            <CButton type="button" class="float-right" color="secondary" v-text="this.$tc('buttons.crud.cancel')"
+                     @click="goBack"/>
           </CCardFooter>
         </CForm>
       </CCard>
@@ -60,7 +61,7 @@ export default {
       },
       password_confirmation: {
         required,
-        sameAs: sameAs(function() {
+        sameAs: sameAs(function () {
           return this.password.password;
         }),
       },
@@ -69,10 +70,17 @@ export default {
   methods: {
     changePassword() {
       this.$v.password.$touch();
-      if(!this.$v.password.$invalid) {
+      if (!this.$v.password.$invalid) {
         this.$store.commit('app/setLoading', true);
         this.$store.dispatch('auth/changePassword', this.password)
-            .then(() => this.$store.commit('app/setLoading', false));
+            .then(result => {
+                  if (result) {
+                    this.$store.dispatch('auth/logout')
+                        .then(() => this.$router.push({path: '/login'}));
+                  }
+                }
+            )
+            .finally(() => this.$store.commit('app/setLoading', false));
       }
     },
     goBack() {

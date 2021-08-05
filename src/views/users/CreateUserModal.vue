@@ -144,6 +144,7 @@ export default {
                 this.resetInitialValues();
                 this.$v.$reset();
                 this.show = false;
+                this.$store.dispatch('users/getList', this.$store.state.users.query)
               }
               this.$store.commit('app/setLoading', false)
             });

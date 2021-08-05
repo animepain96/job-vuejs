@@ -283,7 +283,8 @@
       "success_password": "The user password was successfully reset."
     },
     "app": {
-      "server_error": "There was an error. Please try again."
+      "server_error": "There was an error. Please try again.",
+      "data_invalid": "Your data is invalid."
     }
   },
   "table_tool": {
