@@ -6,7 +6,8 @@
           <CRow :class="['align-items-center']">
             <CCol md="7"><h3 :class="['mb-0']">{{ this.$tc('views.types.title') }}</h3></CCol>
             <CCol md="5">
-              <CButton v-c-tooltip="tc('buttons.crud.create')" @click="() => {this.isCreate = true; this.cancelEdit();}" :class="['ml-auto', 'float-md-right']"
+              <CButton v-c-tooltip="tc('buttons.crud.create')" @click="() => {this.isCreate = true; this.cancelEdit();}"
+                       :class="['ml-auto', 'float-md-right']"
                        color="success">
                 <CIcon name="cil-plus"></CIcon>
               </CButton>
@@ -34,23 +35,21 @@
           </CRow>
         </CCardHeader>
         <CCardBody>
-          <CCustomDataTable
-              :sorterValue="sortBy"
+          <CDataTable
+              :loading="this.$store.state.types.loading"
               responsive
-              :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
-              :itemsPerPageSelect="{ label: tc('table_tool.items_per_page.title')}"
-              items-per-page-select
-              sorter
+              :tableFilter="{external: true, label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
+              :itemsPerPageSelect="{external: true, label: tc('table_tool.items_per_page.title')}"
+              :sorter="{external: true}"
               hover
               striped
               :items="types"
               :fields="fields"
-              :items-per-page="10"
               clickable-rows
-              :active-page="1"
-              :pagination="{ doubleArrows: false, align: 'center'}"
-              @update:sorter-value="(e) => this.sortBy = e"
               :no-items-view="{ noResults: tc('table_tool.no_results'), noItems: tc('table_tool.no_items') }"
+              @update:sorter-value="handleSortChange"
+              @pagination-change="handlePaginationChange"
+              @update:table-filter-value="handleFilterChange"
           >
             <template #Name="{item}">
               <td :class="'inline-edit-wrap'">
@@ -82,7 +81,15 @@
                 </CButton>
               </td>
             </template>
-          </CCustomDataTable>
+          </CDataTable>
+          <CPagination
+              :class="{'disabled': this.$store.state.types.loading}"
+              v-show="totalPages > 1"
+              :activePage.sync="page"
+              :pages="totalPages"
+              @update:activePage="handlePageChange"
+              align="center"
+          />
         </CCardBody>
       </CCard>
     </CCol>
@@ -91,12 +98,10 @@
 
 <script>
 import {required, maxLength} from 'vuelidate/lib/validators';
-import CCustomDataTable from "@/views/custom/CCustomDataTable";
+import {debounce} from "debounce";
+import {confirmAlert} from "../../helpers/alert";
 
 export default {
-  components: {
-    CCustomDataTable,
-  },
   data() {
     return {
       sortBy: {
@@ -121,9 +126,27 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('types/getList');
+    this.$store.commit('types/updateQuery', {per_page: 10, page: 1, order: null, sort_by: null, q: null});
+    this.$store.dispatch('types/getList', this.$store.state.types.query);
+    this.$store.watch(() => this.$store.state.types.query, () => {
+          this.$store.dispatch('types/getList', this.$store.state.types.query);
+        },
+        {
+          deep: true
+        });
   },
   computed: {
+    page: {
+      get: function () {
+        return this.$store.state.types.query.page;
+      },
+      set: function (value) {
+        this.$store.commit('types/updateQuery', {page: value});
+      }
+    },
+    totalPages() {
+      return this.$store.state.types.total_page;
+    },
     fields() {
       return [
         {key: 'ID', label: this.$tc('views.types.table.id'), _style: "width: 20%;"},
@@ -142,16 +165,41 @@ export default {
     }
   },
   methods: {
+    handlePageChange(page) {
+      if (!isNaN(page) && this.page !== page) {
+        this.$store.commit('types/updateQuery', {page: page});
+      }
+    },
+    handleSortChange(sorter) {
+      let order = {asc: false, column: 'ID'};
+      if (sorter.asc) {
+        order.asc = sorter.asc;
+      }
+      if (sorter.column) {
+        order.column = sorter.column;
+      }
+
+      this.$store.commit('types/updateQuery', {order: order});
+    },
+    handleFilterChange: debounce(function (value) {
+      if (value !== this.$store.state.types.query.q) {
+        this.$store.commit('types/updateQuery', {q: value});
+      }
+    }, 300),
+    handlePaginationChange(value) {
+      if (!isNaN(value)) {
+        this.$store.commit('types/updateQuery', {per_page: value});
+      }
+    },
     editType(item) {
       this.selected = item;
       this.isEdit = true;
       this.type.Name = item.Name;
     },
     updateType(e) {
-      if(e.keyCode === 13) {
+      if (e.keyCode === 13) {
         this.$v.type.$touch();
         if (!this.$v.type.$invalid) {
-          this.$store.commit('app/setLoading', true);
           this.$store.dispatch('types/update', {ID: this.selected.ID, Name: this.type.Name}, {root: true})
               .then(status => {
                 if (status) {
@@ -160,11 +208,11 @@ export default {
                     Name: '',
                   };
                   this.$v.type.$reset();
+                  this.$store.dispatch('types/getList', this.$store.state.types.query);
                 }
-                this.$store.commit('app/setLoading', false);
               });
         }
-      } else if(e.keyCode === 27) {
+      } else if (e.keyCode === 27) {
         this.cancelEdit();
       }
     },
@@ -180,6 +228,7 @@ export default {
                   Name: '',
                 };
                 this.$v.type.$reset();
+                this.$store.dispatch('types/getList', this.$store.state.types.query);
               }
               this.$store.commit('app/setLoading', false);
             });
@@ -188,28 +237,17 @@ export default {
     async deleteType(item) {
       this.cancelEdit();
       this.selected = item;
-      let result = await this.$swal.fire({
-        title: this.$tc('alerts.types.delete'),
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: this.$tc('buttons.crud.confirm'),
-        cancelButtonText: this.$tc('buttons.crud.cancel'),
-      }).then((result) => {
+      let result = await confirmAlert(this.$tc('alerts.types.delete'), this.$tc('buttons.crud.confirm'), this.$tc('buttons.crud.cancel'), 'warning').then((result) => {
         return result.isConfirmed;
       });
 
-      if(result) {
+      if (result) {
         this.performDelete();
       }
     },
     performDelete() {
-      this.$store.commit('app/setLoading', true);
       this.$store.dispatch('types/delete', this.selected, {root: true})
-          .then(() => {
-            this.$store.commit('app/setLoading', false);
-          });
+          .then(() => this.$store.dispatch('types/getList', this.$store.state.types.query));
     },
     cancelEdit() {
       this.isEdit = false;

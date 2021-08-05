@@ -53,39 +53,53 @@
             <CCol md="4" class="offset-md-5">
               <CRow>
                 <CCol md="6">
-                  <CSelect :custom="true" :label="tc('views.customers.sort_by.title')"
-                           addLabelClasses="font-weight-bold"
-                           :options="sortOptions"
-                           :value.sync="sortBy"/>
+                  <CSelect
+                      :custom="true"
+                      :label="tc('views.customers.sort_by.title')"
+                      addLabelClasses="font-weight-bold"
+                      :options="sortOptions"
+                      :value.sync="sortBy"
+                      @update:value="handleSortByChange"
+                  />
                 </CCol>
                 <CCol md="6">
-                  <CSelect :custom="true" :label="tc('views.customers.unpaid_list.title')"
-                           addLabelClasses="font-weight-bold"
-                           :options="unpaidOptions" :value.sync="unpaid"/>
+                  <CSelect
+                      :custom="true"
+                      :label="tc('views.customers.unpaid_list.title')"
+                      addLabelClasses="font-weight-bold"
+                      :options="unpaidOptions" :value.sync="unpaid"
+                      @update:value="handleUnpaidChange"
+                  />
                 </CCol>
               </CRow>
             </CCol>
           </CRow>
-          <CCustomDataTable
+          <CDataTable
+              :loading="this.$store.state.customers.loading"
+              addTableClasses="sp-table"
               :customerSort="true"
               :sort-by="sortBy"
               responsive
               :sorterValue="sortState"
-              :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
+              :tableFilter="{external: true, label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
               :itemsPerPageSelect="{ label: tc('table_tool.items_per_page.title')}"
               items-per-page-select
-              sorter
+              :sorter="{external: true}"
               hover
               striped
               :items="customers"
               :fields="fields"
-              :items-per-page="10"
               clickable-rows
-              :active-page="1"
-              :pagination="{ doubleArrows: true, align: 'center'}"
-              @update:sorter-value="(e) => this.sortState = e"
               :no-items-view="{ noResults: tc('table_tool.no_results'), noItems: tc('table_tool.no_items') }"
+              @update:sorter-value="handleSortChange"
+              @pagination-change="handlePaginationChange"
+              @update:table-filter-value="handleFilterChange"
           >
+            <template #ID="{item}">
+              <td :class="'inline-edit-wrap'">
+                <span v-text="item.ID" :data-title="tc('views.customers.table.id')"></span>
+              </td>
+            </template>
             <template #Name="{item}">
               <td :class="'inline-edit-wrap'">
                 <span v-text="item.Name" v-show="!(selected.ID === item.ID && isEdit && editField === 'Name')"></span>
@@ -133,9 +147,9 @@
                 </CButton>
               </td>
             </template>
-            <template #Unpaid="{item}">
+            <template #unpaid="{item}">
               <td>
-                <span v-text="'$' + item.Unpaid.toLocaleString($i18n.locale)"></span>
+                <span v-text="'$' + moneyConverter(item.unpaid)"></span>
               </td>
             </template>
             <template #action="{item}">
@@ -150,7 +164,15 @@
                 </CButton>
               </td>
             </template>
-          </CCustomDataTable>
+          </CDataTable>
+          <CPagination
+              :class="{'disabled': this.$store.state.customers.loading}"
+              v-show="totalPages > 1"
+              :activePage.sync="page"
+              :pages="totalPages"
+              @update:activePage="handlePageChange"
+              align="center"
+          />
         </CCardBody>
       </CCard>
     </CCol>
@@ -159,12 +181,10 @@
 
 <script>
 import {required, maxLength, integer, minValue} from 'vuelidate/lib/validators';
-import CCustomDataTable from "@/views/custom/CCustomDataTable";
+import {debounce} from "debounce";
+import {confirmAlert} from "../../helpers/alert";
 
 export default {
-  components: {
-    CCustomDataTable,
-  },
   data() {
     return {
       customer: {
@@ -201,13 +221,31 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('customers/getList');
+    this.$store.commit('jobs/updateQuery', {per_page: 10, page: 1, order: null, sort_by: null, q: null});
+    this.$store.dispatch('customers/getList', this.$store.state.customers.query);
     this.$store.dispatch('app/getUnpaidThreshold')
         .then(() => {
           this.unpaidThreshold = this.$store.state.app.unpaidThreshold;
         });
+    this.$store.watch(() => this.$store.state.customers.query, () => {
+          this.$store.dispatch('customers/getList', this.$store.state.customers.query);
+        },
+        {
+          deep: true
+        });
   },
   computed: {
+    page: {
+      get: function () {
+        return this.$store.state.customers.query.page;
+      },
+      set: function (value) {
+        this.$store.commit('customers/updateQuery', {page: value});
+      }
+    },
+    totalPages() {
+      return this.$store.state.customers.total_page;
+    },
     sortOptions() {
       return [
         {value: 0, label: this.$tc('views.customers.sort_by.most_recent')},
@@ -224,10 +262,10 @@ export default {
     fields() {
       return [
         {key: 'ID', label: this.$tc('views.customers.table.id'), _style: "width: 10%;"},
-        {key: 'action', label: this.$tc('views.customers.table.action'), _style: "width: 10%;"},
+        {key: 'action', label: this.$tc('views.customers.table.action'), _style: "width: 10%;", sorter: false},
         {key: 'Name', label: this.$tc('views.customers.table.name'), _style: "width: 30%;"},
         {key: 'Note', label: this.$tc('views.customers.table.note'), _style: "width: 30%;"},
-        {key: 'Unpaid', label: this.$tc('views.customers.table.unpaid'), _style: "width: 20%;"},
+        {key: 'unpaid', label: this.$tc('views.customers.table.unpaid'), _style: "width: 20%;"},
       ];
     },
     tc() {
@@ -237,31 +275,48 @@ export default {
       return this.$v;
     },
     customers() {
-      let result = this.$store.state.customers.customers;
-      result = result.map((customer) => {
-        //get unpaid
-        customer.Unpaid = customer.jobs.reduce((total, job) => {
-          if (!job.Paid) {
-            return total + job.Price;
-          }
-          return total + 0;
-        }, 0);
-
-        return customer;
-      });
-
-      if (this.unpaid === 1) {
-        result = result.filter((customer) => {
-          if (customer.Unpaid > this.unpaidThreshold) {
-            return customer;
-          }
-        });
-      }
-
-      return result;
-    },
+      return this.$store.state.customers.customers;
+    }
   },
   methods: {
+    handleUnpaidChange(value) {
+      this.$store.commit('customers/updateQuery', {unpaid: value});
+    },
+    handleSortByChange(value) {
+      this.$store.commit('customers/updateQuery', {sort_by: value});
+    },
+    handlePageChange(page) {
+      if (!isNaN(page) && this.page !== page) {
+        this.$store.commit('customers/updateQuery', {page: page});
+      }
+    },
+    handleSortChange(sorter) {
+      let order = {asc: false, column: 'ID'};
+      if (sorter.asc) {
+        order.asc = sorter.asc;
+      }
+      if (sorter.column) {
+        order.column = sorter.column;
+      }
+
+      this.$store.commit('customers/updateQuery', {order: order});
+    },
+    handleFilterChange: debounce(function (value) {
+      if (value !== this.$store.state.customers.query.q) {
+        this.$store.commit('customers/updateQuery', {q: value});
+      }
+    }, 300),
+    handlePaginationChange(value) {
+      if (!isNaN(value)) {
+        this.$store.commit('customers/updateQuery', {per_page: value});
+      }
+    },
+    moneyConverter(value) {
+      if (!isNaN(value)) {
+        return Number(value).toLocaleString(this.$i18n.locale);
+      }
+      return null;
+    },
     editCustomer(item, field) {
       this.selected = item;
       this.isEdit = true;
@@ -272,7 +327,6 @@ export default {
       if (e.keyCode === 13) {
         this.$v.customer[this.editField].$touch();
         if (!this.$v.customer[this.editField].$invalid) {
-          this.$store.commit('app/setLoading', true);
           this.$store.dispatch('customers/update', {
             ID: this.selected.ID,
             field: this.editField,
@@ -284,8 +338,8 @@ export default {
                   this.$v.customer.$reset();
                   this.customer.Name = '';
                   this.editField = '';
+                  this.$store.dispatch('customers/getList', this.$store.state.customers.query);
                 }
-                this.$store.commit('app/setLoading', false);
               });
         }
       } else if (e.keyCode === 27) {
@@ -295,26 +349,19 @@ export default {
     async deleteCustomer(item) {
       this.cancelEdit();
       this.selected = item;
-      let result = await this.$swal.fire({
-        title: this.$tc('alerts.customers.delete'),
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: this.$tc('buttons.crud.confirm'),
-        cancelButtonText: this.$tc('buttons.crud.cancel')
-      }).then(result => {
-        return result.isConfirmed;
-      });
+
+      let result = await confirmAlert(this.$tc('alerts.customers.delete'), this.$tc('buttons.crud.confirm'), this.$tc('buttons.crud.cancel'), 'warning')
+          .then(result => {
+            return result.isConfirmed;
+          });
 
       if (result) {
         this.performDelete();
       }
     },
     performDelete() {
-      this.$store.commit('app/setLoading', true);
       this.$store.dispatch('customers/delete', this.selected, {root: true})
-          .then(() => this.$store.commit('app/setLoading', false));
+          .then(() => this.$store.dispatch('customers/getList', this.$store.state.customers.query));
     },
     createCustomer() {
       this.$v.customer.$touch();
@@ -328,9 +375,10 @@ export default {
                   Name: '',
                 };
                 this.$v.customer.$reset();
+                this.$store.dispatch('customers/getList', this.$store.state.customers.query);
               }
-              this.$store.commit('app/setLoading', false);
-            });
+            })
+            .finally(() => this.$store.commit('app/setLoading', false));
       }
     },
     cancelEdit() {

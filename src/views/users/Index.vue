@@ -15,23 +15,22 @@
           </CRow>
         </CCardHeader>
         <CCardBody>
-          <CCustomDataTable
+          <CDataTable
+              :loading="this.$store.state.users.loading"
               responsive
               :sorterValue="sortBy"
-              :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
-              :itemsPerPageSelect="{ label: tc('table_tool.items_per_page.title')}"
-              items-per-page-select
-              sorter
+              :tableFilter="{external: true, label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
+              :itemsPerPageSelect="{external: true, label: tc('table_tool.items_per_page.title')}"
+              :sorter="{external: true}"
               hover
               striped
               :items="users"
               :fields="fields"
-              :items-per-page="10"
               clickable-rows
-              :active-page="1"
-              :pagination="{ doubleArrows: false, align: 'center'}"
-              @update:sorter-value="(e) => this.sortBy = e"
               :no-items-view="{ noResults: tc('table_tool.no_results'), noItems: tc('table_tool.no_items') }"
+              @update:sorter-value="handleSortChange"
+              @pagination-change="handlePaginationChange"
+              @update:table-filter-value="handleFilterChange"
           >
             <template #action="{item}">
               <td>
@@ -119,7 +118,15 @@
                 />
               </td>
             </template>
-          </CCustomDataTable>
+          </CDataTable>
+          <CPagination
+              :class="{'disabled': this.$store.state.users.loading}"
+              v-show="totalPages > 1"
+              :activePage.sync="page"
+              :pages="totalPages"
+              @update:activePage="handlePageChange"
+              align="center"
+          />
         </CCardBody>
       </CCard>
     </CCol>
@@ -130,12 +137,12 @@
 <script>
 import CreateUserModal from "@/views/users/CreateUserModal";
 import {required, maxLength} from "vuelidate/lib/validators";
-import CCustomDataTable from "@/views/custom/CCustomDataTable";
+import {debounce} from "debounce";
+import {confirmAlert} from "../../helpers/alert";
 
 export default {
   components: {
     CreateUserModal,
-    CCustomDataTable,
   },
   data() {
     return {
@@ -162,15 +169,33 @@ export default {
       role: {
         required,
       },
-      active: {
-
-      }
+      active: {}
     },
   },
   created() {
-    this.$store.dispatch('users/getUsers');
+    this.$store.commit('users/updateQuery', {per_page: 10, page: 1, order: null, sort_by: null, q: null});
+    this.$store.dispatch('users/getList', this.$store.state.users.query);
+    this.$store.watch(() => this.$store.state.users.query, () => {
+          if (!this.$store.state.users.loading) {
+            this.$store.dispatch('users/getList', this.$store.state.users.query);
+          }
+        },
+        {
+          deep: true
+        });
   },
   computed: {
+    page: {
+      get: function () {
+        return this.$store.state.users.query.page;
+      },
+      set: function (value) {
+        this.$store.commit('users/updateQuery', {page: value});
+      }
+    },
+    totalPages() {
+      return this.$store.state.users.total_page;
+    },
     roles() {
       return [
         {value: 'user', label: this.$tc('views.users.roles.user')},
@@ -202,6 +227,32 @@ export default {
     },
   },
   methods: {
+    handlePageChange(page) {
+      if (!isNaN(page) && this.page !== page) {
+        this.$store.commit('users/updateQuery', {page: page});
+      }
+    },
+    handleSortChange(sorter) {
+      let order = {asc: false, column: 'ID'};
+      if (sorter.asc) {
+        order.asc = sorter.asc;
+      }
+      if (sorter.column) {
+        order.column = sorter.column;
+      }
+
+      this.$store.commit('users/updateQuery', {order: order});
+    },
+    handleFilterChange: debounce(function (value) {
+      if (value !== this.$store.state.users.query.q) {
+        this.$store.commit('users/updateQuery', {q: value});
+      }
+    }, 300),
+    handlePaginationChange(value) {
+      if (!isNaN(value)) {
+        this.$store.commit('users/updateQuery', {per_page: value});
+      }
+    },
     updateUser(e, onChangeUpdate = false) {
       if (e.keyCode === 27) {
         this.cancelEdit();
@@ -209,7 +260,6 @@ export default {
         this.$v.user[this.editField].$touch();
         if (onChangeUpdate || !this.$v.user[this.editField].$invalid) {
           if (e.keyCode === 13 || onChangeUpdate) {
-            this.$store.commit('app/setLoading', true);
             var payload = {
               id: this.selected.id,
               data: {
@@ -217,7 +267,6 @@ export default {
                 value: this.user[this.editField],
               }
             };
-
             if (this.editField === 'active') {
               payload.data.value = e.target.checked;
             }
@@ -227,9 +276,10 @@ export default {
             ).then(status => {
               if (!status) {
                 e.target.checked = !e.target.checked;
+              } else {
+                this.$store.dispatch('users/getList', this.$store.state.users.query);
               }
               this.cancelEdit();
-              this.$store.commit('app/setLoading', false);
             });
           } else if (e.keyCode === 27) {
             this.cancelEdit();
@@ -252,36 +302,20 @@ export default {
       this.user[field] = item[field];
     },
     async resetPassword(item) {
-      let result = await this.$swal.fire({
-        title: this.$tc('alerts.users.password'),
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: this.$tc('buttons.crud.confirm'),
-        cancelButtonText: this.$tc('buttons.crud.cancel')
-      }).then((result) => {
-        return result.isConfirmed;
-      });
+      let result = await confirmAlert(this.$tc('alerts.users.password'), this.$tc('buttons.crud.confirm'), this.$tc('buttons.crud.cancel'), 'warning')
+          .then((result) => {
+            return result.isConfirmed;
+          });
 
       if (result) {
-        this.$store.commit('app/setLoading', true);
         this.$store.dispatch('users/resetPassword', item, {root: true})
-            .then(() => this.$store.commit('app/setLoading', false));
+            .then(() => this.$store.dispatch('users/getList', this.$store.state.users.query));
       }
     },
     async deleteUser(item) {
       this.cancelEdit();
       this.selected = item;
-      let result = await this.$swal.fire({
-        title: this.$tc('alerts.users.delete'),
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: this.$tc('buttons.crud.confirm'),
-        cancelButtonText: this.$tc('buttons.crud.cancel')
-      }).then(result => {
+      let result = await confirmAlert(this.$tc('alerts.users.delete'), this.$tc('buttons.crud.confirm'), this.$tc('buttons.crud.cancel'), 'warning').then(result => {
         return result.isConfirmed;
       });
 
@@ -290,9 +324,8 @@ export default {
       }
     },
     performDelete() {
-      this.$store.commit('app/setLoading', true);
       this.$store.dispatch('users/deleteUser', this.selected, {root: true})
-          .then(() => this.$store.commit('app/setLoading', false));
+          .then(() => this.$store.dispatch('users/getList', this.$store.state.users.query));
     },
   }
 }

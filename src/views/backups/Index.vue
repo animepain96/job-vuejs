@@ -34,7 +34,8 @@
               </CInput>
             </CCol>
           </CRow>
-          <CCustomDataTable
+          <CDataTable
+              :loading="this.$store.state.backups.loading"
               :sorter-value="sortBy"
               responsive
               :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
@@ -98,7 +99,7 @@
                 </CButtonGroup>
               </td>
             </template>
-          </CCustomDataTable>
+          </CDataTable>
           <CButton v-if="multipleDelete && currentUser.id === 1" @click="deleteSelectedItems" class="delete-selected"
                    color="danger" size="lg">
             <CIcon name="cil-trash"/>
@@ -112,12 +113,9 @@
 
 <script>
 import {required, integer, minValue} from 'vuelidate/lib/validators';
-import CCustomDataTable from "@/views/custom/CCustomDataTable";
+import {confirmAlert} from "../../helpers/alert";
 
 export default {
-  components: {
-    CCustomDataTable,
-  },
   data() {
     return {
       sortBy: {
@@ -192,61 +190,43 @@ export default {
       this.checkedAll = !this.backups.some(backup => !backup._checked);
       this.multipleDelete = this.backups.some(backup => backup._checked);
     },
-    deleteSelectedItems() {
+    async deleteSelectedItems() {
       let items = this.backups.filter(backup => backup._checked === true)
           .map(backup => {
             return backup.name;
           });
 
       if (items.length) {
-        this.$swal.fire({
-          title: this.$tc('alerts.backups.multi_delete'),
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: this.$tc('buttons.crud.confirm'),
-          cancelButtonText: this.$tc('buttons.crud.cancel')
-        }).then((result) => {
-          if (result.isConfirmed) {
-            this.performDelete(items);
-          }
-        })
+        let result = await confirmAlert(this.$tc('alerts.backups.multi_delete'), this.$tc('buttons.crud.confirm'), this.$tc('buttons.crud.cancel'), 'warning')
+            .then(result => result);
+
+        if (result.isConfirmed) {
+          this.performDelete(items);
+        }
       }
+
     },
     async deleteItem(name) {
       if (name) {
-        let result = await this.$swal.fire({
-          title: this.$tc('alerts.backups.delete'),
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: this.$tc('buttons.crud.confirm'),
-          cancelButtonText: this.$tc('buttons.crud.cancel')
-        }).then(result => {
-          return result.isConfirmed;
-        });
+        let result = await confirmAlert(this.$tc('alerts.backups.delete'), this.$tc('buttons.crud.confirm'), this.$tc('buttons.crud.cancel'), 'warning')
+            .then(result => result);
 
-        if (result) {
+        if (result.isConfirmed) {
           this.performDelete(new Array(name));
         }
       }
     },
     performDelete(items) {
-      this.$store.commit('app/setLoading', true);
       this.$store.dispatch('backups/deleteBackup', {name: items}, {root: true})
           .then(status => {
                 if (status) {
                   this.multipleDelete = false
                 }
               }
-          ).finally(() => this.$store.commit('app/setLoading', false));
+          );
     },
     downloadFile(name) {
-      this.$store.commit('app/setLoading', true);
-      this.$store.dispatch('backups/downloadBackup', {name: name}, {root: true})
-          .then(() => this.$store.commit('app/setLoading', false));
+      this.$store.dispatch('backups/downloadBackup', {name: name}, {root: true});
     },
     updateKeepDays() {
       this.$v.keepDays.$touch();

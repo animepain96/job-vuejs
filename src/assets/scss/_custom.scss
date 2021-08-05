@@ -69,6 +69,10 @@
   vertical-align: middle;
 }
 
+.disabled {
+  pointer-events: none;
+}
+
 @media (max-width: 768px) {
   .collapse-block .inline-edit-button {
     position: relative;

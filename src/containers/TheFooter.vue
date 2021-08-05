@@ -1,7 +1,7 @@
 <template>
   <CFooter :fixed="false">
     <div>
-      <a href="https://coreui.io" target="_blank">{{ this.$tc('app.title') }}</a>
+      <a :href="appURL" target="_blank">{{ this.$tc('app.title') }}</a>
       <span class="ml-1">&copy; {{new Date().getFullYear()}} BPOTech JSC.</span>
     </div>
     <div class="mfs-auto">
@@ -13,6 +13,11 @@
 
 <script>
 export default {
-  name: 'TheFooter'
+  name: 'TheFooter',
+  data () {
+    return {
+      appURL: location.origin,
+    }
+  }
 }
 </script>

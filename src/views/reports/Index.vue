@@ -12,13 +12,13 @@
             <CCol md="3" lg="2">
               <label :class="'font-weight-bold'" v-text="this.$tc('views.reports.filter.from')"/>
               <div role="group" class="form-group">
-                <DatePicker type="date" format="YYYY-MM-DD" v-model="query.from"/>
+                <DatePicker type="date" format="YYYY-MM-DD" v-model="filter.from"/>
               </div>
             </CCol>
             <CCol md="3" lg="2">
               <label :class="'font-weight-bold'" v-text="this.$tc('views.reports.filter.to')"/>
               <div role="group" class="form-group">
-                <DatePicker type="date" format="YYYY-MM-DD" v-model="query.to"/>
+                <DatePicker type="date" format="YYYY-MM-DD" v-model="filter.to"/>
               </div>
             </CCol>
             <CCol md="3" lg="2">
@@ -26,37 +26,37 @@
               <CSelect
                   :custom="true"
                   :options="modeOptions"
-                  :value="query.mode"
-                  @change="(e) => this.query.mode = e.target.value"/>
+                  :value=" filter.mode"
+                  @change="(e) => filter.mode = e.target.value"/>
             </CCol>
             <CCol md="3" lg="2">
               <label :class="'font-weight-bold'" v-text="this.$tc('views.reports.filter.customer')"/>
               <CSelect :custom="true"
                        :options="[{value: 0, label: tc('views.reports.filter.options.all')}].concat(customers)"
-                       :value="query.customer"
-                       @change="(e) => this.query.customer = e.target.value"/>
+                       :value=" filter.customer"
+                       @change="(e) =>  filter.customer = e.target.value"/>
             </CCol>
             <CCol md="3" lg="2">
               <label :class="'font-weight-bold'" v-text="this.$tc('views.reports.filter.type')"/>
               <CSelect :custom="true"
                        :options="[{value: 0, label: tc('views.reports.filter.options.all')}].concat(types)"
-                       :value="query.type"
-                       @change="(e) => this.query.type = e.target.value"/>
+                       :value=" filter.type"
+                       @change="(e) =>  filter.type = e.target.value"/>
             </CCol>
             <CCol md="3" lg="2">
               <label :class="'font-weight-bold'" v-text="this.$tc('views.reports.filter.method')"/>
               <CSelect :custom="true"
                        :options="[{value: 0, label: tc('views.reports.filter.options.all')}].concat(methods)"
                        :value="query.method"
-                       @change="(e) => this.query.method = e.target.value"/>
+                       @change="(e) =>  filter.method = e.target.value"/>
             </CCol>
             <CCol md="3" lg="2">
               <label :class="'font-weight-bold'" v-text="this.$tc('views.reports.filter.paid')"/>
-              <CSelect :custom="true" :options="paidOptions" :value="query.paid"
-                       @change="(e) => this.query.paid = e.target.value"/>
+              <CSelect :custom="true" :options="paidOptions" :value=" filter.paid"
+                       @change="(e) =>  filter.paid = e.target.value"/>
             </CCol>
             <CCol md="12">
-              <CButton color="primary" v-text="this.$tc('buttons.crud.view')" @click="getList"/>
+              <CButton color="primary" v-text="this.$tc('buttons.crud.view')" @click="getFilterData"/>
               <CButton :class="'ml-2'" color="dark" v-text="this.$tc('buttons.crud.chart')"
                        @click="showModal = !showModal"/>
             </CCol>
@@ -65,31 +65,30 @@
           <CRow>
             <CCol :class="'text-right'">
               <p :class="'font-weight-bold mb-1'">{{ this.$tc('views.reports.total') }}: <span style="font-size: 16px;"><span
-                  :class="'text-danger'">{{ Number(totalRevenueUSD).toLocaleString($i18n.locale) }}USD</span> - <span
-                  :class="'text-primary'">{{ Number(totalRevenueYen).toLocaleString($i18n.locale) }}JPY</span></span></p>
+                  :class="'text-danger'">{{ convertCurrency(revenue.price) }}USD</span> - <span
+                  :class="'text-primary'">{{ convertCurrency(revenue.price_yen) }}JPY</span></span>
+              </p>
               <p :class="'font-weight-bold mb-1'">{{ this.$tc('views.reports.rate') }}: <span
                   style="font-size: 16px;"><span
                   :class="'text-danger'">1USD</span> - <span
                   :class="'text-primary'">{{ rate }}JPY</span></span></p>
             </CCol>
           </CRow>
-          <CCustomDataTable
-              :sorterValue="sortBy"
+          <CDataTable
+              :loading="this.$store.state.reports.loading"
               :responsive="true"
-              :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
-              :itemsPerPageSelect="{ label: tc('table_tool.items_per_page.title')}"
-              items-per-page-select
+              :tableFilter="{external: true, label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
+              :itemsPerPageSelect="{external: true, label: tc('table_tool.items_per_page.title')}"
               sorter
               hover
               striped
               :items="jobs"
               :fields="fields"
-              :items-per-page="10"
               clickable-rows
-              :active-page="1"
-              :pagination="{ doubleArrows: false, align: 'center'}"
-              @update:sorter-value="(e) => this.sortBy = e"
               :no-items-view="{ noResults: tc('table_tool.no_results'), noItems: tc('table_tool.no_items') }"
+              @update:sorter-value="handleSortChange"
+              @pagination-change="handlePaginationChange"
+              @update:table-filter-value="handleFilterChange"
           >
             <template #action="{item}">
               <td>
@@ -376,7 +375,15 @@
                 </CCardBody>
               </CCollapse>
             </template>
-          </CCustomDataTable>
+          </CDataTable>
+          <CPagination
+              :class="{'disabled': this.$store.state.reports.loading}"
+              v-show="totalPages > 1"
+              :activePage.sync="page"
+              :pages="totalPages"
+              @update:activePage="handlePageChange"
+              align="center"
+          />
         </CCardBody>
       </CCard>
     </CCol>
@@ -389,20 +396,18 @@ import DatePicker from 'vue2-datepicker';
 import ChartModal from "@/views/reports/ChartModal";
 import {format} from "date-fns";
 import {integer, maxLength, required} from "vuelidate/lib/validators";
-import CCustomDataTable from "@/views/custom/CCustomDataTable";
+import {debounce} from "debounce";
+import {confirmAlert} from "../../helpers/alert";
+
+const now = new Date();
 
 export default {
   components: {
-    DatePicker,
     ChartModal,
-    CCustomDataTable,
+    DatePicker,
   },
   data() {
     return {
-      sortBy: {
-        column: 'ID',
-        asc: false,
-      },
       job: {
         Name: '',
         PriceYen: '',
@@ -422,6 +427,14 @@ export default {
       isLoading: false,
       collapseDuration: 0,
       showModal: false,
+      filter: {
+        from: new Date(now.getFullYear(), now.getMonth(), 1),
+        to: new Date(now.getFullYear(), now.getMonth() + 1, 0),
+        mode: 0,
+        customer: 0,
+        type: 0,
+        method: 0,
+      }
     };
   },
   validations: {
@@ -449,9 +462,7 @@ export default {
       Method: {
         required,
       },
-      Paid: {
-
-      },
+      Paid: {},
       Deadline: {
         required,
       },
@@ -464,11 +475,44 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('reports/getList');
+    this.$store.commit('reports/updateQuery', {
+      paid: 0,
+      per_page: 10,
+      order: null,
+      q: null,
+      page: 1,
+      from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+      to: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+      mode: null,
+      customer: null,
+      type: null,
+      method: null,
+    });
+    this.$store.dispatch('reports/getList', this.$store.state.reports.query);
     this.$store.dispatch('jobs/getAdditionList');
     this.$store.dispatch('jobs/getRate');
+    this.$store.watch(() => this.$store.state.reports.query, () => {
+          this.$store.dispatch('reports/getList', this.$store.state.reports.query);
+        },
+        {
+          deep: true
+        });
   },
   computed: {
+    revenue() {
+      return this.$store.state.reports.revenue;
+    },
+    totalPages() {
+      return this.$store.state.reports.total_page;
+    },
+    page: {
+      get: function () {
+        return this.$store.state.reports.query.page;
+      },
+      set: function (page) {
+        this.$store.commit('reports/updateQuery', {page: page});
+      },
+    },
     modeOptions() {
       return [
         {
@@ -499,15 +543,15 @@ export default {
     },
     fields() {
       return [
-        {key: 'ID', label : this.$tc('views.jobs.table.id'), _style: 'width: 5%;'},
-        {key: 'action', label : this.$tc('views.jobs.table.action'), _style: 'width: 7%;'},
-        {key: 'Name', label : this.$tc('views.jobs.table.name'), _style: 'width: 15%;'},
-        {key: 'Price', label : this.$tc('views.jobs.table.price'), _style: 'width: 15%;'},
-        {key: 'PriceYen', label : this.$tc('views.jobs.table.price_yen'), _style: 'width: 15%;'},
-        {key: 'StartDate', label : this.$tc('views.jobs.table.start_date'), _style: 'width: 15%;'},
-        {key: 'Paydate', label : this.$tc('views.jobs.table.pay_date'), _style: 'width: 15%;'},
-        {key: 'Paid', label : this.$tc('views.jobs.table.paid'), _style: 'width: 8%;'},
-        {key: 'show_details', label : this.$tc('views.jobs.table.details'), _style: 'width: 5%;'},
+        {key: 'ID', label: this.$tc('views.jobs.table.id'), _style: 'width: 5%;'},
+        {key: 'action', label: this.$tc('views.jobs.table.action'), _style: 'width: 7%;'},
+        {key: 'Name', label: this.$tc('views.jobs.table.name'), _style: 'width: 15%;'},
+        {key: 'Price', label: this.$tc('views.jobs.table.price'), _style: 'width: 15%;'},
+        {key: 'PriceYen', label: this.$tc('views.jobs.table.price_yen'), _style: 'width: 15%;'},
+        {key: 'StartDate', label: this.$tc('views.jobs.table.start_date'), _style: 'width: 15%;'},
+        {key: 'Paydate', label: this.$tc('views.jobs.table.pay_date'), _style: 'width: 15%;'},
+        {key: 'Paid', label: this.$tc('views.jobs.table.paid'), _style: 'width: 8%;'},
+        {key: 'show_details', label: this.$tc('views.jobs.table.details'), _style: 'width: 5%;'},
         /*{key: 'customer', name: 'Customer'},
         {key: 'type', name: 'Customer'},
         {key: 'method', name: 'Customer'},
@@ -524,16 +568,6 @@ export default {
     },
     query() {
       return this.$store.state.reports.query;
-    },
-    totalRevenueYen() {
-      return this.$store.state.reports.jobs.reduce((total, item) => {
-        return total + item.PriceYen;
-      }, 0);
-    },
-    totalRevenueUSD() {
-      return this.$store.state.reports.jobs.reduce((total, item) => {
-        return total + item.Price;
-      }, 0);
     },
     rate() {
       return Math.round(this.$store.state.jobs.rate);
@@ -558,13 +592,34 @@ export default {
     }
   },
   methods: {
-    getList() {
-      this.$store.commit('app/setLoading', true);
-      this.$store.dispatch('reports/getList', this.query).then(result => {
-        if (result) {
-          this.$store.commit('app/setLoading', false);
-        }
-      });
+    handlePageChange(page) {
+      if (!isNaN(page) && this.page !== page) {
+        this.$store.commit('reports/updateQuery', {page: page});
+      }
+    },
+    handleSortChange(sorter) {
+      let order = {asc: false, column: 'ID'};
+      if (sorter.asc) {
+        order.asc = sorter.asc;
+      }
+      if (sorter.column) {
+        order.column = sorter.column;
+      }
+
+      this.$store.commit('reports/updateQuery', {order: order});
+    },
+    handleFilterChange: debounce(function (value) {
+      if (value !== this.$store.state.reports.query.q) {
+        this.$store.commit('reports/updateQuery', {q: value});
+      }
+    }, 300),
+    handlePaginationChange(value) {
+      if (!isNaN(value)) {
+        this.$store.commit('reports/updateQuery', {per_page: value});
+      }
+    },
+    getFilterData() {
+      this.$store.commit('reports/updateQuery', this.filter);
     },
     formattedDate(value) {
       return value;
@@ -590,7 +645,6 @@ export default {
         //}
         if (!this.$v.job[this.editField].$invalid) {
           if (onChangeUpdate || e.keyCode === 13) {
-            this.$store.commit('app/setLoading', true);
             var payload = {
               ID: this.selected.ID,
               data: {
@@ -616,8 +670,8 @@ export default {
             ).then(status => {
               if (status) {
                 this.cancelEdit();
+                this.$store.dispatch('reports/getList', this.$store.state.reports.query);
               }
-              this.$store.commit('app/setLoading', false);
             });
           }
         }
@@ -644,15 +698,7 @@ export default {
       this.cancelEdit();
       this.selected = item;
 
-      let result = await this.$swal.fire({
-        title: this.$tc('alerts.jobs.delete'),
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: this.$tc('buttons.crud.confirm'),
-        cancelButtonText: this.$tc('buttons.crud.cancel')
-      }).then(result => {
+      let result = await confirmAlert(this.$tc('alerts.jobs.delete'), this.$tc('buttons.crud.confirm'), this.$tc('buttons.crud.cancel'), 'warning').then(result => {
         return result.isConfirmed;
       });
 
@@ -661,13 +707,16 @@ export default {
       }
     },
     performDelete() {
-      this.$store.commit('app/setLoading', true);
       this.$store.dispatch('reports/delete', this.selected, {root: true})
-          .then(() => this.$store.commit('app/setLoading', false));
+          .then(result => {
+            if (result) {
+              this.$store.dispatch('reports/getList', this.$store.state.reports.query);
+            }
+          });
     },
     convertCurrency(value) {
       if (!isNaN(value)) {
-        return value.toLocaleString();
+        return Number(value).toLocaleString(this.$i18n.locale);
       }
       return 0;
     },

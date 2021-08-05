@@ -6,16 +6,22 @@ import i18n from "@/helpers/i18n";
 const backups = {
     namespaced: true,
     state: {
+        loading: false,
         backups: [],
     },
     mutations: {
         setBackups(state, backups) {
             state.backups = backups;
         },
+        setLoading(state, loading) {
+            state.loading = loading;
+        },
     },
     actions: {
         getBackups({commit}) {
-            return HTTP(true).get(GET_BACKUP)
+            commit('setLoading', true);
+            return HTTP(true)
+                .get(GET_BACKUP)
                 .then(response => {
                     if (response.data.status === 'success') {
                         commit('setBackups', response.data.data);
@@ -25,10 +31,13 @@ const backups = {
                     toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                     return false;
                 })
-                .catch(error => handleError(error));
+                .catch(error => handleError(error))
+                .finally(() => commit('setLoading', false));
         },
-        manualBackup({dispatch}) {
-            return HTTP(true).get(MANUAL_BACKUP)
+        manualBackup({dispatch, commit}) {
+            commit('setLoading', true);
+            return HTTP(true)
+                .get(MANUAL_BACKUP)
                 .then(response => {
                     if (response.data.status === 'success') {
                         dispatch('getBackups');
@@ -40,10 +49,13 @@ const backups = {
                     toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                     return false;
                 })
-                .catch(error => handleError(error));
+                .catch(error => handleError(error))
+                .finally(() => commit('setLoading', false));
         },
         deleteBackup({commit, state}, backups) {
-            return HTTP(true).post(DELETE_BACKUP, backups)
+            commit('setLoading', true);
+            return HTTP(true)
+                .post(DELETE_BACKUP, backups)
                 .then(response => {
                     if (response.data.status === 'success') {
                         let stateBackups = state.backups.filter(backup => {
@@ -57,10 +69,14 @@ const backups = {
 
                     toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                     return false;
-                }).catch(error => handleError(error));
+                })
+                .catch(error => handleError(error))
+                .finally(() => commit('setLoading', false));
         },
         downloadBackup({commit}, backup) {
-            return HTTP(true).get(DOWNLOAD_BACKUP, {
+            commit('setLoading', true);
+            return HTTP(true)
+                .get(DOWNLOAD_BACKUP, {
                 params: backup,
                 responseType: 'arraybuffer',
             })
@@ -80,7 +96,9 @@ const backups = {
 
                     toastAlert(i18n.tc('alerts.app.server_error'), 'error');
                     return false;
-                }).catch(error => handleError(error));
+                })
+                .catch(error => handleError(error))
+                .finally(() => commit('setLoading', false));
         },
     },
 };

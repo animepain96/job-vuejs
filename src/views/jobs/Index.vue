@@ -19,31 +19,30 @@
             <CCol :class="'text-right'">
               <p :class="'font-weight-bold mb-1'">{{ this.$tc('views.jobs.total_monthly') }}: <span
                   style="font-size: 16px;"><span
-                  :class="'text-danger'">{{ monthlyRevenueUSD.toLocaleString() }}USD</span> - <span
-                  :class="'text-primary'">{{ monthlyRevenueYen.toLocaleString() }}JPY</span></span></p>
+                  :class="'text-danger'">{{ convertCurrency(monthlyRevenue.price) }}USD</span> - <span
+                  :class="'text-primary'">{{ convertCurrency(monthlyRevenue.price_yen) }}JPY</span></span></p>
               <p :class="'font-weight-bold mb-1'">{{ this.$tc('views.jobs.rate') }}: <span
                   style="font-size: 16px;"><span
                   :class="'text-danger'">1USD</span> - <span
                   :class="'text-primary'">{{ rate }}JPY</span></span></p>
             </CCol>
           </CRow>
-          <CCustomDataTable
+          <CDataTable
+              :loading="this.$store.state.jobs.loading"
               :sorterValue="sortBy"
               :responsive="true"
-              :tableFilter="{ label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
+              :tableFilter="{external: true, label: tc('table_tool.filter.title'), placeholder: tc('table_tool.filter.placeholder')}"
               :itemsPerPageSelect="{ label: tc('table_tool.items_per_page.title')}"
-              items-per-page-select
-              sorter
+              :sorter="{external: true}"
               hover
               striped
               :items="jobs"
               :fields="fields"
-              :items-per-page="10"
               clickable-rows
-              :active-page="1"
-              :pagination="{ doubleArrows: false, align: 'center'}"
-              @update:sorter-value="(e) => this.sortBy = e"
               :no-items-view="{ noResults: tc('table_tool.no_results'), noItems: tc('table_tool.no_items') }"
+              @update:sorter-value="handleSortChange"
+              @pagination-change="handlePaginationChange"
+              @update:table-filter-value="handleFilterChange"
           >
             <template #action="{item}">
               <td>
@@ -334,7 +333,15 @@
                 </CCardBody>
               </CCollapse>
             </template>
-          </CCustomDataTable>
+          </CDataTable>
+          <CPagination
+              :class="{'disabled': this.$store.state.jobs.loading}"
+              v-show="totalPages > 1"
+              :activePage.sync="page"
+              :pages="totalPages"
+              @update:activePage="handlePageChange"
+              align="center"
+          />
         </CCardBody>
       </CCard>
     </CCol>
@@ -355,13 +362,13 @@ import DatePicker from 'vue2-datepicker';
 import CreateJobModal from "@/views/jobs/CreateJobModal";
 import {format, isValid, parse} from "date-fns";
 import "vue2-datepicker/locale/vi";
-import CCustomDataTable from "@/views/custom/CCustomDataTable";
+import {debounce} from "debounce";
+import {confirmAlert} from "../../helpers/alert";
 
 export default {
   components: {
     DatePicker,
     CreateJobModal,
-    CCustomDataTable,
   },
   data() {
     return {
@@ -413,9 +420,7 @@ export default {
       Method: {
         required,
       },
-      Paid: {
-
-      },
+      Paid: {},
       Deadline: {
         required,
       },
@@ -428,25 +433,44 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('jobs/getList');
+    this.$store.commit('jobs/updateQuery', {per_page: 10, page: 1, order: null, q: null});
+    this.$store.dispatch('jobs/getList', this.$store.state.jobs.query);
     this.$store.dispatch('jobs/getAdditionList');
+    this.$store.dispatch('jobs/getMonthlyRevenue');
     this.$store.dispatch('jobs/getRate');
+    this.$store.watch(() => this.$store.state.jobs.query, () => {
+          this.$store.dispatch('jobs/getList', this.$store.state.jobs.query);
+        },
+        {
+          deep: true
+        });
   },
   computed: {
+    totalPages() {
+      return this.$store.state.jobs.total_page;
+    },
+    page: {
+      get: function () {
+        return this.$store.state.jobs.query.page;
+      },
+      set: function (page) {
+        this.$store.commit('jobs/updateQuery', {page: page});
+      },
+    },
     i18n() {
       return this.$i18n;
     },
     fields() {
       return [
-        {key: 'ID', label : this.$tc('views.jobs.table.id'), _style: 'width: 5%;'},
-        {key: 'action', label : this.$tc('views.jobs.table.action'), _style: 'width: 7%;'},
-        {key: 'Name', label : this.$tc('views.jobs.table.name'), _style: 'width: 15%;'},
-        {key: 'Price', label : this.$tc('views.jobs.table.price'), _style: 'width: 15%;'},
-        {key: 'PriceYen', label : this.$tc('views.jobs.table.price_yen'), _style: 'width: 15%;'},
-        {key: 'StartDate', label : this.$tc('views.jobs.table.start_date'), _style: 'width: 15%;'},
-        {key: 'Paydate', label : this.$tc('views.jobs.table.pay_date'), _style: 'width: 15%;'},
-        {key: 'Paid', label : this.$tc('views.jobs.table.paid'), _style: 'width: 8%;'},
-        {key: 'show_details', label : this.$tc('views.jobs.table.details'), _style: 'width: 5%;'},
+        {key: 'ID', label: this.$tc('views.jobs.table.id'), _style: 'width: 5%;'},
+        {key: 'action', label: this.$tc('views.jobs.table.action'), _style: 'width: 7%;'},
+        {key: 'Name', label: this.$tc('views.jobs.table.name'), _style: 'width: 15%;'},
+        {key: 'Price', label: this.$tc('views.jobs.table.price'), _style: 'width: 15%;'},
+        {key: 'PriceYen', label: this.$tc('views.jobs.table.price_yen'), _style: 'width: 15%;'},
+        {key: 'StartDate', label: this.$tc('views.jobs.table.start_date'), _style: 'width: 15%;'},
+        {key: 'Paydate', label: this.$tc('views.jobs.table.pay_date'), _style: 'width: 15%;'},
+        {key: 'Paid', label: this.$tc('views.jobs.table.paid'), _style: 'width: 8%;'},
+        {key: 'show_details', label: this.$tc('views.jobs.table.details'), _style: 'width: 5%;'},
         /*{key: 'customer', name: 'Customer'},
         {key: 'type', name: 'Customer'},
         {key: 'method', name: 'Customer'},
@@ -461,23 +485,8 @@ export default {
     v() {
       return this.$v;
     },
-    monthlyRevenueYen() {
-      let now = new Date();
-      return this.$store.state.jobs.jobs.filter((item) => {
-        let startDate = parse(item.StartDate, 'yyyy-MM-dd', new Date());
-        return isValid(startDate) && startDate.getFullYear() === now.getFullYear() && startDate.getMonth() === now.getMonth();
-      }).reduce((total, item) => {
-        return total + item.PriceYen;
-      }, 0);
-    },
-    monthlyRevenueUSD() {
-      let now = new Date();
-      return this.$store.state.jobs.jobs.filter((item) => {
-        let startDate = parse(item.StartDate, 'yyyy-MM-dd', new Date());
-        return isValid(startDate) && startDate.getFullYear() === now.getFullYear() && startDate.getMonth() === now.getMonth();
-      }).reduce((total, item) => {
-        return total + item.Price;
-      }, 0);
+    monthlyRevenue() {
+      return this.$store.state.jobs.monthly_revenue;
     },
     rate() {
       return Math.round(this.$store.state.jobs.rate);
@@ -502,6 +511,32 @@ export default {
     }
   },
   methods: {
+    handlePageChange(page) {
+      if (!isNaN(page) && this.page !== page) {
+        this.$store.commit('jobs/updateQuery', {page: page});
+      }
+    },
+    handleSortChange(sorter) {
+      let order = {asc: false, column: 'ID'};
+      if (sorter.asc) {
+        order.asc = sorter.asc;
+      }
+      if (sorter.column) {
+        order.column = sorter.column;
+      }
+
+      this.$store.commit('jobs/updateQuery', {order: order});
+    },
+    handleFilterChange: debounce(function (value) {
+      if (value !== this.$store.state.jobs.query.q) {
+        this.$store.commit('jobs/updateQuery', {q: value});
+      }
+    }, 300),
+    handlePaginationChange(value) {
+      if (!isNaN(value)) {
+        this.$store.commit('jobs/updateQuery', {per_page: value});
+      }
+    },
     formattedDate(value) {
       return value;
     },
@@ -527,7 +562,7 @@ export default {
         if (!this.$v.job[this.editField].$invalid) {
           if (onChangeUpdate || e.keyCode === 13) {
             this.$store.commit('app/setLoading', true);
-            var payload = {
+            let payload = {
               ID: this.selected.ID,
               data: {
                 field: this.editField,
@@ -580,15 +615,7 @@ export default {
       this.cancelEdit();
       this.selected = item;
 
-      let result = await this.$swal.fire({
-        title: this.$tc('alerts.jobs.delete'),
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: this.$tc('buttons.crud.confirm'),
-        cancelButtonText: this.$tc('buttons.crud.cancel')
-      }).then(result => {
+      let result = await confirmAlert(this.$tc('alerts.jobs.delete'), this.$tc('buttons.crud.confirm'), this.$tc('buttons.crud.cancel'), 'warning').then(result => {
         return result.isConfirmed;
       });
 
@@ -597,13 +624,12 @@ export default {
       }
     },
     performDelete() {
-      this.$store.commit('app/setLoading', true);
       this.$store.dispatch('jobs/delete', this.selected, {root: true})
-          .then(() => this.$store.commit('app/setLoading', false));
+          .then(() => this.$store.dispatch('jobs/getList'), this.$store.state.jobs.query);
     },
     convertCurrency(value) {
       if (!isNaN(value)) {
-        return value.toLocaleString();
+        return Number(value).toLocaleString(this.$i18n.locale);
       }
       return 0;
     },

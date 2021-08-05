@@ -283,7 +283,8 @@
       "success_password": "Khôi phục mật khẩu cho người dùng thành công."
     },
     "app": {
-      "server_error": "Có lỗi xảy ra. Vui lòng thử lại sau."
+      "server_error": "Có lỗi xảy ra. Vui lòng thử lại sau.",
+      "data_invalid": "Dữ liệu không hợp lệ."
     }
 
   },
