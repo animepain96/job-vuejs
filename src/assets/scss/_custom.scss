@@ -81,42 +81,5 @@
     margin-left: 0.8rem;
     transform: none;
   }
-
-  /* Force table to not be like tables anymore */
-  .sp-table table,
-  .sp-table thead,
-  .sp-table tbody,
-  .sp-table th,
-  .sp-table td,
-  .sp-table tr {
-    display: block;
-  }
-
-  /* Hide table headers (but not display: none;, for accessibility) */
-  .sp-table thead tr {
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
-  }
-
-  .sp-table td {
-    /* Behave  like a "row" */
-    position: relative;
-    padding-left: 50%;
-    white-space: normal;
-    text-align: left;
-    min-height: 3rem;
-  }
-
-  .sp-table td:before {
-    /* Now like a table header */
-    position: absolute;
-    /* Top/left values mimic padding */
-    width: 45%;
-    padding-right: 0.5rem;
-    white-space: nowrap;
-    text-align: left;
-    font-weight: bold;
-  }
 }
 
